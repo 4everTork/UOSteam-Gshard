@@ -1,0 +1,20 @@
+////
+// Macro Pvp: Subir/Descer da montaria
+// Mandar atacar last target
+////
+if mounted
+  useobject! 'self'
+  msg 'all stay'
+  pause 100
+  if @findobject 'last'
+autotargetenemy
+    msg 'all kill'   
+  endif
+else
+  if not @findobject 'montaria'
+    sysmsg 'Selecione a montaria'
+    promptalias 'montaria'
+  endif
+  msg 'all come'
+  useobject! 'montaria'
+endif

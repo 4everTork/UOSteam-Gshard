@@ -1,0 +1,13 @@
+// Stealth
+clearjournal
+while not hidden 'self'
+  useskill 'Hiding'
+  while not @injournal 'voce ficou invisivel'
+    if @injournal 'nao conseguiu'
+      replay
+    endif
+  endwhile
+endwhile
+useskill 'Stealth'
+while not @injournal 'mover em silencio'
+endwhile

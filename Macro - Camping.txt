@@ -1,0 +1,29 @@
+////
+// Macro de Camping
+////
+// Ter kindling na backpack e bastante espaço para andar reto
+////
+@clearjournal
+movetypeoffset 0xde1 'backpack' 'ground' 2 1 0 '0' '1' '0'
+pause 750
+movetypeoffset 0xde1 'backpack' 'ground' 2 -1 0 '0' '1' '0'
+pause 750
+while @findtype 0xde1 0 'ground' 'any' 3
+  useobject 'found'
+  pause 500
+  while not @injournal 'seu acampamento' 'system'
+    if @injournal 'falhou ao acender' 'system'
+      pause 250
+      @clearjournal
+      useobject 'found'
+      pause 500
+    endif
+  endwhile
+endwhile
+pause 1000
+walk 'East'
+pause 500
+walk 'East'
+pause 500
+walk 'East'
+pause 500

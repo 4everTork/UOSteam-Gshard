@@ -1,0 +1,167 @@
+//Macro de Mining para UOSteam
+//Servidor: Dimension Free Shard
+//Feito por: Tork
+//Data: 29/04/2016
+// ** Ter um container (baú em seu banco) **
+// ** A mina que você estiver DEVERÁ ter acesso ao banco de qualquer lugar **
+//
+// CONFIGURACOES
+//
+if not listexists 'Pos_X'
+  createlist 'Pos_X'
+endif
+@clearlist 'Pos_X'
+pushlist! 'Pos_X' -1
+pushlist! 'Pos_X' 0
+pushlist! 'Pos_X' 1
+if not listexists 'Pos_Y'
+  createlist 'Pos_Y'
+endif
+@clearlist 'Pos_Y'
+pushlist! 'Pos_Y' -1
+pushlist! 'Pos_Y' 0
+pushlist! 'Pos_Y' 1
+if not listexists 'Directions'
+  createlist 'Directions'
+endif
+@clearlist 'Directions'
+pushlist! 'Directions' 'Southeast'
+pushlist! 'Directions' 'North'
+pushlist! 'Directions' 'Northwest'
+pushlist! 'Directions' 'East'
+pushlist! 'Directions' 'South'
+pushlist! 'Directions' 'Southwest'
+pushlist! 'Directions' 'West'
+pushlist! 'Directions' 'Northeast'
+if not listexists 'RunXY'
+  createlist 'RunXY'
+endif
+@clearlist 'RunXY'
+pushlist! 'RunXY' 'East'
+pushlist! 'RunXY' 'South'
+pushlist! 'RunXY' 'Southeast'
+pushlist! 'RunXY' 'North'
+pushlist! 'RunXY' 'Northwest'
+pushlist! 'RunXY' 'Southwest'
+pushlist! 'RunXY' 'West'
+pushlist! 'RunXY' 'Northeast'
+if not @findobject 'bagmining'
+  headmsg 'Selecione o bau em seu banco para guardar os minerios.'
+  msg 'Banker Bank'
+  pause 300
+  promptalias 'bagmining'
+  useobject 'bagmining'
+endif
+//
+// Guardar
+//
+if diffweight < 200
+  Resync
+  pause 1000
+  headmsg 'Guardando minerios'
+  msg 'banker bank'
+  pause 1000
+  @clearjournal
+  while @movetype 0x1bf2 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0x19b9 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf13 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf16 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf11 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf26 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf18 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf0f 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf10 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf15 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0x19b7 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0x19b8 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0x19ba 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0x19b7 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0x19bef 'backpack' 'bagmining' 0 0 0 'any'
+    pause 1000
+  endwhile
+endif
+//
+// Minerar
+//
+@cancelautotarget
+for 0 to 2
+  for 0 to 'RunXY'
+    for 0 to 'Directions'
+      for 0 to 'Pos_X'
+        for 0 to 'Pos_Y'
+          if dead 'self'
+            stop
+          endif
+          @unsetalias 'quit'
+          while not @findalias 'quit'
+            @cancelautotarget
+            if dead 'self'
+              stop
+            endif
+            autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
+            if not @useobject! 'righthand'
+              usetype! 0xe85 'any' 'self' 1
+            endif
+            clearjournal
+            @settimer 't_timeout' 0
+            while @timer 't_timeout' < 15000
+              if dead 'self'
+                stop
+              endif
+              //
+              //  Jornal
+              //
+              if @injournal 'Voce pos' 'system' or @injournal 'Voce nao encontrou' 'system'
+                break
+              elseif @injournal 'Nao ha nada aqui' 'system' or @injournal 'Tente minerar em outro' 'system'
+                @setalias 'quit' 'self'
+                break
+              elseif @injournal 'Voce nao tem uma' 'system' or @injournal 'You cannot mine' 'system'
+                @setalias 'quit' 'self'
+                break
+              endif
+            endwhile
+            @clearjournal
+            if diffweight < 200
+              replay
+            endif
+          endwhile
+        endfor
+      endfor
+      for 4
+        walk 'Directions[]'
+      endfor
+    endfor
+    for 8
+      walk 'RunXY[]'
+    endfor
+  endfor
+  // by tork

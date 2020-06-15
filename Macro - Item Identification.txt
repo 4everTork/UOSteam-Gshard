@@ -1,0 +1,15 @@
+// Item Identification
+if not @findobject 'TID'
+  headmsg 'Selecione o item.'
+  promptalias 'TID'
+else
+endif
+clearjournal
+useskill 'Item Identification'
+waitingfortarget
+@target 'TID'
+while not @injournal 'vale'
+  if @injournal 'nao conseguiu'
+    replay
+  endif
+endwhile

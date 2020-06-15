@@ -1,0 +1,29 @@
+////
+// Macro de Meditation
+////
+@clearjournal
+useskill 'meditation'
+while not mana == maxmana
+  if @injournal 'Voce perdeu sua' 'system'
+    replay
+  endif
+endwhile
+pause 2000
+if mana == maxmana
+  cast 'Magic Arrow' 'self'
+  pause 1750
+  if hits <= 85
+    if @findtype 0xe21 'any' 'backpack' 0
+      autotargetself!
+      useobject 'found'
+      while not @injournal 'voce curou'
+        if @injournal 'seus dedos escorregam'
+          replay
+        endif
+      endwhile
+    else
+      headmsg 'Sem Bandage na Backpack' 50 'self'
+      stop
+    endif
+  endif
+endif

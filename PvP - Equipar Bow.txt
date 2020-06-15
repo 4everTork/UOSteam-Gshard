@@ -1,0 +1,10 @@
+if @findobject 'Bow' 'any' 'backpack'
+  @useobject 'found'
+  stop
+endif
+if @findlayer 'self' 1 or @findlayer 'self' 2
+  stop
+endif
+if not @findobject 'Bow' 'any' 'backpack'
+  promptalias 'Bow'
+endif

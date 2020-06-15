@@ -1,0 +1,15 @@
+// Taste Identification
+if not @findobject 'TTI'
+  headmsg 'Selecione a comida.'
+  promptalias 'TTI'
+else
+endif
+clearjournal
+useskill 'Taste Identification'
+waitingfortarget
+@target 'TTI'
+while not @injournal 'nada estranho'
+  if @injournal 'nao conseguiu'
+    replay
+  endif
+endwhile

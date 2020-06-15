@@ -1,0 +1,7 @@
+////
+// Macro de Tracking
+// Estar longe de monstros
+////
+useskill 'tracking'
+automenu 'Tracking' 'Monstros'
+pause 7250

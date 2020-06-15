@@ -1,0 +1,54 @@
+////
+// Macro de Carpentry
+// Ter um bau perto (ou banco) com log
+// Ter um Saw (serrote) na backpack
+////
+if not @findobject 'BauCarp'
+  headmsg 'Selecione o bau com as Logs.'
+  promptalias 'BauCarp'
+  useobject 'BauCarp'
+else
+  useobject 'BauCarp'
+endif
+// Se acabar a log
+if @counttype 0x1bdd 0 'backpack' == 0
+  headmsg 'Restockando Log'
+  movetype 0x1bdd 'BauCarp' 'Backpack' (0 0 0) 0 500 4
+  pause 1000
+endif
+// Se tiver mais que 100 board
+if @counttype 0x1bd7 0 'backpack' >= 100
+  useobject 'BauCarp'
+  headmsg 'Guardando board'
+  @movetypeoffset 0x1bd7 'backpack' 'BauCarp' (0 0 0).
+  pause 1000
+endif
+// Fazer 1 Board
+if @gumpexists 0x483
+  @replygump 0x483 0
+elseif @gumpexists 0x484
+  @replygump 0x484 0
+elseif @gumpexists 0x485
+  @replygump 0x485 0
+endif
+usetype 0x1034 'backpack'
+waitforgump 'any' 15000
+//Gump 1
+if @gumpexists 0x483
+  @replygump 0x483 1
+  waitforgump 0x483 15000
+  @replygump 0x483 10101
+  waitforgump 0x483 15000
+  //Gump 2
+elseif @gumpexists 0x484
+  @replygump 0x484 1
+  waitforgump 0x484 15000
+  @replygump 0x484 10101
+  waitforgump 0x484 15000
+  //Gump 3
+elseif @gumpexists 0x485
+  @replygump 0x485 1
+  waitforgump 0x485 15000
+  @replygump 0x485 10101
+  waitforgump 0x485 15000
+endif

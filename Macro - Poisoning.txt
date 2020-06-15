@@ -1,0 +1,36 @@
+/////
+// Ter bastante Lesser Poison, Oil Cloth e uma lâmmina na backpack.
+// Cuidado porque diminui karma a ponto de ficar PK
+/////
+if not @findobject 'daggerpoison'
+  headmsg 'Selecione a lamina para envenenar.'
+  promptalias 'daggerpoison'
+endif
+// Usar Poisoning
+@clearjournal
+useskill 'Poisoning'
+waitfortarget 15000
+targettype! 0xf0e 68
+waitfortarget 15000
+target! 'daggerpoison'
+// Jornal
+if @injournal 'voce deve esperar' 'system'
+  pause 1000
+  replay
+endif
+while not @injournal 'aplicou o veneno' 'system'
+  if @injournal 'voce falhou ao aplicar' 'system'
+    pause 9000
+    replay
+  endif
+  if @injournal 'Voce cometeu um grande engano' 'system'
+    cast 'cure' 'self'
+    pause 2250
+    break
+  endif
+endwhile
+// Limpar com Oil Cloth
+usetype 0x175d 2001
+waitfortarget 15000
+target! 'daggerpoison'
+pause 9000

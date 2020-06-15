@@ -1,0 +1,9 @@
+////
+// Macro de Detecting Hidden
+////
+useskill "Detecting Hidden"
+while not @injournal 'detectou'
+  if @injournal 'nao encontrou'
+    replay
+  endif
+endwhile

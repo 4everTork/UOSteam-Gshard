@@ -1,0 +1,24 @@
+// Macro cortar corpo e abrir bones
+//
+if not @findobject 'Arma' 'any' 'self' 1
+  headmsg 'Selecione sua arma.'
+  promptalias 'Arma'
+endif
+if @findtype 0x2006 'any' 'ground' 'any' 3
+  @useobject! 'Arma'
+  waitingfortarget
+  @target 'found'
+  headmsg '*Corpo cortado*'
+else
+endif
+if @findtype 0xeca 'any' 'ground' 'any' 3 or @findtype 0xecb 'any' 'ground' 'any' 3
+  useobject 'found'
+elseif @findtype 0xecc 'any' 'ground' 'any' 3 or @findtype 0xecd 'any' 'ground' 'any' 3
+  useobject 'found'
+elseif @findtype 0xece 'any' 'ground' 'any' 3 or @findtype 0xecf 'any' 'ground' 'any' 3
+  useobject 'found'
+elseif @findtype 0xed0 'any' 'ground' 'any' 3 or @findtype 0xed1 'any' 'ground' 'any' 3
+  useobject 'found'
+elseif @findtype 0xed2 'any' 'ground' 'any' 3
+  useobject 'found'
+endif

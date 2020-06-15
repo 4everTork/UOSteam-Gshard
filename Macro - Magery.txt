@@ -1,0 +1,12 @@
+////
+// Macro de Magery
+////
+while mana >= 4
+  @autotargetself
+  cast "Night Sight"
+  pause 1750
+endwhile
+while mana < maxmana
+  useskill meditation
+  pause 3500
+endwhile

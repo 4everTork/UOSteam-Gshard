@@ -1,0 +1,14 @@
+// Arms Lore
+if not @findobject 'TAL'
+  headmsg 'Selecione a arma.'
+  promptalias 'TAL'
+else
+endif
+clearjournal
+autotargetobject 'TAL'
+useskill 'Arms Lore'
+while not @injournal 'durabilidade'
+  if @injournal 'nao esta certo'
+    replay
+  endif
+endwhile

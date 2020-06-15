@@ -1,0 +1,31 @@
+msg '.disarm'
+//Tall Straw
+if @findtype 0x1716 'any' 'backpack'
+  @useobject 'found'
+  stop
+endif
+// Bear Mask
+if @findtype 0x1546 'any' 'backpack' or @findtype 0x1545 'any' 'backpack' 0
+  @useobject 'found'
+  stop
+endif
+// Deer Mask
+if @findtype 0x1547 'any' 'backpack' or @findtype 0x1548 'any' 'backpack'
+  @useobject 'found'
+  stop
+endif
+// Orc Mask
+if @findtype 0x141B 'any' 'backpack' or @findtype 0x141C 'any' 'backpack'
+  @useobject 'found'
+  stop
+endif
+// Tribal Mask P
+if @findtype 0x1549 'any' 'backpack' or @findtype 0x154A 'any' 'backpack'
+  @useobject 'found'
+  stop
+endif
+// Tribal Mask G
+if @findtype 0x154B 'any' 'backpack' or @findtype 0x154C 'any' 'backpack'
+  @useobject 'found'
+  stop
+endif

@@ -1,0 +1,22 @@
+// Peacemaking + Musicanship
+removetimer 'peace'
+@createtimer 'peace'
+clearjournal
+if not @findobject 'TPeacemaking'
+  headmsg 'Selecione o que acalmar.'
+  promptalias 'TPeacemaking'
+else
+endif
+@autotargetobject! 'TPeacemaking'
+useskill 'Peacemaking'
+while not @injournal 'parando a batalha'
+  if @injournal 'mas falhou' or @injournal 'sua musica nao'
+    replay
+  endif
+  if @injournal 'tocou mal'
+    replay
+  endif
+  if timer 'peace' > 10000
+    replay
+  endif
+endwhile

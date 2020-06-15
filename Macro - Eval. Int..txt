@@ -1,0 +1,14 @@
+// Eval. Int.
+if not @findobject 'Tevalint'
+  headmsg 'Selecione o animal.'
+  promptalias 'Tevalint'
+else
+endif
+clearjournal
+autotargetobject 'Tevalint'
+useskill 'Evaluating Intelligence'
+while not @injournal 'looks'
+  if @injournal 'cannot'
+    replay
+  endif
+endwhile

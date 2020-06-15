@@ -1,0 +1,8 @@
+// Hiding
+@clearjournal
+useskill 'Hiding'
+while not @injournal 'voce ficou invisivel'
+  if @injournal 'nao conseguiu'
+    replay
+  endif
+endwhile

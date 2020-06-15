@@ -1,0 +1,414 @@
+//---------------------------------------------------
+// Macro de Mining
+// Funcoes: Recall para banco, Smeltar, Guardar, Comer, Ressucitar e Minerar.
+// Para GShard 2020
+// ------------------------------------------
+// 1- Ter DOIS bau no banco. Um para guardar MINERIOS
+// e outro para pegar PICKAXE, MARTELO e comer FISH STEAK(opcional).
+//
+// 2- Ter um runebook com a 1ª runa para o BANCO ao lado da FORGE e a 2ª runa para a MINA.
+// * Ter magia recall no spellbook.
+// -----------------------------------------------------------
+//
+// CONFIGURACOES
+//
+if not listexists 'Pos_X'
+  createlist 'Pos_X'
+endif
+@clearlist 'Pos_X'
+pushlist! 'Pos_X' -1
+pushlist! 'Pos_X' 0
+pushlist! 'Pos_X' 1
+if not listexists 'Pos_Y'
+  createlist 'Pos_Y'
+endif
+@clearlist 'Pos_Y'
+pushlist! 'Pos_Y' -1
+pushlist! 'Pos_Y' 0
+pushlist! 'Pos_Y' 1
+if not listexists 'Directions'
+  createlist 'Directions'
+endif
+@clearlist 'Directions'
+pushlist! 'Directions' 'Southeast'
+pushlist! 'Directions' 'North'
+pushlist! 'Directions' 'Northwest'
+pushlist! 'Directions' 'East'
+pushlist! 'Directions' 'South'
+pushlist! 'Directions' 'Southwest'
+pushlist! 'Directions' 'West'
+pushlist! 'Directions' 'Northeast'
+if not listexists 'RunXY'
+  createlist 'RunXY'
+endif
+@clearlist 'RunXY'
+pushlist! 'RunXY' 'East'
+pushlist! 'RunXY' 'South'
+pushlist! 'RunXY' 'Southeast'
+pushlist! 'RunXY' 'North'
+pushlist! 'RunXY' 'Northwest'
+pushlist! 'RunXY' 'Southwest'
+pushlist! 'RunXY' 'West'
+pushlist! 'RunXY' 'Northeast'
+if not @findobject 'runebookmining'
+  headmsg 'Selecione o seu runebook. PRIMEIRA runa MINA e SEGUNDA runa BANCO cidade safe.'
+  promptalias 'runebookmining'
+endif
+if not @findalias 'bankitens'
+  msg 'banker bank'
+  headmsg 'Selecione o bau para RESTOCK de Pickaxes e Smith Hammer.' '33'
+  promptalias 'bankitens'
+endif
+if not @findalias 'bankminerios'
+  msg 'banker bank'
+  headmsg 'Selecione o bau onde GUARDAR minerios' '33'
+  promptalias 'bankminerios'
+endif
+//
+// Peso limite
+//
+if diffweight < 100 or not @findtype 0xe85 'any' 'self'
+  while not inregion 'town' 'self'
+    useobject 'runebookmining'
+    waitforgump 'any' 10000
+    //Gump Runebook 1
+    if @gumpexists 0x472
+      @replygump 0x472 1
+      waitforgump 0x472 15000
+      @replygump 0x472 101
+      //Gump Runebook 2
+    elseif @gumpexists 0x473
+      @replygump 0x473 1
+      waitforgump 0x473 15000
+      @replygump 0x473 101
+    endif
+    pause 11500
+  endwhile
+endif
+//
+// Restock
+//
+if inregion 'town' 'self'
+  msg 'banker bank'
+  pause 500
+  useobject 'bankitens'
+  pause 250
+  @togglehands 'right'
+  pause 500
+  while @counttype '0xe85' 'any' 'backpack' < 1
+    if @counttype '0xe85' 'any' 'bankitens' > 0
+      useobject 'bankitens'
+      pause 500
+      @movetype '0xe85' 'bankitens' 'backpack' 0 0 0 'any'
+      pause 1000
+      headmsg 'Restock de Pickaxe'
+    else
+      headmsg '*Sem Pickaxe*'
+      stop
+    endif
+  endwhile
+  if @findtype 0x97b 'any' 'bankitens'
+    useobject 'found'
+  else
+    headmsg '*Sem fish steak*
+  endif
+endif
+//
+// Smeltar
+//
+if inregion 'town' 'self'
+  togglehands 'right'
+  pause 500
+  if not @findtype 0x13e3 'any' 'backpack' 'any' 0
+    useobject 'bankitens'
+    pause 500
+    @movetype 0x13e3 'bankitens' 'backpack' 0 0 0 'any'
+    pause 1000
+  endif
+  msg 'banker bank'
+  pause 1000
+  //Gump 1
+  if @gumpexists 0x483
+    @replygump 0x483 0
+    //Gump 2
+  elseif @gumpexists 0x484
+    @replygump 0x484 0
+    //Gump 3
+  elseif @gumpexists 0x485
+    @replygump 0x485 0
+  endif
+  usetype 0x13e3 'any' 'self' 1
+  waitforgump 'any' 10000
+  @replygump 'any' 0
+  @findtype 0x19ba 'any' 'backpack'
+  if @findobject 'found' 2492 'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  @findtype 0x19ba 'any' 'backpack'
+  if @findobject 'found' 2493'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  @findtype 0x19ba 'any' 'backpack'
+  if  @findobject 'found' 2489 'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  @findtype 0x19ba 'any' 'backpack'
+  if @findobject 'found' '2490' 'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  while @findtype 0x19ba 'any' 'backpack'
+    @useobject 'found'
+    pause 1000
+  endwhile
+  @findtype 0x19b7 'any' 'backpack'
+  if @findobject 'found' 2492 'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  @findtype 0x19b7 'any' 'backpack'
+  if @findobject 'found' 2493'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  @findtype 0x19b7 'any' 'backpack'
+  if  @findobject 'found' 2489 'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  @findtype 0x19b7 'any' 'backpack'
+  if @findobject 'found' '2490' 'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  while @findtype 0x19b7 'any' 'backpack'
+    @useobject 'found'
+    pause 1000
+  endwhile
+  @findtype 0x19b8 'any' 'backpack'
+  if @findobject 'found' 2492 'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  @findtype 0x19b8 'any' 'backpack'
+  if @findobject 'found' 2493'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  @findtype 0x19b8 'any' 'backpack'
+  if  @findobject 'found' 2489 'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  @findtype 0x19b8 'any' 'backpack'
+  if @findobject 'found' '2490' 'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  while @findtype 0x19b8 'any' 'backpack'
+    @useobject 'found'
+    pause 1000
+  endwhile
+  @findtype 0x19b9 'any' 'backpack'
+  if @findobject 'found' 2492 'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  @findtype 0x19b9 'any' 'backpack'
+  if @findobject 'found' 2493'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  @findtype 0x19b9 'any' 'backpack'
+  if  @findobject 'found' 2489 'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  @findtype 0x19b9 'any' 'backpack'
+  if @findobject 'found' '2490' 'backpack'
+    @moveitem 'found' 'bankminerios'
+    pause 1000
+  endif
+  while @findtype 0x19b9 'any' 'backpack'
+    @useobject 'found'
+    pause 1000
+  endwhile
+  togglehands 'right'
+  pause 1000
+  @movetypeoffset 0x13e3 'backpack' 'bankitens' 0 0 0 'any' 1 0
+  pause 1000
+  if @injournal 'You can not pick that up' 'system'
+    Sysmsg 'Recalculando'
+    break
+  endif
+endif
+//
+// Guardar
+//
+if inregion 'town' 'self'
+  Resync
+  pause 1000
+  headmsg 'Guardando minerios'
+  msg 'banker bank'
+  pause 1000
+  @clearjournal
+  while @movetype 0x1bf2 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0x19b9 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf13 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+endwhile
+while @movetype 0xf16 'backpack' 'bankminerios' 0 0 0 'any'
+  pause 1000
+endwhile
+while @movetype 0xf11 'backpack' 'bankminerios' 0 0 0 'any'
+  pause 1000
+endwhile
+while @movetype 0xf26 'backpack' 'bankminerios' 0 0 0 'any'
+  pause 1000
+endwhile
+while @movetype 0xf18 'backpack' 'bankminerios' 0 0 0 'any'
+  pause 1000
+endwhile
+while @movetype 0xf0f 'backpack' 'bankminerios' 0 0 0 'any'
+  pause 1000
+endwhile
+while @movetype 0xf10 'backpack' 'bankminerios' 0 0 0 'any'
+  pause 1000
+endwhile
+while @movetype 0xf15 'backpack' 'bankminerios' 0 0 0 'any'
+  pause 1000
+endwhile
+while @movetype 0x19b7 'backpack' 'bankminerios' 0 0 0 'any'
+  pause 1000
+endwhile
+while @movetype 0x19b8 'backpack' 'bankminerios' 0 0 0 'any'
+  pause 1000
+endwhile
+while @movetype 0x19ba 'backpack' 'bankminerios' 0 0 0 'any'
+  pause 1000
+endwhile
+while @movetype 0x19b7 'backpack' 'bankminerios' 0 0 0 'any'
+  pause 1000
+endwhile
+while @movetype 0x19bef 'backpack' 'bankminerios' 0 0 0 'any'
+  pause 1000
+endwhile
+endif
+//
+// Minerar
+//
+while mana < 40
+useskill 'meditation'
+pause 3150
+endwhile
+if inregion 'town' 'self'
+@clearjournal
+pause 500
+useobject 'runebookmining'
+waitforgump 'any' 15000
+//Gump Runebook 1
+if @gumpexists 0x472
+  @replygump 0x472 2
+  waitforgump 0x472 15000
+  @replygump 0x472 102
+  //Gump Runebook 2
+elseif @gumpexists 0x473
+  @replygump 0x473 2
+  waitforgump 0x473 15000
+  @replygump 0x473 102
+endif
+if @injournal 'blocked' 'system'
+  pause 10000
+  @clearjournal
+  replay
+endif
+pause 11500
+usetype! 0xe85 'any' 'self' 1
+endif
+@cancelautotarget
+for 0 to 2
+for 0 to 'RunXY'
+  for 0 to 'Directions'
+    for 0 to 'Pos_X'
+      for 0 to 'Pos_Y'
+       
+        if dead 'self'
+          stop
+        endif
+        //
+        if not hidden 'self'
+          while not hidden 'self'
+            useskill 'Hiding'
+            pause 3500
+          endwhile
+          pause 750
+          if hidden 'self'
+            useskill 'Stealth'
+            while not @injournal 'mover em silencio' 'system'
+            endwhile
+          else
+            while not hidden 'self'
+              useskill 'Hiding'
+              pause 3500
+            endwhile
+          endif
+        endif
+        //
+        // Minerar em si
+        //
+        @unsetalias 'quit'
+        while not @findalias 'quit'
+          @cancelautotarget
+          if dead 'self'
+            stop
+          endif
+          autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
+          if not @useobject! 'righthand'
+            usetype! 0xe85 'any' 'self' 1
+          endif
+          clearjournal
+          @settimer 't_timeout' 0
+          while @timer 't_timeout' < 15000
+           
+            if dead 'self'
+              stop
+            endif
+            //
+            //  Jornal
+            //
+            if @injournal 'Voce pos' 'system' or @injournal 'Voce nao encontrou' 'system'
+              break
+              elseif @injournal 'Nao ha nada aqui' 'system' or @injournal 'Tente minerar em outro' 'system'
+              @setalias 'quit' 'self'
+              break
+            elseif @injournal 'Voce nao tem uma' 'system' or @injournal 'You cannot mine' 'system'
+              @setalias 'quit' 'self'
+              break
+            endif
+          endwhile
+          @clearjournal
+          if diffweight < 100
+            replay
+          endif
+          if not @findtype '0xe85' 'any' 'self'
+            replay
+          endif
+        endwhile
+      endfor
+    endfor
+    for 4
+      walk 'Directions[]'
+    endfor
+  endfor
+  for 8
+    walk 'RunXY[]'
+  endfor
+endfor
+// by tork

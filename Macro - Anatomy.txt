@@ -1,0 +1,14 @@
+// Anatomy
+if not @findobject 'TAnatomy'
+  headmsg 'Selecione o que analisar.'
+  promptalias 'TAnatomy'
+else
+endif
+clearjournal
+autotargetobject 'TAnatomy'
+useskill 'Anatomy'
+while not @injournal 'looks'
+  if @injournal 'can not'
+    replay
+  endif
+endwhile

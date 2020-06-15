@@ -1,0 +1,9 @@
+////
+// Macro de Magic Arrow na explosion potion
+////
+if @findtype 0xf0e 21 'backpack'
+  autotargettype  0xf0e 21 'backpack'
+  cast 'Magic Arrow'
+else
+  headmsg 'Sem pocao de explosion.' 55
+endif

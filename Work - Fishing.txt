@@ -1,0 +1,254 @@
+//---------------------------------------------------
+// Macro de Fishing
+// Funcoes: Pesca em 20 spots, corta, guarda tudo e navega em quadrado
+// Para GShard
+// ------------------------------------------
+// 1- Estar em cima do bau de seu barco.
+// 2- Ter uma vara de pescar e uma lamina na backpack.
+// 3- Comecar com o barco apontado para South (S).
+// -----------------------------------------------------------
+//
+// CONFIGURAÇÕES FIXAS
+//
+if not listexists 'axisx'
+  createlist 'axisx'
+endif
+@clearlist 'axisx'
+pushlist 'axisx' 4
+pushlist 'axisx' 3
+pushlist 'axisx' -4
+pushlist 'axisx' -3
+if not listexists 'axisy'
+  createlist 'axisy'
+endif
+@clearlist 'axisy'
+pushlist 'axisy' 0
+pushlist 'axisy' 1
+pushlist 'axisy' 2
+pushlist 'axisy' 3
+pushlist 'axisy' 4
+//
+// TARGETS
+//
+if not @findobject 'vara'
+  headmsg 'Selecione a vara de pesca'
+  promptalias 'vara'
+endif
+if not @findobject 'faca'
+  headmsg 'Selecione a lamina'
+  promptalias 'faca'
+endif
+if not @findobject 'containerdobarco'
+  headmsg 'Selecione o container do barco'
+  promptalias 'containerdobarco'
+endif
+useobject 'containerdobarco'
+pause 150
+@moveitem 'vara' 'backpack'
+pause 1250
+@moveitem 'faca' 'backpack'
+pause 1250
+////////////
+// PESCAR //
+////////////
+msg 'Raise Anchor'
+for 0 to 8
+  for 0 to 'axisx'
+    for 0 to 'axisy'
+      @clearjournal
+      useobject 'vara'
+      waitfortarget 15000
+      targettileoffset  'axisx[]' 'axisy[]' -3
+      pause 250
+      if not @injournal 'Nao ha peixe' and not @injournal 'Tente pescar'
+        if diffweight < 100
+          break
+        endif
+        waitforjournal 'pescou' 15000 'system'
+        @clearjournal
+        while not @injournal 'Voce pescou' 'system'
+          useobject 'vara'
+          waitfortarget 15000
+          targettileoffset  'axisx[]' 'axisy[]' -3
+          pause 250
+          if not @injournal 'Nao ha peixe' and not @injournal 'Tente pescar'
+            @clearjournal
+            waitforjournal 'pescou' 15000
+          else
+            break
+          endif
+        endwhile
+      endif
+    endfor
+  endfor
+  msg 'Forward'
+  pause 6000
+  msg 'Stop'
+  pause 1000
+endfor
+//
+// CORTAR
+//
+while @findtype '0x9cd' '0' 'backpack'
+  useobject 'faca'
+  waitfortarget 15000
+  targettype '0x9cd' // peixe marrom
+  pause 1000
+endwhile
+while @findtype '0x9cf' '0' 'backpack'
+  useobject 'faca'
+  waitfortarget 15000
+  targettype '0x9cf' // peixe amarelo
+  pause 1000
+endwhile
+while @findtype '0x9cc' '0' 'backpack'
+  useobject 'faca'
+  waitfortarget 15000
+  targettype '0x9cc' // peixe verde
+  pause 1000
+endwhile
+while @findtype '0x9ce' '0' 'backpack'
+  useobject 'faca'
+  waitfortarget 15000
+  targettype '0x9ce' // peixe roxo
+  pause 1000
+endwhile
+//
+// GUARDAR
+//
+while @findtype '0x14eb' '0' 'backpack' // Tattered Treasure Map
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x99f' '0' 'backpack' // SoS in Bottle
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x97a' '0' 'backpack' // raw fish steaks
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x9cc' '76' 'backpack' // Truly Rare Fish
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x9cc' '51' 'backpack' // Prized Fish
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x9cc' '51' 'backpack' // Prized Fish
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x9cc' '86' 'backpack' /// Wondrous Fish
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+msg 'Right'
+pause 10000
+msg 'Stop
+pause 1000
+////////////
+//PESCAR 2//
+////////////
+for 0 to 8
+  for 0 to 'axisx'
+    for 0 to 'axisy'
+      @clearjournal
+      useobject 'vara'
+      waitfortarget 15000
+      targettileoffset  'axisx[]' 'axisy[]' -3
+      pause 250
+      if not @injournal 'Nao ha peixe' and not @injournal 'Tente pescar'
+        if diffweight < 100
+          break
+        endif
+        waitforjournal 'pescou' 15000 'system'
+        @clearjournal
+        while not @injournal 'Voce pescou' 'system'
+          useobject 'vara'
+          waitfortarget 15000
+          targettileoffset  'axisx[]' 'axisy[]' -3
+          pause 250
+          if not @injournal 'Nao ha peixe' and not @injournal 'Tente pescar'
+            @clearjournal
+            waitforjournal 'pescou' 15000
+          else
+            break
+          endif
+        endwhile
+      endif
+    endfor
+  endfor
+  msg 'Back'
+  pause 6000
+  msg 'Stop'
+  pause 1000
+endfor
+//
+// CORTAR
+//
+while @findtype '0x9cd' '0' 'backpack'
+  useobject 'faca'
+  waitfortarget 15000
+  targettype '0x9cd' // peixe marrom
+  pause 1000
+endwhile
+while @findtype '0x9cf' '0' 'backpack'
+  useobject 'faca'
+  waitfortarget 15000
+  targettype '0x9cf' // peixe amarelo
+  pause 1000
+endwhile
+while @findtype '0x9cc' '0' 'backpack'
+  useobject 'faca'
+  waitfortarget 15000
+  targettype '0x9cc' // peixe verde
+  pause 1000
+endwhile
+while @findtype '0x9ce' '0' 'backpack'
+  useobject 'faca'
+  waitfortarget 15000
+  targettype '0x9ce' // peixe roxo
+  pause 1000
+endwhile
+//
+// GUARDAR
+//
+while @findtype '0x14eb' '0' 'backpack' // Tattered Treasure Map
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x99f' '0' 'backpack' // SoS in Bottle
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x97a' '0' 'backpack' // raw fish steaks
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x9cc' '76' 'backpack' // Truly Rare Fish
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x9cc' '51' 'backpack' // Prized Fish
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x9cc' '51' 'backpack' // Prized Fish
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x9cc' '86' 'backpack' /// Wondrous Fish
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+msg 'Left'
+pause 10000
+msg 'Stop
+pause 1000
+/////////
+// FIM //
+/////////
+// by Tork
+// 27.05.2020

@@ -1,0 +1,26 @@
+////
+// Macro de Herding
+// Ter um Crook consigo e um animal perto
+////
+@clearjournal
+if not @findobject 'THerding'
+  headmsg 'Selecione o animal para guiar.'
+  promptalias 'THerding'
+else
+endif
+if not @findobject 'TCrook'
+  headmsg 'Selecione o bastão Crook.'
+  promptalias 'TCrook'
+else
+endif
+useobject 'TCrook'
+waitfortarget 15000
+target! 'THerding'
+waitfortarget 15000
+target! 'self'
+while not @injournal 'animal vai'
+  if @injournal 'nao conseguiu persuadir' 'system'
+    replay
+  endif
+endwhile
+

@@ -1,0 +1,54 @@
+////
+// Macro PvP: Recall com Hiding/Stealth
+// Na runa ou Runebook (configurar para o seu)
+////
+@clearjournal
+cast "Recall"
+waitfortarget 4000
+@targettype! 0x1f14 'any'
+pause 250
+if @injournal 'ainda nao esta' or not @findtype 0x1f14 'any' 'backpack'
+// Alterar UID e runa!!!
+  msg '.recall 040077d7c,4' 
+// Alterar UID e runa!!!
+@canceltarget
+endif
+if @listexists 'RecallHid'
+  @clearlist 'RecallHid'
+else
+  @createlist 'RecallHid'
+endif
+useskill 'Hiding'
+if @findlayer 'self' 6
+  @moveitem 'found' 'backpack
+  pause 750
+  pushlist 'RecallHid' 'found'
+endif
+if @findlayer 'self' 13
+  @moveitem 'found' 'backpack
+  pushlist 'RecallHid' 'found'
+  pause 250
+endif
+pause 2250
+headmsg '*Ficando Hidding*'
+pause 1250
+if hidden 'self'
+  @clearjournal
+  headmsg '*Usando Stealth*'
+  useskill 'Stealth'
+  pause 500
+  for 0 to 'RecallHid'
+    useobject 'RecallHid[]'
+    pause 500
+  endfor
+  removelist 'RecallHid'
+  waitforjournal 'se mover em silencio' 6000 'system'
+  headmsg '*Modo Stealth*'
+else
+  for 0 to 'RecallHid'
+    useobject 'RecallHid[]'
+    pause 500
+  endfor
+  removelist 'RecallHid'
+  stop
+endif

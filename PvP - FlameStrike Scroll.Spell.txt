@@ -1,0 +1,12 @@
+////
+// Macro de FlameStrike
+// No scroll ou magia
+////
+if @findtype 0x1f5f 'backpack'
+  autotargetlast
+  useobject! 'found'
+else
+  headmsg 'Sem scroll FS.' 55
+  autotargetlast
+  cast 'Flame Strike'
+endif

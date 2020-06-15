@@ -1,0 +1,26 @@
+//Closed Helmet
+if @findtype 0x1408 'any' 'backpack'
+  @useobject 'found'
+endif
+//Platemail Helmet
+if @findtype 0x1412 'any' 'backpack'
+  useobject 'found'
+endif
+//Heater Shield
+if @findtype 0x1b76 'any' 'backpack'
+  useobject 'found'
+endif
+//Arma
+if @findobject 'Arma' 'any' 'backpack'
+  @useobject! 'found'
+  waitingfortarget
+  @target 'self'
+  stop
+endif
+if @findlayer 'self' 1 or @findlayer 'self' 2
+  canceltarget
+  stop
+endif
+if not @findobject 'Arma' 'any' 'backpack'
+  promptalias 'Arma'
+endif
