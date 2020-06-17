@@ -22,8 +22,14 @@ endif
 // Smeltar
 //
 useobject 'hammer'
-waitforgump 0x485 10000
-replygump 0x485 0
+waitforgump 'any' 10000
+if @gumpexists 0x483
+  @replygump 0x483 0
+elseif @gumpexists 0x484
+@replygump 0x484 0
+elseif @gumpexists 0x485
+@replygump 0x485 0
+endif
 while not @injournal 'voce esmeltou o ore' 'system'
   if @findtype 0x19ba 'any' 'backpack'
     useobject 'found'
