@@ -4,11 +4,13 @@
 ////
 if mounted
   useobject! 'self'
-  msg 'all stay'
-  pause 100
   if @findobject 'last'
-autotargetenemy!
-    msg 'all kill'   
+    autotargetenemy!
+    msg 'all kill'
+    waitfortarget 5000
+    target! 'last'
+  else
+    msg 'all stay'
   endif
 else
   if not @findobject 'montaria'
