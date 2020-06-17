@@ -1,4 +1,4 @@
-// 
+//
 // Macro de Smelt 2 em 2 para GShard.
 // Ter um baú com os minérios e ingots.
 // Estar em frente a um forge.
@@ -26,19 +26,18 @@ waitforgump 'any' 10000
 if @gumpexists 0x483
   @replygump 0x483 0
 elseif @gumpexists 0x484
-@replygump 0x484 0
+  @replygump 0x484 0
 elseif @gumpexists 0x485
-@replygump 0x485 0
+  @replygump 0x485 0
 endif
 while not @injournal 'voce esmeltou o ore' 'system'
-  if @findtype 0x19ba 'any' 'backpack'
+  while @findtype 0x19ba 'any' 'backpack'
     useobject 'found'
     pause 1000
-  endif
-  if @findtype 0x19b7 'any' 'backpack'
-    useobject 'found'
+  endwhile
+  if @injournal 'nao conseguiu' 'system'
+    @movetype 0x19b7 'backpack' 'baumineriosmelt' 0 0 0 'any'
     pause 1000
-  else
     break
   endif
 endwhile
