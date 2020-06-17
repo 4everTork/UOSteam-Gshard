@@ -5,7 +5,6 @@
 if mounted
   useobject! 'self'
   if @findobject 'last'
-    autotargetenemy!
     msg 'all kill'
     waitfortarget 5000
     target! 'last'
