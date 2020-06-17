@@ -7,7 +7,7 @@ if mounted
   msg 'all stay'
   pause 100
   if @findobject 'last'
-autotargetenemy
+autotargetenemy!
     msg 'all kill'   
   endif
 else
