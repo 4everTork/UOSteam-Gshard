@@ -1,7 +1,6 @@
 //Macro de Mining para UOSteam
-//Servidor: Dimension Free Shard
-//Feito por: Tork
-//Data: 29/04/2016
+//Servidor: Gshard Free Shard
+//Data: 15/06/2020
 // ** Ter um container (baú em seu banco) **
 // ** A mina que você estiver DEVERÁ ter acesso ao banco de qualquer lugar **
 //
