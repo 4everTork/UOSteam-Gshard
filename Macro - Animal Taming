@@ -1,0 +1,17 @@
+////
+// Macro de Taming
+////
+if not @findobject 'tamingtreino'
+  headmsg 'Selecione o animal.'
+  promptalias 'tamingtreino'
+else
+endif
+clearjournal
+msg 'ALL Release'
+autotargetobject! 'tamingtreino'
+useskill 'Animal Taming'
+while not @injournal 'nao conseguiu'
+  if @injournal 'aceitou voce'
+    replay
+  endif
+endwhile
