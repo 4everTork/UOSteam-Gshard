@@ -32,11 +32,11 @@ if @counttype 0xf0e 68 'backpack' >= 200
 endif
 // Fazer 1 Lesser Poison
 if @gumpexists 0x483
-  @@replygump 0x483 0
+  @replygump 0x483 0
 elseif @gumpexists 0x484
-  @@replygump 0x484 0
+  @replygump 0x484 0
 elseif @gumpexists 0x485
-  @@replygump 0x485 0
+  @replygump 0x485 0
 endif
 usetype 0xe9b 'backpack'
 waitforgump 'any' 15000
