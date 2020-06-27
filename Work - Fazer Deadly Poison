@@ -1,0 +1,61 @@
+////
+// Macro de Alchemy
+// Faz Deadly Poison Potion
+// Ter um bau perto (ou banco) com reagente e empty bottle
+// Ter um Mortar and Pestle na backpack
+////
+if not @findobject 'BauDPoison'
+  headmsg 'Selecione o bau com os Reags e Bottle.'
+  promptalias 'BauDPoison'
+  useobject 'BauDPoison'
+else
+  useobject 'BauDPoison'
+endif
+// Se acabar Nightshade
+if @counttype 0xf88 0 'backpack' < 3
+  headmsg 'Restockando Nightshade'
+  movetype 0xf88 'BauDPoison' 'Backpack' (0 0 0) 0 400 4
+  pause 1000
+endif
+// Se acabar a Empty Bottle
+if @counttype 0xf0e 0 'backpack' == 0
+  headmsg 'Restockando Empty Bottle'
+  movetype 0xf0e  'BauDPoison' 'Backpack' (0 0 0) 0 15 4
+  pause 1000
+endif
+// Se tiver mais que 50 Deadly Poison Potion
+if @counttype 0xf0e 68 'backpack' >= 10
+  useobject 'BauDPoison'
+  headmsg 'Guardando Deadly Poison Potion'
+  @movetypeoffset 0xf0e 'backpack' 'BauDPoison' (0 0 0) 68
+  pause 1000
+endif
+// Fazer 1 Deadly Poison
+if @gumpexists 0x483
+  @replygump 0x483 0
+elseif @gumpexists 0x484
+  @replygump 0x484 0
+elseif @gumpexists 0x485
+  @replygump 0x485 0
+endif
+usetype 0xe9b 'backpack'
+waitforgump 'any' 15000
+//Gump 1
+if @gumpexists 0x483
+  @replygump 0x483 6
+  waitforgump 0x483 15000
+  @replygump 0x483 10104
+  waitforgump 0x483 15000
+  //Gump 2
+elseif @gumpexists 0x484
+  @replygump 0x484 6
+  waitforgump 0x484 15000
+  @replygump 0x484 10104
+  waitforgump 0x484 15000
+  //Gump 3
+elseif @gumpexists 0x485
+  @replygump 0x485 6
+  waitforgump 0x485 15000
+  @replygump 0x485 10104
+  waitforgump 0x485 15000
+endif
