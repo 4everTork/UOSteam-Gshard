@@ -1,13 +1,12 @@
 //---------------------------------------------------
 // Macro de Mining
-// Funcoes: Recall para banco, Smeltar, Guardar, Comer e Minerar.
+// Funcoes: Recall para banco, Smeltar, Guardar, Comer, Hiding e Minerar.
 // Para GShard 2020
 // ------------------------------------------
-// 1- Ter DOIS bau no banco. Um para guardar MINERIOS
-// e outro para pegar PICKAXE, MARTELO e comer FISH STEAK(opcional).
+// 1- Ter UM bau no banco para guardar MINERIOS e comer FISH STEAK (opcional)
+// 2- Ter uma Pickaxe e um Smith Hammer consigo ou no bau.
 //
-// 2- Ter um runebook com a 1ª runa para o BANCO ao lado da FORGE e a 2ª runa para a MINA.
-// * Ter magia recall no spellbook.
+// 3- Ter um runebook com a 1ª runa para o BANCO ao lado da FORGE e a 2ª runa para a MINA.
 // -----------------------------------------------------------
 //
 // CONFIGURACOES
@@ -54,14 +53,9 @@ if not @findobject 'runebookmining'
   headmsg 'Selecione o seu runebook. PRIMEIRA runa MINA e SEGUNDA runa BANCO cidade safe.'
   promptalias 'runebookmining'
 endif
-if not @findalias 'bankitens'
-  msg 'banker bank'
-  headmsg 'Selecione o bau para RESTOCK de Pickaxes e Smith Hammer.' '33'
-  promptalias 'bankitens'
-endif
 if not @findalias 'bankminerios'
   msg 'banker bank'
-  headmsg 'Selecione o bau onde GUARDAR minerios' '33'
+  headmsg 'Selecione o bau onde GUARDAR minerios e COMER Fish Steak.' '33'
   promptalias 'bankminerios'
 endif
 //
@@ -73,14 +67,14 @@ if diffweight < 100 or not @findtype 0xe85 'any' 'self'
     waitforgump 'any' 10000
     //Gump Runebook 1
     if @gumpexists 0x472
-      @replygump 0x472 1
+      replygump 0x472 1
       waitforgump 0x472 15000
-      @replygump 0x472 101
+      replygump 0x472 101
       //Gump Runebook 2
     elseif @gumpexists 0x473
-      @replygump 0x473 1
+      replygump 0x473 1
       waitforgump 0x473 15000
-      @replygump 0x473 101
+      replygump 0x473 101
     endif
     pause 11500
   endwhile
@@ -91,15 +85,15 @@ endif
 if inregion 'town' 'self'
   msg 'banker bank'
   pause 500
-  useobject 'bankitens'
+  useobject 'bankminerios'
   pause 250
   @togglehands 'right'
   pause 500
   while @counttype '0xe85' 'any' 'backpack' < 1
-    if @counttype '0xe85' 'any' 'bankitens' > 0
-      useobject 'bankitens'
+    if @counttype '0xe85' 'any' 'bankminerios' > 0
+      useobject 'bankminerios'
       pause 500
-      @movetype '0xe85' 'bankitens' 'backpack' 0 0 0 'any'
+      @movetype '0xe85' 'bankminerios' 'backpack' 0 0 0 'any'
       pause 1000
       headmsg 'Restock de Pickaxe'
     else
@@ -107,7 +101,7 @@ if inregion 'town' 'self'
       stop
     endif
   endwhile
-  if @findtype 0x97b 'any' 'bankitens'
+  if @findtype 0x97b 'any' 'bankminerios'
     useobject 'found'
   else
     headmsg '*Sem fish steak*
@@ -120,9 +114,9 @@ if inregion 'town' 'self'
   togglehands 'right'
   pause 500
   if not @findtype 0x13e3 'any' 'backpack' 'any' 0
-    useobject 'bankitens'
+    useobject 'bankminerios'
     pause 500
-    @movetype 0x13e3 'bankitens' 'backpack' 0 0 0 'any'
+    @movetype 0x13e3 'bankminerios' 'backpack' 0 0 0 'any'
     pause 1000
   endif
   msg 'banker bank'
@@ -222,8 +216,6 @@ if inregion 'town' 'self'
   endwhile
   togglehands 'right'
   pause 1000
-  @movetypeoffset 0x13e3 'backpack' 'bankitens' 0 0 0 'any' 1 0
-  pause 1000
   if @injournal 'You can not pick that up' 'system'
     Sysmsg 'Recalculando'
     break
@@ -247,152 +239,172 @@ if inregion 'town' 'self'
   endwhile
   while @movetype 0xf13 'backpack' 'bankminerios' 0 0 0 'any'
     pause 1000
-endwhile
-while @movetype 0xf16 'backpack' 'bankminerios' 0 0 0 'any'
-  pause 1000
-endwhile
-while @movetype 0xf11 'backpack' 'bankminerios' 0 0 0 'any'
-  pause 1000
-endwhile
-while @movetype 0xf26 'backpack' 'bankminerios' 0 0 0 'any'
-  pause 1000
-endwhile
-while @movetype 0xf18 'backpack' 'bankminerios' 0 0 0 'any'
-  pause 1000
-endwhile
-while @movetype 0xf0f 'backpack' 'bankminerios' 0 0 0 'any'
-  pause 1000
-endwhile
-while @movetype 0xf10 'backpack' 'bankminerios' 0 0 0 'any'
-  pause 1000
-endwhile
-while @movetype 0xf15 'backpack' 'bankminerios' 0 0 0 'any'
-  pause 1000
-endwhile
-while @movetype 0x19b7 'backpack' 'bankminerios' 0 0 0 'any'
-  pause 1000
-endwhile
-while @movetype 0x19b8 'backpack' 'bankminerios' 0 0 0 'any'
-  pause 1000
-endwhile
-while @movetype 0x19ba 'backpack' 'bankminerios' 0 0 0 'any'
-  pause 1000
-endwhile
-while @movetype 0x19b7 'backpack' 'bankminerios' 0 0 0 'any'
-  pause 1000
-endwhile
-while @movetype 0x19bef 'backpack' 'bankminerios' 0 0 0 'any'
-  pause 1000
-endwhile
+  endwhile
+  while @movetype 0xf16 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf11 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf26 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf18 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf0f 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf10 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0xf15 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0x19b7 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0x19b8 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0x19ba 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0x19b7 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
+  while @movetype 0x19bef 'backpack' 'bankminerios' 0 0 0 'any'
+    pause 1000
+  endwhile
 endif
 //
 // Minerar
 //
 while mana < 40
-useskill 'meditation'
-pause 3150
+  useskill 'meditation'
+  pause 3150
 endwhile
 if inregion 'town' 'self'
-@clearjournal
-pause 500
-useobject 'runebookmining'
-waitforgump 'any' 15000
-//Gump Runebook 1
-if @gumpexists 0x472
-  @replygump 0x472 2
-  waitforgump 0x472 15000
-  @replygump 0x472 102
-  //Gump Runebook 2
-elseif @gumpexists 0x473
-  @replygump 0x473 2
-  waitforgump 0x473 15000
-  @replygump 0x473 102
-endif
-if @injournal 'blocked' 'system'
-  pause 10000
   @clearjournal
-  replay
-endif
-pause 11500
-usetype! 0xe85 'any' 'self' 1
+  pause 500
+  useobject 'runebookmining'
+  waitforgump 'any' 15000
+  //Gump Runebook 1
+  if @gumpexists 0x472
+    replygump 0x472 2
+    waitforgump 0x472 15000
+    replygump 0x472 102
+    //Gump Runebook 2
+  elseif @gumpexists 0x473
+    replygump 0x473 2
+    waitforgump 0x473 15000
+    replygump 0x473 102
+  endif
+  if @injournal 'blocked' 'system'
+    pause 10000
+    @clearjournal
+    replay
+  endif
+  pause 11500
+  usetype! 0xe85 'any' 'self' 1
 endif
 @cancelautotarget
 for 0 to 2
-for 0 to 'RunXY'
-  for 0 to 'Directions'
-    for 0 to 'Pos_X'
-      for 0 to 'Pos_Y'
-       
-        if dead 'self'
-          stop
-        endif
-        //
-        if not hidden 'self'
-          while not hidden 'self'
-            useskill 'Hiding'
-            pause 3500
+  for 0 to 'RunXY'
+    for 0 to 'Directions'
+      for 0 to 'Pos_X'
+        for 0 to 'Pos_Y'
+          ///
+          //Checar se ta vivo e se tem PK perto
+          ///
+          getenemy 'Murderer' 'Criminal' 'humanoid' 'closest'
+          while @inrange 'Enemy' '15'
+            headmsg '*Aguardando PK sair*' 33
+            warmode 'on'
+            pause 150
+            warmode 'off'
+            pause 7000
           endwhile
-          pause 750
-          if hidden 'self'
-            useskill 'Stealth'
-            while not @injournal 'mover em silencio' 'system'
-            endwhile
-          else
+          if dead 'self'
+            replay
+          endif
+          //
+          if not hidden 'self'
             while not hidden 'self'
               useskill 'Hiding'
               pause 3500
             endwhile
-          endif
-        endif
-        //
-        // Minerar em si
-        //
-        @unsetalias 'quit'
-        while not @findalias 'quit'
-          @cancelautotarget
-          if dead 'self'
-            stop
-          endif
-          autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
-          if not @useobject! 'righthand'
-            usetype! 0xe85 'any' 'self' 1
-          endif
-          clearjournal
-          @settimer 't_timeout' 0
-          while @timer 't_timeout' < 15000
-           
-            if dead 'self'
-              stop
+            pause 750
+            if hidden 'self'
+              useskill 'Stealth'
+              while not @injournal 'mover em silencio' 'system'
+              endwhile
+            else
+              while not hidden 'self'
+                useskill 'Hiding'
+                pause 3500
+              endwhile
             endif
-            //
-            //  Jornal
-            //
-            if @injournal 'Voce pos' 'system' or @injournal 'Voce nao encontrou' 'system'
-              break
-              elseif @injournal 'Nao ha nada aqui' 'system' or @injournal 'Tente minerar em outro' 'system'
-              @setalias 'quit' 'self'
-              break
-            elseif @injournal 'Voce nao tem uma' 'system' or @injournal 'You cannot mine' 'system'
-              @setalias 'quit' 'self'
-              break
+          endif
+          //
+          // Minerar em si
+          //
+          @unsetalias 'quit'
+          while not @findalias 'quit'
+            @cancelautotarget
+            if dead 'self'
+              replay
+            endif
+            autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
+            if not @useobject! 'righthand'
+              usetype! 0xe85 'any' 'self' 1
+            endif
+            clearjournal
+            @settimer 't_timeout' 0
+            while @timer 't_timeout' < 15000
+              ///
+              //Checar se ta vivo e se tem PK perto
+              ///
+              getenemy 'Murderer' 'Criminal' 'humanoid' 'closest'
+              while @inrange 'Enemy' '15'
+                headmsg '*Aguardando PK sair*' 33
+                warmode 'on'
+                pause 150
+                warmode 'off'
+                pause 7000
+              endwhile
+              if dead 'self'
+                replay
+              endif
+              //
+              //  Jornal
+              //
+              if @injournal 'Voce pos' 'system' or @injournal 'Voce nao encontrou' 'system'
+                break
+              elseif @injournal 'Nao ha nada aqui' 'system'
+                @setalias 'quit' 'self'
+                break
+              elseif @injournal 'Voce nao tem uma' 'system' or @injournal 'You cannot mine' 'system'
+                @setalias 'quit' 'self'
+                break
+              endif
+            endwhile
+            @clearjournal
+            if diffweight < 100
+              replay
+            endif
+            if not @findtype '0xe85' 'any' 'self'
+              replay
             endif
           endwhile
-          @clearjournal
-          if diffweight < 100
-            replay
-          endif
-          if not @findtype '0xe85' 'any' 'self'
-            replay
-          endif
-        endwhile
+        endfor
+      endfor
+      for 4
+        walk 'Directions[]'
       endfor
     endfor
-    for 4
-      walk 'Directions[]'
+    for 8
+      walk 'RunXY[]'
     endfor
   endfor
-  for 8
-    walk 'RunXY[]'
-  endfor
-endfor
-// by tork
+  // by tork
