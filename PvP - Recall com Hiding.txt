@@ -5,13 +5,13 @@
 @clearjournal
 cast "Recall"
 waitfortarget 4000
-@targettype! 0x1f14 'any'
+@targettype! 0x1f14 'any' 0
 pause 250
 if @injournal 'ainda nao esta' or not @findtype 0x1f14 'any' 'backpack'
-// Alterar UID e runa!!!
-  msg '.recall 040077d7c,4' 
-// Alterar UID e runa!!!
-@canceltarget
+  // Alterar UID e runa!!!
+  msg '.recall 040077d7c,12'
+  // Alterar UID e runa!!!
+  @canceltarget
 endif
 if @listexists 'RecallHid'
   @clearlist 'RecallHid'
@@ -29,9 +29,9 @@ if @findlayer 'self' 13
   pushlist 'RecallHid' 'found'
   pause 250
 endif
-pause 2250
+pause 1750
 headmsg '*Ficando Hidding*'
-pause 1250
+pause 750
 if hidden 'self'
   @clearjournal
   headmsg '*Usando Stealth*'
