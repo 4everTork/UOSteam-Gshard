@@ -1,6 +1,6 @@
 //---------------------------------------------------
 // Macro de Mining
-// Funcoes: Recall para banco, Smeltar, Guardar, Comer, Ressucitar e Minerar.
+// Funcoes: Recall para banco, Smeltar, Guardar, Comer e Minerar.
 // Para GShard 2020
 // ------------------------------------------
 // 1- Ter DOIS bau no banco. Um para guardar MINERIOS
