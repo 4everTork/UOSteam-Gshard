@@ -129,34 +129,30 @@ if inregion 'town' 'self'
   pause 1000
   //Gump 1
   if @gumpexists 0x483
-    @replygump 0x483 0
+    replygump 0x483 0
     //Gump 2
   elseif @gumpexists 0x484
-    @replygump 0x484 0
+    replygump 0x484 0
     //Gump 3
   elseif @gumpexists 0x485
-    @replygump 0x485 0
+    replygump 0x485 0
   endif
   usetype 0x13e3 'any' 'self' 1
   waitforgump 'any' 10000
-  @replygump 'any' 0
-  @findtype 0x19ba 'any' 'backpack'
-  if @findobject 'found' 2492 'backpack'
+  replygump 'any' 0
+  if @findtype 0x19ba '2492' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  @findtype 0x19ba 'any' 'backpack'
-  if @findobject 'found' 2493'backpack'
+  if @findtype 0x19ba '2493' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  @findtype 0x19ba 'any' 'backpack'
-  if  @findobject 'found' 2489 'backpack'
+  if @findtype 0x19ba '2489' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  @findtype 0x19ba 'any' 'backpack'
-  if @findobject 'found' '2490' 'backpack'
+  if @findtype 0x19ba '2490' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
@@ -164,23 +160,19 @@ if inregion 'town' 'self'
     @useobject 'found'
     pause 1000
   endwhile
-  @findtype 0x19b7 'any' 'backpack'
-  if @findobject 'found' 2492 'backpack'
+  if @findtype 0x19b7 '2492' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  @findtype 0x19b7 'any' 'backpack'
-  if @findobject 'found' 2493'backpack'
+  if @findtype 0x19b7 'any' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  @findtype 0x19b7 'any' 'backpack'
-  if  @findobject 'found' 2489 'backpack'
+  if  @findtype 0x19b7 'any' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  @findtype 0x19b7 'any' 'backpack'
-  if @findobject 'found' '2490' 'backpack'
+  if @findtype 0x19b7 'any' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
@@ -188,23 +180,19 @@ if inregion 'town' 'self'
     @useobject 'found'
     pause 1000
   endwhile
-  @findtype 0x19b8 'any' 'backpack'
-  if @findobject 'found' 2492 'backpack'
+  if @findtype 0x19b8 '2492' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  @findtype 0x19b8 'any' 'backpack'
-  if @findobject 'found' 2493'backpack'
+  if @findtype 0x19b8 '2493' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  @findtype 0x19b8 'any' 'backpack'
-  if  @findobject 'found' 2489 'backpack'
+  if @findtype 0x19b8 '2489' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  @findtype 0x19b8 'any' 'backpack'
-  if @findobject 'found' '2490' 'backpack'
+  if @findtype 0x19b8 '2490' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
@@ -212,23 +200,19 @@ if inregion 'town' 'self'
     @useobject 'found'
     pause 1000
   endwhile
-  @findtype 0x19b9 'any' 'backpack'
-  if @findobject 'found' 2492 'backpack'
+  if @findtype 0x19b9 '2492' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  @findtype 0x19b9 'any' 'backpack'
-  if @findobject 'found' 2493'backpack'
+  if @findtype 0x19b9 '2493' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  @findtype 0x19b9 'any' 'backpack'
-  if  @findobject 'found' 2489 'backpack'
+  if @findtype 0x19b9 '2489' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  @findtype 0x19b9 'any' 'backpack'
-  if @findobject 'found' '2490' 'backpack'
+  if @findtype 0x19b9 '2490' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
