@@ -10,6 +10,12 @@ if not @findobject 'BauFazerFS'
 else
   useobject 'BauFazerFS'
 endif
+// Se estiver pesado
+if @injournal 'muito pesado' 'system'
+  headmsg 'Guardando FlameStrike Scrolls'
+  @movetypeoffset 0x1f5f 'backpack' 'BauFazerFS' (0 0 0)
+  @clearjournal
+endif
 // Se acabar os Blank Scrolls
 if @counttype 0xe34 0 'backpack' == 0
   headmsg 'Restockando Blank Scroll'
@@ -32,7 +38,7 @@ endif
 if @counttype 0x1f5f 0 'backpack' >= 100
   useobject 'BauFazerFS'
   headmsg 'Guardando FlameStrike Scrolls'
-  @movetypeoffset 0x1f5f 'backpack' 'BauFazerFS' (0 0 0).
+  @movetypeoffset 0x1f5f 'backpack' 'BauFazerFS' (0 0 0)
   pause 1000
 endif
 // Fazer 1 FlameStrike Scroll
