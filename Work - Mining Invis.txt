@@ -314,21 +314,6 @@ for 0 to 2
     for 0 to 'Directions'
       for 0 to 'Pos_X'
         for 0 to 'Pos_Y'
-          ///
-          //Checar se ta vivo e se tem PK perto
-          ///
-          getenemy 'Murderer' 'Criminal' 'humanoid' 'closest'
-          while @inrange 'Enemy' '15'
-            headmsg '*Aguardando PK sair*' 33
-            warmode 'on'
-            pause 150
-            warmode 'off'
-            pause 7000
-          endwhile
-          if dead 'self'
-            replay
-          endif
-          //
           if not hidden 'self'
             while not hidden 'self'
               useskill 'Hiding'
@@ -362,20 +347,6 @@ for 0 to 2
             clearjournal
             @settimer 't_timeout' 0
             while @timer 't_timeout' < 15000
-              ///
-              //Checar se ta vivo e se tem PK perto
-              ///
-              getenemy 'Murderer' 'Criminal' 'humanoid' 'closest'
-              while @inrange 'Enemy' '15'
-                headmsg '*Aguardando PK sair*' 33
-                warmode 'on'
-                pause 150
-                warmode 'off'
-                pause 7000
-              endwhile
-              if dead 'self'
-                replay
-              endif
               //
               //  Jornal
               //
