@@ -61,7 +61,7 @@ endif
 //
 // Peso limite
 //
-if diffweight < 100 or not @findtype 0xe85 'any' 'self'
+if diffweight < 100
   while not inregion 'town' 'self'
     useobject 'runebookmining'
     waitforgump 'any' 10000
@@ -89,7 +89,6 @@ if inregion 'town' 'self'
   pause 250
   @togglehands 'right'
   pause 500
- 
   if @findtype 0x97b 'any' 'bankminerios'
     useobject 'found'
   else
@@ -295,9 +294,9 @@ if inregion 'town' 'self'
     replay
   endif
   pause 11500
-  if @findtype 0xe85 'any' 'self' 1 or @findtype 0xe86 'any' 'self' 1
-  @useobject 'found'
-endif
+  if findtype '0xe85' 'any' or findtype '0xe86' 'any'
+    useobject 'found'
+  endif
 endif
 @cancelautotarget
 for 0 to 2
@@ -333,7 +332,9 @@ for 0 to 2
             endif
             autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
             if not @useobject! 'righthand'
-              usetype! 0xe85 'any' 'self' 1
+              if findtype '0xe85' 'any' or findtype '0xe86' 'any'
+                useobject 'found'
+              endif
             endif
             clearjournal
             @settimer 't_timeout' 0
@@ -353,9 +354,6 @@ for 0 to 2
             endwhile
             @clearjournal
             if diffweight < 100
-              replay
-            endif
-            if not @findtype '0xe85' 'any' 'self'
               replay
             endif
           endwhile
