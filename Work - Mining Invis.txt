@@ -295,7 +295,9 @@ if inregion 'town' 'self'
     replay
   endif
   pause 11500
-  usetype! 0xe85 'any' 'self' 1
+  if @findtype 0xe85 'any' 'self' 1 or @findtype 0xe86 'any' 'self' 1
+  @useobject 'found'
+endif
 endif
 @cancelautotarget
 for 0 to 2
