@@ -89,18 +89,7 @@ if inregion 'town' 'self'
   pause 250
   @togglehands 'right'
   pause 500
-  while @counttype '0xe85' 'any' 'backpack' < 1
-    if @counttype '0xe85' 'any' 'bankminerios' > 0
-      useobject 'bankminerios'
-      pause 500
-      @movetype '0xe85' 'bankminerios' 'backpack' 0 0 0 'any'
-      pause 1000
-      headmsg 'Restock de Pickaxe'
-    else
-      headmsg '*Sem Pickaxe*'
-      stop
-    endif
-  endwhile
+ 
   if @findtype 0x97b 'any' 'bankminerios'
     useobject 'found'
   else
