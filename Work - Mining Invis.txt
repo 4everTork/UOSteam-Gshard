@@ -158,15 +158,15 @@ if inregion 'town' 'self'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  if @findtype 0x19b7 'any' 'backpack'
+  if @findtype 0x19b7 '2493' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  if  @findtype 0x19b7 'any' 'backpack'
+  if  @findtype 0x19b7 '2489' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
-  if @findtype 0x19b7 'any' 'backpack'
+  if @findtype 0x19b7 '2490' 'backpack'
     @moveitem 'found' 'bankminerios'
     pause 1000
   endif
