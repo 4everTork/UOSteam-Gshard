@@ -1,10 +1,12 @@
 ////
 // Macro de Blacksmithing
+// Derreter Dagger e fazer outra.
+////
 // Ter um bau perto (ou banco) com Iron Ingot
-// Ter uma Smith Hammer consigo
+// Ter uma Smith Hammer consigo e um forge do lado
 ////
 if not @findobject 'BaumacroBS'
-  headmsg 'Selecione o bau com as postas de peixe.'
+  headmsg 'Selecione o bau com os Iron Ingots.'
   promptalias 'BaumacroBS'
   useobject 'BaumacroBS'
 else
