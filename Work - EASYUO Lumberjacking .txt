@@ -1,12 +1,12 @@
-                                 // Macro Lumberjacking Configuravel by iGGy
+                                 // Macro Lumberjacking de EASYUO Configuravel by iGGy
 // Criado: 21/02/03
 // Revisao: 21/11/18
 // Habilite o ALLOW EXECUTE em Options no EUO, se disponivel.
 //////
 //////**<<
-// Shift + F1 para marcar as árvores. Vai aparecer um target, clique na árvore.
-// Pode cancelar a ação e partir para a próxima.
-// Shift + F4 para finalizar a marcação.
+// Shift + F1 para marcar as Ã¡rvores. Vai aparecer um target, clique na Ã¡rvore.
+// Pode cancelar a aÃ§Ã£o e partir para a prÃ³xima.
+// Shift + F4 para finalizar a marcaÃ§Ã£o.
 //////**>>
 //////
 // Leva 9 segundos por arvore marcada para criar o arquivo. AGUARDE
@@ -111,7 +111,7 @@ menu button 1 10 7 100 25 &Banco
 menu button 2 10 69 100 25 Bau &Seguro
 menu button 3 10 94 100 25 &Voltar
 menu text TEXT1 10 34 Va ao lado do banco
-menu text TEXT2 10 50 &Marcar Posicao(M) ou Cancelar©
+menu text TEXT2 10 50 &Marcar Posicao(M) ou CancelarÂ©
 goto hotkey1
 B2:
 menu clear
@@ -126,7 +126,7 @@ menu button 3 10 108 100 25 &Voltar
 menu text TEXT1 10 59 Posicione o cursor do mouse no local onde vai ficar o
 BauSeguro
 menu text TEXT2 10 74 Esteja proximo ou ao lado dele.
-menu text TEXT3 10 89 &Marcar Posicao(M) ou Cancelar©
+menu text TEXT3 10 89 &Marcar Posicao(M) ou CancelarÂ©
 goto hotkey2
 hotkey1:
 If #MenuButton = 2
@@ -163,7 +163,7 @@ menu font bgcolor black
 menu font color white
 menu font size 10
 menu text TEXT1 10 34 Posicione o Cursor do mouse onde vai ficar as logs!
-menu text TEXT2 10 50 &Marcar Posicao(M) ou Cancelar©
+menu text TEXT2 10 50 &Marcar Posicao(M) ou CancelarÂ©
 banco1:
 If #MenuButton = 2
 goto B2
