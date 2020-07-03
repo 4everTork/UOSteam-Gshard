@@ -119,7 +119,7 @@ if inregion 'town' 'self'
   elseif @gumpexists 0x485
     replygump 0x485 0
   endif
-  usetype 0x13e3 'any' 'self' 1
+  @usetype 0x13e3 'any' 'self' 1
   waitforgump 'any' 10000
   replygump 'any' 0
   if @findtype 0x19ba '2492' 'backpack'
