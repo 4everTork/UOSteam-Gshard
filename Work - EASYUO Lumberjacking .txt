@@ -3,6 +3,8 @@
 // Revisao: 21/11/18
 // Habilite o ALLOW EXECUTE em Options no EUO, se disponivel.
 //////
+// Caminha, Hiding, Stealth, Guarda Bau/Banc
+//////
 //////**<<
 // Shift + F1 para marcar as árvores. Vai aparecer um target, clique na árvore.
 // Pode cancelar a ação e partir para a próxima.
