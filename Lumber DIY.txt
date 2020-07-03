@@ -1,0 +1,826 @@
+                                 // Macro Lumberjacking Configuravel by iGGy
+// Criado: 21/02/03
+// Revisao: 21/11/18
+// Habilite o ALLOW EXECUTE em Options no EUO, se disponivel.
+//////
+//////**<<
+// Shift + F1 para marcar as árvores. Vai aparecer um target, clique na árvore.
+// Pode cancelar a ação e partir para a próxima.
+// Shift + F4 para finalizar a marcação.
+//////**>>
+//////
+// Leva 9 segundos por arvore marcada para criar o arquivo. AGUARDE
+
+
+set %filename N/A
+set %machado N/A
+set %r N/A
+set %pausescan 10
+set %peso #maxweight - 250
+set %parado 0
+set %guardar 0
+set %fail 0
+set %reconect novoreconect.txt
+Set #SysMsgCol 1965
+
+chooseskill Lumberjacking
+wait 3
+set %real #skill - 10
+set %oldskill %real
+set %change %real - %oldskill
+SETUOTITLE  Macro: Mining  Valor atual: %real Valor Inicial: %oldskill Delta: %change
+
+initevents
+;--------------------------- Inicio ---------------------------
+configurar:
+menu clear
+menu window size 165 145
+menu window title Lumber
+menu window color black
+menu hideeuo
+menu show 0 26
+menu font bgcolor black
+menu font color white
+menu font size 10
+menu button 1 10 18 150 25 &Onde Guardar
+menu button 2 10 43 150 25 &Reconect
+menu button 4 10 68 150 25 Definir &Machado
+menu button 3 10 93 150 25 Definir &Posicoes/Arvores
+menu button 5 10 118 150 25 &Iniciar Macro
+start:
+set #menubutton N/A
+Loop:
+if #menubutton <> N/A
+{
+If #MenuButton = Closed
+{
+goto terminar
+}
+goto A , #menubutton
+}
+goto Loop
+
+A1:
+goto botao1
+A2:
+goto botao2
+A3:
+goto botao3
+A4:
+goto botao4
+A5:
+menu hide
+goto init
+
+botao1:
+set #menubutton N/A
+menu clear
+menu window size 120 89
+menu window title Qual tipo sera usado?
+menu window color black
+menu hideeuo
+menu show 0 26
+menu font bgcolor black
+menu font color white
+menu font size 10
+menu button 1 10 7 100 25 &Banco
+menu button 2 10 32 100 25 Bau &Seguro
+menu button 3 10 57 100 25 &Voltar
+start2:
+set #menubutton N/A
+Loop2:
+if #menubutton <> N/A
+{
+If #MenuButton = Closed
+{
+goto terminar
+}
+goto B , #menubutton
+}
+goto Loop2
+
+B1:
+set #menubutton N/A
+menu clear
+menu window size 220 124
+menu show 0 26
+menu font bgcolor black
+menu font color white
+menu font size 10
+menu button 1 10 7 100 25 &Banco
+menu button 2 10 69 100 25 Bau &Seguro
+menu button 3 10 94 100 25 &Voltar
+menu text TEXT1 10 34 Va ao lado do banco
+menu text TEXT2 10 50 &Marcar Posicao(M) ou Cancelar©
+goto hotkey1
+B2:
+menu clear
+menu window size 393 138
+menu show 0 26
+menu font bgcolor black
+menu font color white
+menu font size 10
+menu button 1 10 7 100 25 &Banco
+menu button 2 10 32 100 25 Bau &Seguro
+menu button 3 10 108 100 25 &Voltar
+menu text TEXT1 10 59 Posicione o cursor do mouse no local onde vai ficar o
+BauSeguro
+menu text TEXT2 10 74 Esteja proximo ou ao lado dele.
+menu text TEXT3 10 89 &Marcar Posicao(M) ou Cancelar©
+goto hotkey2
+hotkey1:
+If #MenuButton = 2
+goto B2
+If #MenuButton = 3
+goto configurar
+If #MenuButton = Closed
+goto terminar
+onhotkey m 1
+goto marcar1
+onhotkey c 1
+goto botao1
+goto hotkey1
+hotkey2:
+If #MenuButton = 1
+goto B1
+If #MenuButton = 3
+goto configurar
+If #MenuButton = Closed
+goto terminar
+onhotkey m 1
+goto marcar2
+onhotkey c 1
+goto botao1
+goto hotkey2
+marcar1:
+set %rx0 #charposx
+set %ry0 #charposy
+gosub banco
+banco:
+menu window size 317 138
+menu show 0 26
+menu font bgcolor black
+menu font color white
+menu font size 10
+menu text TEXT1 10 34 Posicione o Cursor do mouse onde vai ficar as logs!
+menu text TEXT2 10 50 &Marcar Posicao(M) ou Cancelar©
+banco1:
+If #MenuButton = 2
+goto B2
+If #MenuButton = 3
+goto configurar
+If #MenuButton = Closed
+goto terminar
+onhotkey m 1
+goto banco3
+onhotkey c 1
+goto botao1
+goto banco1
+banco3:
+set %tipo banco
+set %guardarx #cursorx
+set %guardary #cursory
+key home
+goto configurar
+marcar2:
+set %tipo N/A
+set %guardarx #cursorx
+set %guardary #cursory
+set %rx0 #charposx
+set %ry0 #charposy
+goto configurar
+B3:
+goto configurar
+
+botao2:
+menu clear
+menu window size 134 75
+menu window title Reconect
+menu window color black
+menu hideeuo
+menu show 0 26
+menu font bgcolor black
+menu font color white
+menu font size 10
+menu text TEXT1 18 0 &Digite sua senha
+menu edit profile 18 18 100
+menu button 1 5 45 60 25 &Ok
+menu button 2 70 45 60 25 &Voltar
+start3:
+set #menubutton N/A
+loop3:
+if #menubutton <> N/A
+{
+If #MenuButton = Closed
+{
+goto terminar
+}
+goto C , #menubutton
+}
+goto Loop3
+
+C1:
+menu get profile
+set %senha #menures
+set %charid #charid
+goto configurar
+C2:
+goto configurar
+
+botao3:
+if %machado = N/A
+{
+event sysmessage Defina o Machado Antes!
+wait 1s
+goto botao4
+}
+menu clear
+menu window size 378 135
+menu window title Posicoes/Arvores
+menu window color black
+menu hideeuo
+menu show 0 26
+menu font bgcolor black
+menu font color white
+menu font size 10
+menu text TEXT1 5 0 Se ja houver algum arquivo com as posicoes e arvores
+definidas
+menu text TEXT2 5 20 digite o nome:
+menu edit profile 90 19 70
+menu button 1 165 22 45 20 &Ok
+menu text TEXT3 5 43 Se eh a primeira vez que esta rodando o macro ou pretende
+menu text TEXT4 5 62 redefinir as posicoes digite o nome do arquivo:
+menu edit profile2 5 80 70
+menu text TEXT5 79 82 (Obs:Se ele ja existir sera deletado)
+menu button 2 290 82 45 20 O&k
+menu button 3 150 107 65 25 &Voltar
+start4:
+set #menubutton N/A
+loop4:
+if #menubutton <> N/A
+{
+If #MenuButton = Closed
+{
+goto terminar
+}
+goto D , #menubutton
+}
+goto Loop4
+
+D1:
+menu get profile
+set %filename #menures
+goto configurar
+D2:
+menu get profile2
+set %filename #menures
+gosub apagar
+goto posicoes_arvores
+D3:
+goto configurar
+
+sub apagar
+execute cmd /c del %filename , .txt
+return
+
+posicoes_arvores:
+set %p 0
+posicao:
+set #menubutton N/A
+menu clear
+menu window size 230 75
+menu show 0 26
+menu font bgcolor black
+menu font color white
+menu font size 10
+menu text TEXT1 5 0 Posicoes Marcadas = %p
+menu text TEXT2 5 19 Remarcar posicao
+menu edit profile 115 15 25
+menu button 1 145 15 30 25 &OK
+menu text TEXT3 5 39 Use Shift F1 para marcar as posicoes
+menu text TEXT4 5 54 Shift F4 quando tiver acabado todas
+loop5:
+If #MenuButton = Closed
+{
+goto terminar
+}
+If #MenuButton = 1
+{
+set %r %p
+menu get profile
+set %r1 #menures
+set %p %r1 - 1
+goto setloc
+}
+OnHotKey F1 shift
+goto setLoc
+OnHotKey F4 shift
+goto finish
+goto loop5
+
+setLoc:
+set %localizacaox #charposx
+set %localizacaoy #charposy
+for %mp 1 %p
+{
+if %localizacaox = %rx . %mp
+{
+if %localizacaoy = %ry . %mp
+{
+set #sysmsgcol 38
+event sysmessage Posicao Repetida!
+set #sysmsgcol 1000
+}
+}
+}
+set %p %p + 1
+event sysmessage Localizacao %p set, %localizacaox %localizacaoy
+wait 3
+set %ltargetx #ltargetx
+set %ltargety #ltargety
+set #menubutton N/A
+menu clear
+menu window size 90 63
+menu show 0 26
+menu font bgcolor black
+menu font color white
+menu font size 10
+menu text TEXT1 5 0 Posicao %p
+menu text TEXT2 5 15 Target a arvore
+menu button 1 5 35 40 25 &Voltar
+set #lobjectid %machado
+event macro 17 0
+event sysmessage Apos clicar na arvore, pode cancelar a acao com TAB e ir para a proxima.
+tree:
+If #MenuButton = Closed
+{
+goto terminar
+}
+If #MenuButton = 1
+{
+if %r <> N/A
+{
+set %p %r
+set %r N/A
+set %p %p + 1
+}
+set %p %p - 1
+key esc
+goto posicao
+}
+scanjournal 1
+if nothing_here in #journal
+{
+deletejournal
+goto ttree
+}
+if but_fail in #journal
+{
+deletejournal
+goto ttree
+}
+if you_put in #journal
+{
+deletejournal
+goto ttree
+}
+if #ltargetx <> %ltargetx
+goto ttree
+if #ltargety <> %ltargety
+goto ttree
+goto tree
+
+ttree:
+set %rx . %p %localizacaox
+set %ry . %p %localizacaoy
+set %treex . %p #cursorx
+set %treey . %p #cursory
+event sysmessage Arvore marcada, Posicao %p completa
+if %r <> N/A
+{
+set %p %r
+set %r N/A
+}
+goto posicao
+
+finish:
+menu hide
+event sysmessage Escrevendo arquivo %filename , .txt, AGUARDE alguns MINUTOS! ...
+for %i 1 %p
+{
+execute cmd /c echo set  % , rx . %i %rx . %i >> %filename , .txt
+execute cmd /c echo set  % , ry . %i %ry . %i >> %filename , .txt
+execute cmd /c echo set  % , treex . %i %treex . %i >> %filename , .txt
+execute cmd /c echo set  % , treey . %i %treey . %i >> %filename , .txt
+}
+execute cmd /c echo set  % , maxwpts %p >> %filename , .txt
+execute cmd /c echo exit >> %filename , .txt
+event sysmessage Arquivo Completo!
+goto configurar
+
+botao4:
+menu clear
+menu window size 142 50
+menu window title Lumber
+menu window color black
+menu hideeuo
+menu show 0 26
+menu font bgcolor black
+menu font color white
+menu font size 10
+menu text TEXT1 7 0 &Clique 2x no machado
+menu button 2 7 18 60 25 &Voltar
+start5:
+set #lobjectid A
+set #menubutton N/A
+Loop6:
+if #lobjectid <> A
+{
+set %machado #lobjectid
+wait 6
+key esc
+goto configurar
+}
+if #menubutton <> N/A
+{
+If #MenuButton = Closed
+{
+goto terminar
+}
+goto configurar
+}
+goto Loop6
+
+init:
+if %machado = N/A
+{
+event sysmessage Machado nao Definido!
+goto botao4
+}
+if %senha = N/A
+{
+event sysmessage Senha nao Definida!
+goto botao2
+}
+if  %guardarx = N/A
+{
+event sysmessage Onde Guardar nao Definido!
+goto botao1
+}
+if %filename = N/A
+{
+event sysmessage Arquivo com as posicoes Definido!
+goto botao3
+}
+entrada:
+set %target 0
+call %filename , .txt
+event sysmessage Comecando o macro de Lumberjacking!
+wait 1s
+goto contas
+;------------------------------ LUMBER ------------------------------
+lumber:
+set %real #skill - 9
+set %change %real - %oldskill
+for %cnt 1 15
+{
+call %reconect
+if #weight > %peso
+goto guardar
+gosub stealth
+event sysmessage Lumberjacking Lugar %target de %MAXWPTS
+set #lobjectid %machado
+event macro 17 0
+event macro 17 0
+target
+click %TREEX . %target %TREEY . %target
+goto jornal
+;---------------------------- JORNAL -------------------------------------
+jornal:
+wait %pausescan
+scanjournal 1
+if nao_ha_madeiras in #journal
+goto contas
+if immune in #journal
+goto contas
+if the_tree_foliage in #journal
+goto contas
+if reach_this in #journal
+goto contas
+if longe in #journal
+goto contas
+if mochila in #journal
+goto lumber
+if decide_not in #journal
+wait 1s
+if nenhum  in #journal
+{
+set %fail %fail + 1
+goto lumber
+}
+if %fail > 10
+{
+set %fail 0
+goto contas
+}
+event macro 22 0  ;Last Target
+set %repetir %repetir + 1
+if %repetir > 60
+{
+set %repetir 0
+goto lumber
+}
+goto jornal
+;------------------------------ Stealth + Hiding-----------------------
+sub stealth
+hiding:
+if #charstatus = G
+key tab
+if #charstatus <> H
+{
+ event macro 13 21
+ wait 80
+ event macro 13 47
+ wait 80
+ goto hiding
+}
+}
+return
+;--------------------------------- Guardar ----------------------------
+guardar:
+call %reconect
+set %guardar %guardar + 1
+if %guardar = 1
+{
+set %target2 %target
+set %target 0
+goto onde_cortar
+}
+if %guardar > 2
+{
+set %guardar 0
+set %target %target2
+goto onde_cortar
+}
+acharlog:
+call %reconect
+finditem ZLK
+if #findkind = 1
+{
+ignoreitem #findid 1
+goto acharlog
+}
+if #findkind = 0
+{
+if %tipo = banco
+gosub banco
+event drag #findid
+wait 10
+msg $
+wait 10
+click %guardarx %guardary p
+wait 10
+goto acharlog
+}
+}
+if #findkind = -1
+goto guardar
+goto acharlog
+
+sub banco
+banco4:
+call %reconect
+msg bank$
+wait 15
+if #conttype = IKF
+{
+contpos 321 0
+wait 10
+return
+}
+goto banco4
+;------------------------------ ONDE CORTAR --------------------------
+onde_cortar:
+call %reconect
+for %mv 1 10
+{
+move %rx . %target %ry . %target a 3s
+set %charposx . %mv #charposx
+set %charposy . %mv #charposy
+for %mv2 1 %mv
+{
+if #charposx = %rx . %target
+{
+if #charposy = %ry . %target
+{
+set %parado 0
+if %guardar = 1
+goto guardar
+goto lumber
+}
+}
+set %mv3 %mv2 - 1
+if %charposx . %mv = %charposx . %mv3
+{
+if %charposy . %mv = %charposy . %mv3
+{
+set %parado %parado + 1
+}
+}
+if %parado >= 4
+goto iniciar_desvio
+}
+}
+goto onde_cortar
+
+iniciar_desvio:
+call %reconect
+if #charposx >= %rx . %target
+{
+set %desviar1 home
+set %desviar2 pgdn
+}
+if #charposx <= %rx . %target
+{
+set %desviar1 pgdn
+set %desviar2 home
+}
+if #charposy > %ry . %target
+{
+set %desviar3 end
+set %desviar4 pgup
+}
+if #charposy < %ry . %target
+{
+set %desviar3 pgup
+set %desviar4 end
+}
+set %parado 0
+set %d1 x
+set %d2 1
+set %andou 0
+set %t 1
+
+desviar:
+call %reconect
+for %des 1 4
+{
+set %charpos . %d1 #charpos . %d1
+for %des2  1 3
+{
+key %desviar . %d2
+wait 10
+if %charpos . %d1 <> #charpos . %d1
+{
+set %andou %andou + 1
+gosub mudar_desviar . %t
+}
+}
+gosub mudar2_desviar . %t
+}
+goto mudar_tipo
+
+sub mudar_desviar1
+if %andou > 5
+goto onde_cortar
+set %des2 0
+if %d2 = 1
+{
+set %d2 4
+set %d1 y
+set %charpos . %d1 #charpos . %d1
+return
+}
+if %d2 = 3
+{
+set %d2 1
+set %d1 x
+set %charpos . %d1 #charpos . %d1
+return
+}
+if %d2 = 4
+{
+set %d2 1
+set %d1 x
+set %charpos . %d1 #charpos . %d1
+return
+}
+
+sub mudar2_desviar1
+if %andou > 5
+goto onde_cortar
+set %des2 0
+if %d2 = 1
+{
+set %d2 3
+set %d1 y
+set %charpos . %d1 #charpos . %d1
+return
+}
+if %d2 = 3
+{
+set %d2 1
+set %d1 x
+set %charpos . %d1 #charpos . %d1
+return
+}
+if %d2 = 4
+{
+set %d2 1
+set %d1 x
+set %charpos . %d1 #charpos . %d1
+return
+}
+
+sub mudar_desviar2
+set %des2 0
+if %andou > 5
+goto mudar_tipo
+if %d2 = 2
+{
+set %d2 4
+set %d1 y
+set %charpos . %d1 #charpos . %d1
+return
+}
+if %d2 = 3
+{
+set %d2 2
+set %d1 x
+set %charpos . %d1 #charpos . %d1
+return
+}
+if %d2 = 4
+{
+set %d2 2
+set %d1 x
+set %charpos . %d1 #charpos . %d1
+return
+}
+
+sub mudar2_desviar2
+set %des2 0
+if %andou > 5
+goto mudar_tipo
+if %d2 = 2
+{
+set %d2 3
+set %d1 y
+set %charpos . %d1 #charpos . %d1
+return
+}
+if %d2 = 3
+{
+set %d2 2
+set %d1 x
+set %charpos . %d1 #charpos . %d1
+return
+}
+if %d2 = 4
+{
+set %d2 2
+set %d1 x
+set %charpos . %d1 #charpos . %d1
+return
+}
+
+mudar_tipo:
+if %t = 1
+{
+set %t 2
+set %d2 2
+set %d1 x
+goto desviar
+}
+if %t = 2
+{
+set %t 1
+set %d2 1
+set %d1 x
+goto desviar
+}
+goto desviar
+;------------------------------ CONTAS ------------------------------
+contas:
+Finditem HND_YSD_WLI_AQD
+Set #LObjectId #FindID
+Event Macro 17
+set %target %target + 1
+if %target > %MAXWPTS
+set %target 1
+set %fail 0
+goto onde_cortar
+
+
+terminar:
+Event Sysmessage Macro Finalizada!
+Menu Hide
+Halt
+
+Sub Guards
+msg Guards $
+wait 10
+Return
+// by iGGy
+// revisao by tork
+
