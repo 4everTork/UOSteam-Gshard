@@ -1,6 +1,6 @@
                                  // Macro Lumberjacking de EASYUO Configuravel by iGGy
 // Criado: 21/02/03
-// Revisao: 21/11/18
+// TFG shard: 21/11/18
 // AnCorp shard: 01/07/20
 // Habilite o ALLOW EXECUTE em Options no EUO, se disponivel.
 //////
