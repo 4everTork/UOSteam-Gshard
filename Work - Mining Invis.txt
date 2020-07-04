@@ -77,7 +77,7 @@ if diffweight < 100
       replygump 0x473 102
       //Gump Runebook 3
     elseif @gumpexists 0x474
-      replygump 0x473 1
+      replygump 0x474 1
       waitforgump 0x474 15000
       replygump 0x474 101
     endif
@@ -292,7 +292,7 @@ if diffweight < 100
       replygump 0x473 102
       //Gump Runebook 3
     elseif @gumpexists 0x474
-      replygump 0x473 1
+      replygump 0x474 1
       waitforgump 0x474 15000
       replygump 0x474 101
     endif
