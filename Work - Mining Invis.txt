@@ -65,7 +65,7 @@ if diffweight < 100
   while not inregion 'town' 'self'
     useobject 'runebookmining'
     waitforgump 'any' 10000
-    //Gump Runebook 1
+   //Gump Runebook 1
     if @gumpexists 0x472
       replygump 0x472 1
       waitforgump 0x472 15000
@@ -75,7 +75,6 @@ if diffweight < 100
       replygump 0x473 1
       waitforgump 0x473 15000
       replygump 0x473 101
-      //Gump Runebook 3
     elseif @gumpexists 0x474
       replygump 0x474 1
       waitforgump 0x474 15000
@@ -280,22 +279,21 @@ if diffweight < 100
     pause 500
     useobject 'runebookmining'
     waitforgump 'any' 15000
-        //Gump Runebook 1
-    if @gumpexists 0x472
-      replygump 0x472 2
-      waitforgump 0x472 15000
-      replygump 0x472 102
-      //Gump Runebook 2
-    elseif @gumpexists 0x473
-      replygump 0x473 2
-      waitforgump 0x473 15000
-      replygump 0x473 102
-      //Gump Runebook 3
-    elseif @gumpexists 0x474
-      replygump 0x474 2
-      waitforgump 0x474 15000
-      replygump 0x474 102
-    endif
+ //Gump Runebook 1
+  if @gumpexists 0x472
+    replygump 0x472 2
+    waitforgump 0x472 15000
+    replygump 0x472 102
+    //Gump Runebook 2
+  elseif @gumpexists 0x473
+    replygump 0x473 2
+    waitforgump 0x473 15000
+    replygump 0x473 102
+  elseif @gumpexists 0x474
+    replygump 0x474 2
+    waitforgump 0x474 15000
+    replygump 0x474 102
+  endif
     pause 11500
     if @findtype '0xe85' 'any' or @findtype '0xe86' 'any'
       @useobject 'found'
