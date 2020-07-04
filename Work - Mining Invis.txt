@@ -81,6 +81,7 @@ if diffweight < 100
       replygump 0x474 101
     endif
   enwhile
+  endif
   //
   // Restock
   //
