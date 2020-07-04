@@ -57,7 +57,7 @@ for 0 to 8
     for 0 to 'axisy'
       @clearjournal
       useobject 'vara'
-      waitfortarget 15000
+      waitfortarget 5000
       targettileoffset  'axisx[]' 'axisy[]' -3
       pause 250
       if not @injournal 'Nao ha peixe' and not @injournal 'Tente pescar'
@@ -68,7 +68,7 @@ for 0 to 8
         @clearjournal
         while not @injournal 'Voce pescou' 'system'
           useobject 'vara'
-          waitfortarget 15000
+          waitfortarget 5000
           targettileoffset  'axisx[]' 'axisy[]' -3
           pause 250
           if not @injournal 'Nao ha peixe' and not @injournal 'Tente pescar'
@@ -152,7 +152,7 @@ for 0 to 8
     for 0 to 'axisy'
       @clearjournal
       useobject 'vara'
-      waitfortarget 15000
+      waitfortarget 5000
       targettileoffset  'axisx[]' 'axisy[]' -3
       pause 250
       if not @injournal 'Nao ha peixe' and not @injournal 'Tente pescar'
@@ -163,7 +163,7 @@ for 0 to 8
         @clearjournal
         while not @injournal 'Voce pescou' 'system'
           useobject 'vara'
-          waitfortarget 15000
+          waitfortarget 5000
           targettileoffset  'axisx[]' 'axisy[]' -3
           pause 250
           if not @injournal 'Nao ha peixe' and not @injournal 'Tente pescar'
