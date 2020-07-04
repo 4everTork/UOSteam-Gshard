@@ -90,27 +90,23 @@ endfor
 // CORTAR
 //
 while @findtype '0x9cd' '0' 'backpack'
+  autotargettype '0x9cd' // peixe marrom
   useobject 'faca'
-  waitfortarget 15000
-  targettype '0x9cd' // peixe marrom
   pause 1000
 endwhile
 while @findtype '0x9cf' '0' 'backpack'
+  autotargettype '0x9cf' // peixe amarelo
   useobject 'faca'
-  waitfortarget 15000
-  targettype '0x9cf' // peixe amarelo
   pause 1000
 endwhile
 while @findtype '0x9cc' '0' 'backpack'
+  autotargettype '0x9cc' // peixe verde
   useobject 'faca'
-  waitfortarget 15000
-  targettype '0x9cc' // peixe verde
   pause 1000
 endwhile
 while @findtype '0x9ce' '0' 'backpack'
+  autotargettype '0x9ce' // peixe roxo
   useobject 'faca'
-  waitfortarget 15000
-  targettype '0x9ce' // peixe roxo
   pause 1000
 endwhile
 //
@@ -189,27 +185,23 @@ endfor
 // CORTAR
 //
 while @findtype '0x9cd' '0' 'backpack'
+  autotargettype '0x9cd' // peixe marrom
   useobject 'faca'
-  waitfortarget 15000
-  targettype '0x9cd' // peixe marrom
   pause 1000
 endwhile
 while @findtype '0x9cf' '0' 'backpack'
+  autotargettype '0x9cf' // peixe amarelo
   useobject 'faca'
-  waitfortarget 15000
-  targettype '0x9cf' // peixe amarelo
   pause 1000
 endwhile
 while @findtype '0x9cc' '0' 'backpack'
+  autotargettype '0x9cc' // peixe verde
   useobject 'faca'
-  waitfortarget 15000
-  targettype '0x9cc' // peixe verde
   pause 1000
 endwhile
 while @findtype '0x9ce' '0' 'backpack'
+  autotargettype '0x9ce' // peixe roxo
   useobject 'faca'
-  waitfortarget 15000
-  targettype '0x9ce' // peixe roxo
   pause 1000
 endwhile
 //
@@ -240,6 +232,10 @@ while @findtype '0x9cc' '51' 'backpack' // Prized Fish
   pause 1000
 endwhile
 while @findtype '0x9cc' '86' 'backpack' /// Wondrous Fish
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x9cc' '66' 'backpack' /// High Peculiar Fish
   moveitem! 'found' 'containerdobarco'
   pause 1000
 endwhile
