@@ -1,0 +1,48 @@
+//
+// Macro de Smelt 2 em 2 para GShard.
+// Ter um baú com os minérios e ingots.
+// Estar em frente a um forge.
+//
+if not @findobject 'baumineriosmelt'
+  headmsg 'Selecione o bau com ores e ingots.'
+  promptalias 'baumineriosmelt'
+endif
+if not @findobject 'hammer'
+  headmsg 'Selecione o Smith Hammer.'
+  promptalias 'hammer'
+endif
+//
+// Pegar minerios
+//
+if @findtype '0x19b9' 'any' 'baumineriosmelt'
+  @moveitem 'found' 'backpack' (0 0 0) 2
+  pause 1000
+endif
+//
+// Smeltar
+//
+useobject 'hammer'
+waitforgump 'any' 10000
+if @gumpexists 0x483
+  @replygump 0x483 0
+elseif @gumpexists 0x484
+  @replygump 0x484 0
+elseif @gumpexists 0x485
+  @replygump 0x485 0
+endif
+while not @injournal 'voce esmeltou o ore' 'system'
+  usetype 0x19ba 'any' 'backpack'
+  pause 1000
+  if @injournal 'nao conseguiu' 'system'
+    @movetype 0x19b7 'backpack' 'baumineriosmelt' 0 0 0 'any'
+    pause 1000
+    break
+  endif
+endwhile
+@clearjournal
+//
+// Guardar
+//
+@clearjournal
+@movetype 0x1bf2 'backpack' 'baumineriosmelt' 0 0 0 'any'
+pause 1000
