@@ -1,0 +1,39 @@
+//////
+// Macro para Tamar animal e seguindo
+//////
+if not @findobject 'taming'
+  headmsg '*Selecione o animal.*'
+  promptalias 'taming'
+endif
+@clearjournal
+useskill 'Animal Taming'
+waitfortarget 2000
+target! 'taming'
+while not @injournal 'nao conseguiu'
+  while not @inrange 'taming' 1
+    if @x 'taming' > x 'self' and @y 'taming' > y 'self'
+      walk 'Southeast'
+    elseif @x 'taming' < x 'self' and @y 'taming' > y 'self'
+      walk 'Southwest'
+    elseif @x 'taming' > x 'self' and @y 'taming' < y 'self'
+      walk 'Northeast'
+    elseif @x 'taming' < x 'self' and @y 'taming' < y 'self'
+      walk 'Northwest'
+    elseif @x 'taming' > x 'self' and @y 'taming' == y 'self'
+      walk 'East'
+    elseif @x 'taming' < x 'self' and @y 'taming' == y 'self'
+      walk 'West'
+    elseif @x 'taming' == x 'self' and @y 'taming' > y 'self'
+      walk 'South'
+    elseif @x 'taming' == x 'self' and @y 'taming' < y 'self'
+      walk 'North'
+    endif
+  endwhile
+  if @injournal 'aceitou voce'
+    headmsg '*Tamou*'
+    autotargetobject! 'taming'
+    usetype 0xf0e '2045' 'backpack'
+    stop
+  endif
+endwhile
+
