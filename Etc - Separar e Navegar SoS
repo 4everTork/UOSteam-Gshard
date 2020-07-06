@@ -1,0 +1,4380 @@
+;==================================
+; Script Name: SOS Master (alpha)
+; Author: Kal In Ex, Gaderian (PandoraUO mods), others
+; Version: 4.3h
+; Client Tested with: 7.0.75.6
+; EUO version tested with: 1.6 (version 333)
+; Shard OSI / FS: OSI, PandoraUO
+; Revision Date: June 23, 2018 (bug fix release)
+; Public Release: November 25, 2004
+; Purpose: useful script for SOS
+; Copyright: 2004-2012 Kal In Ex
+;==================================
+; Thanks to the bug fixers...
+; ErwinEUO fixes with menu items deleting/clearing, labels, Brit ship
+; yeuo     fix in "sub _getClosestRegion"
+; garath   fix in boat sailing code
+; yeuo     fix with "move sos" button's status message
+; Notes: SOSs must be visible
+; If using Britannian Ship, stand on deck behind the hold
+; If using Tokuno Ship, stand on the hold
+
+; SCRIPT SETUP
+set %shardType Odyssey ; can be OSI, Pandora, POL, RunUO, Alexandria, Odessa, Odyssey
+if #SHARD = Ultima , #spc , Forever || #shard = Pandora
+ set %shardType Pandora
+if #Shard = Odyssey , #spc , II , #spc , - , #spc , 1
+ set %ShardType Odyssey
+gosub setCurPath #curpath , _scripts\SOS master\
+
+set %Say_Whisper_Yell 1 ; 1=say, 3=whisper, 4=yell Some shards can't deal with whispering commands to tillerman from the front of the boat, so must set to say (1)
+; END SETUP
+
+; COLORS SETUP
+set %MapWaterColor     $FF5555
+set %MapLandColor      $66ff66
+set %MapMountainColor  $aaaaaa ; comment out to prevent display (HIGH DETAIL map only)
+set %MapRegionColor    $8888ff
+set %MapRegionTColor   aqua
+set %MapServerLColor   $ff88ff ; comment out to prevent display
+set %MapSOSMarkerColor $FFFFFF
+; END SETUP
+
+sub setCurPath
+ if %0 > 1
+  {
+  for %_ 2 %0
+   {
+   set %1 %1 , #spc , % . %_
+   }
+  }
+ set %curpath %1
+return
+
+
+set #lpc 100
+gosub KalOCRInit
+set %_SOSData _
+set %_delay4actions 0
+gosub setTypeInfoFor , %shardType
+gosub showsosmastermenu
+menu set status drawing world map
+;call %curpath , worldmap.txt
+gosub WorldMap
+;call %curpath , sosregions.txt
+;if %_SOSRegion_Cnt = n/a
+;	gosub createSOSRegionsFile
+sub defineSOSRegion
+ set %_sosregion_cnt %_sosregion_cnt + 1
+ set %_sosregion_x1_ . %1 %2
+ set %_sosregion_y1_ . %1 %3
+ set %_sosregion_x2_ . %1 %4
+ set %_sosregion_y2_ . %1 %5
+ set %_sosregion_col_ . %1 %6
+return
+set %_sosregion_cnt 0
+;gosub defineSOSRegion 1 0 0 4798 4059 lime
+gosub defineSOSRegion 1 2248 1137 3420 1801 black
+gosub defineSOSRegion 2 3557 53 3792 940 red
+gosub defineSOSRegion 3 3908 1739 4798 2859 lime
+gosub defineSOSRegion 4 2332 2546 3245 3095 yellow
+gosub defineSOSRegion 5 3341 3153 4235 3522 blue
+gosub defineSOSRegion 6 1606 3712 2034 4059 fuchsia
+gosub defineSOSRegion 7 2657 3800 4022 3957 aqua
+gosub defineSOSRegion 8 0 130 91 1524 white
+gosub defineSOSRegion 9 0 1559 683 2019 gray
+gosub defineSOSRegion 10 0 2084 308 3989 green
+
+;for %0 1 %_sosregion_cnt
+;   {
+;   set %1 %_sosregion_x1_ . %0 + ( %_sosregion_x2_ . %0 - %_sosregion_x1_ . %0 )
+;   set %2 %_sosregion_y1_ . %0 + ( %_sosregion_y2_ . %0 - %_sosregion_y1_ . %0 )
+;   set %_sosregion_x1_ . %0 %1
+;   set %_sosregion_y1_ . %0 %2
+;   set %_sosregion_x2_ . %0 %1
+;   set %_sosregion_y2_ . %0 %2
+;   }
+
+;call %curpath , sosdata.txt
+;call %curpath , _test_pin_file.txt
+gosub redrawSOSRegions
+gosub redrawSOSOnMap
+menu set status ready!
+
+; close open SOS gumps
+
+while #contsize = %sosSize
+ {
+ set %1 #contposx + 50
+ set %2 #contposy + 50
+ click %1 %2 r f dmc
+ wait 10
+ }
+
+gosub MainMenu
+halt
+
+sub MainMenu
+MainMenu:
+ menu Font Transparent #true
+ menu Font Align Right
+ menu Font Name MS Sans Serif
+ menu Font Size 8
+ menu Font Style
+ menu Font Color WindowText
+ menu Font BGColor BtnFace
+ menu Font Align Left
+ menu Text Menu_Label 328 8 Main Menu
+ ;menu Text EUOLabel1 416 8 Script Setup
+ menu Button loadSOSInfo 328 24 83 25 Load SOS Info
+ menu Button clearSOSInfo 328 52 83 25 Clear SOS Info
+ menu Button MoveSOSTo 328 80 83 25 Move SOS To..
+ menu Button DragMarkedSOS 328 108 83 25 Drag Marked
+ menu Button deleteMarked 328 136 83 25 Delete Marked
+ menu Button SailToMarked 328 164 83 25 Sail To Marked
+ ;menu Check SetTypeInfoForOSI 416 24 97 17 #false OSI Shard
+ ;menu Check SetTypeInfoForPOL 416 40 97 17 #false POL Shard
+ ;menu Set SetTypeInfo , %shardType #true
+ gosub WaitForMenuEvent
+ menu Delete Menu_Label
+ ;menu Delete EUOLabel1
+ menu Delete loadSOSInfo
+ menu Delete clearSOSInfo
+ menu Delete makeMapFile
+ menu Delete MoveSOSTo
+ menu Delete DragMarkedSOS
+ menu Delete deleteMarked
+ menu Delete SailToMarked
+ ;menu Delete SetTypeInfoForOSI
+ ;menu Delete SetTypeInfoForPOL
+ if #menubutton = loadSOSInfo
+	gosub loadSOSInfo
+ if #menubutton = clearSOSInfo
+	gosub clearSOSInfo
+ if #menubutton = makeMapFile
+	gosub makeMapFile
+ if #menubutton = MoveSOSTo
+	gosub MoveSOSTo
+ if #menubutton = DragMarkedSOS
+	gosub DragMarkedSOS
+ if #menubutton = deleteMarked
+	gosub deleteMarked
+ if #menubutton = SailToMarked
+	gosub SailToMarked
+; if #menubutton = SetTypeInfoForOSI
+;	 gosub SetTypeInfoForOSI
+; if #menubutton = SetTypeInfoForPOL
+;	 gosub SetTypeInfoForOSI
+ if #menubutton <> closed
+	goto MainMenu
+return
+
+sub setTypeInfoForAlexandria
+ set %regionDrawRoutine Alexandria
+ set %shardType Alexandria
+ set %mibType HTD
+ set %sosType RVH
+ set %sosSize 254_400
+ set %holdNorthType UVX
+ set %holdWestType ZUX
+ set %holdEastType ZNX
+ set %holdSouthType LWX
+ set %holdType %holdNorthType , _ , %holdWestType , _ , %holdEastType , _ , %holdSouthType
+return
+
+sub setTypeInfoForRunUO
+ set %regionDrawRoutine Normal
+ set %shardType RunUO
+ set %mibType HTD
+ set %sosType RVH
+ set %sosSize 254_400
+ set %holdNorthType UVX
+ set %holdWestType ZUX
+ set %holdEastType ZNX
+ set %holdSouthType LWX
+ set %holdType %holdNorthType , _ , %holdWestType , _ , %holdEastType , _ , %holdSouthType
+return
+
+sub setTypeInfoForOSI
+ set %regionDrawRoutine Normal
+ set %shardType OSI
+ set %mibType HTD_AWJC
+ set %sosType UVH
+ set %sosSize 254_400
+ ;hold types for classic, Tokuno, Britannian ships
+ set %holdNorthType UVX_XZCC_DAJB
+ set %holdWestType ZUX_CVCC_PEJB
+ set %holdEastType ZNX_EFDC_DTIB
+ set %holdSouthType LWX_VPCC_PXIB
+ set %holdType %holdNorthType , _ , %holdWestType , _ , %holdEastType , _ , %holdSouthType
+return
+
+sub setTypeInfoForPandora
+ set %regionDrawRoutine Normal
+ set %shardType RunUO_Pandora
+ set %mibType HTD
+ set %sosType UVH
+ set %sosSize 350_340
+ ;hold types for classic, Tokuno, Britannian ships
+ set %holdNorthType UVX_XZCC_DAJB
+ set %holdWestType ZUX_CVCC_PEJB
+ set %holdEastType ZNX_EFDC_DTIB
+ set %holdSouthType LWX_VPCC_PXIB
+ set %holdType %holdNorthType , _ , %holdWestType , _ , %holdEastType , _ , %holdSouthType
+return
+
+sub setTypeInfoForOdyssey
+ set %regionDrawRoutine Normal
+ set %shardType Odyssey
+ set %mibType HTD
+ set %sosType RVH
+ set %sosSize 350_340
+ ;hold types for classic ship
+ set %holdNorthType UVX
+ set %holdWestType ZUX
+ set %holdEastType ZNX
+ set %holdSouthType LWX
+ set %holdType %holdNorthType , _ , %holdWestType , _ , %holdEastType , _ , %holdSouthType
+return
+
+sub setTypeInfoForPOL
+ set %regionDrawRoutine Normal
+ set %shardType POL
+ set %mibType RVH
+ set %sosType HTD
+ set %sosSize 254_400
+ set %holdNorthType ZNX
+ set %holdWestType UVX
+ set %holdEastType LWX
+ set %holdSouthType ZUX
+ set %holdType %holdNorthType , _ , %holdWestType , _ , %holdEastType , _ , %holdSouthType
+return
+
+sub setTypeInfoForOdessa
+ set %regionDrawRoutine Normal
+ set %shardType POL
+ set %mibType RVH
+ set %sosType HTD
+ set %sosSize 254_400
+ set %holdNorthType ZNX
+ set %holdWestType UVX
+ set %holdEastType LWX
+ set %holdSouthType ZUX
+ set %holdType %holdNorthType , _ , %holdWestType , _ , %holdEastType , _ , %holdSouthType
+return
+
+sub LoadSOSInfo
+ ; BUST OPEN MIBS
+ finditem %mibType c
+ if #findkind <> -1
+  {
+  menu hide
+  display yesno Would you like the script to open MIBs?
+  menu show
+  set #menubutton n/a
+  if #dispres = yes
+   {
+   for !mibIndex #findcnt 1
+    {
+    set #findindex !mibIndex
+    if #findcol = 0
+     {
+     set #lobjectid #findid
+     event macro 17 0
+     wait 20
+     }
+    }
+   }
+  if #targcurs = 1
+  key esc
+  }
+
+ finditem %sosType c
+ if #findkind = -1
+	{
+	menu set status no sos found to load!
+	return
+	}
+
+ menu Font Transparent #true
+ menu Font Align Right
+ menu Font Name MS Sans Serif
+ menu Font Size 8
+ menu Font Style
+ menu Font Color WindowText
+ menu Font Align Left
+ menu Text EUOLabel1 328 8 The script is "scanning" coordinates
+ menu Text EUOLabel2 328 20 from SOS gumps using a process
+ menu Text EUOLabel3 328 32 sometimes referred to as pixel color
+ menu Text EUOLabel4 328 44 testing. IE: now would be a really
+ menu Text EUOLabel5 328 56 bad time to minimize UO or cause
+ menu Text EUOLabel6 328 68 other windows to cover up the area
+ menu Text EUOLabel7 328 80 of the UO window the coordinates
+ menu Text EUOLabel8 328 92 are being scanned from.
+
+; load un-listed SOS
+ set !lpc #lpc
+ set #lpc 10000
+ for %_index #findcnt 1
+  {
+  finditem %sosType %_index c
+  if #findkind <> -1 && #findid notin %_SOSData
+   {
+   gosub scanSOS #findid
+   gosub LoadSOSData %_sosworldx %_sosworldy #findid
+   }
+  }
+ set #lpc 100
+
+; remove SOS that can't be found
+ set %_temp %_SOSData
+ set %_SOSData _
+ str len %_temp
+ set #strres #strres / 18
+ set %_REdrawFlag #false
+ for %_loop #strres 1
+  {
+  str pos %_temp _
+  if #strres = 0 || #strres > 8
+   set #strres 8
+  else
+   set #strres #strres - 1
+  str mid %_temp 1 #strres
+  finditem #strres
+  if #findkind = -1
+   set %_redrawFlag #true
+  if #findkind <> -1
+   {
+   str mid %_temp 1 18
+   set %_SOSData #strres , %_SOSData
+   }
+  str del %_temp 1 18
+  set %_temp #strres
+  }
+ gosub redrawSOSRegions
+ if %_redrawFlag = #true
+  gosub redrawSOSOnMap
+ gosub markClosestSOSLocation
+ menu set status SOS Info loaded
+ menu Delete Menu_BKGND
+ menu Delete EUOLabel1
+ menu Delete EUOLabel2
+ menu Delete EUOLabel3
+ menu Delete EUOLabel4
+ menu Delete EUOLabel5
+ menu Delete EUOLabel6
+ menu Delete EUOLabel7
+ menu Delete EUOLabel8
+ menu Delete EUOLabel9
+return
+
+sub ClearSOSInfo
+ set #menubutton n/a
+ menu set status clearing SOS info
+ str len %_SOSDATA
+ set %_looper #strres / 18
+ for %_eetmp 1 %_looper
+  {
+  str left %_SOSDATA 7
+  menu delete #strres
+  str del %_SOSDATA 1 18
+  set %_SOSDATA #strres
+  }
+ gosub redrawSOSOnMap
+ gosub markClosestSOSLocation
+ menu set status SOS info cleared
+return
+
+sub MoveSOSTo
+MoveSOSto:
+ menu Font Transparent #true
+ menu Font Align Right
+ menu Font Name MS Sans Serif
+ menu Font Size 8
+ menu Font Style
+ menu Font Color WindowText
+ menu Font Align Left
+ menu Font BGColor BtnFace
+ menu Text EUOLabel1 328 8 Select the sos region number(s) to
+ menu Text EUOLabel2 328 20 grab SOS from then click the "ok"
+ menu Text EUOLabel3 328 32 button. You then need to place your
+ menu Text EUOLabel4 328 44 cursor over the container you want
+ menu Text EUOLabel5 328 56 to move the SOS into and press the
+ menu Text EUOLabel6 328 68 spacebar. The script will move * , all*
+ menu Text EUOLabel7 328 80 sos from the region(s) to a container.
+ menu Button EUOButton1 332 256 43 17 ok
+ menu Button EUOButton2 380 256 75 17 cancel
+ menu Button EUOButton3 332 232 51 21 select all
+ menu Button EUOButton4 388 232 67 21 none
+ for %_ 1 %_SOSRegion_cnt
+  {
+  set %_y %_ * 12 + 88
+  menu Check SOSRegion , %_ 354 %_Y 97 17 #false SOS region # , %_
+  }
+MoveSOSTo2:
+ gosub WaitForMenuEvent
+ if #menubutton = EUOButton3
+  {
+  for %_ 1 %_SOSRegion_cnt
+   {
+   menu set SOSRegion , %_ #true
+   }
+  goto MoveSOSTo2
+  }
+ if #menubutton = EUOButton4
+  {
+  for %_ 1 %_SOSRegion_cnt
+   {
+   menu set SOSRegion , %_ #false
+   }
+  goto MoveSOSTo2
+  }
+ menu Delete Menu_BKGND
+ menu Delete EUOLabel1
+ menu Delete EUOLabel2
+ menu Delete EUOLabel3
+ menu Delete EUOLabel4
+ menu Delete EUOLabel5
+ menu Delete EUOLabel6
+ menu Delete EUOLabel7
+ menu Delete EUOButton1
+ menu Delete EUOButton2
+ menu Delete EUOButton3
+ menu Delete EUOButton4
+ set %_region _
+ set %sosregion ; (yeuo)
+ for %_ 1 %_SOSRegion_cnt
+  {
+  menu get SOSRegion , %_
+  if #menures = #true 2
+   set %sosregion %sosregion , #spc , %_ ; (yeuo)
+  set %_region %_region , %_ , _
+  menu Delete SOSRegion , %_
+  }
+ if #menubutton = EUOButton2
+  return
+ str len %_SOSData
+ if #strres = 0
+  {
+  menu set status SOS cant be moved as no info is loaded
+  return
+  }
+ menu set status position cursor over bag and press spacebar
+ for %_ 1 1
+  {
+  wait 1
+  set %_ 0
+  onhotkey space
+  set %_ 1
+  }
+ set %_xpos #cursorx
+ set %_ypos #cursory
+ menu set status moving SOS from region(s) %sosregion
+ str len %_SOSData
+ set %_temp %_SOSData
+ set #strres #strres / 18
+ for %_loop #strres 1
+  {
+  str mid %_temp 17 2
+  set #strres #strres + 0
+  if _ , #strres , _ in %_region
+   {
+   str pos %_temp _
+   if #strres = 0 || #strres > 8
+    str mid %_temp 1 8
+   else
+    {
+    set #strres #strres - 1
+    str mid %_temp 1 #strres
+    }
+   finditem #strres
+   if #findkind <> -1
+    {
+    if #lliftedkind = 0
+     {
+     event drag #findid
+     wait 5
+     }
+    click %_xpos %_ypos p f dmc
+    wait 20
+    }
+   }
+  str del %_temp 1 18
+  set %_temp #strres
+  }
+ menu set status finished moving SOS to container
+return
+
+sub waitForMenuEvent
+waitForMenuEvent:
+ set #menubutton n/a
+ for !_ 1 1
+  {
+  if #charposx / 16 <> %_charmapposx || #charposy / 16 <> %_charmapposy
+   {
+   gosub redrawPlayerPosition
+   gosub markClosestSOSLocation
+   }
+  if #menubutton = n/a
+   {
+   set !_ 0
+   wait 1
+   }
+  }
+ if #menubutton = saveSOSData
+  {
+  gosub saveSOSData
+  goto waitForMenuEvent
+  }
+return
+
+sub SailToMarked
+ menu Font Transparent #true
+ menu Font Align Right
+ menu Font Name MS Sans Serif
+ menu Font Size 8
+ menu Font Style
+ menu Font Color WindowText
+ menu Font Align Left
+ menu Text EUOLabel1 328 8 The script is sailing to the "marked"
+ menu Text EUOLabel2 328 20 SOS location shown on the map. If
+ menu Text EUOLabel3 328 32 any obstacles are encountered
+ menu Text EUOLabel4 328 44 the script will stop and return you
+ menu Text EUOLabel5 328 56 back to the main menu... you can
+ menu Text EUOLabel6 328 68 also click the "cancel" button to
+ menu Text EUOLabel7 328 80 exit this sailing routine early.
+ menu Button EUOButton2 380 256 75 17 cancel
+
+ menu set status sailing to marked SOS
+ if %_CLOSESTSOSX = 0 && %_CLOSESTSOSY = 0
+  {
+  menu set status No SOS loaded, cancelling sail
+  goto sailToMarkedEnd
+  }
+ gosub _findShipsHold
+ gosub _getShipInfo
+ set %1 %_closestSOSx
+ set %2 %_closestSOSy - 2
+ set %_xdist %1 - %_shipsX abs
+ set %_ydist %2 - %_shipsY abs
+ ; turn the boat
+ if %_xdist > %_ydist
+  {
+  if %_shipsx > %1
+   set %_destDir 7
+  if %_shipsx = %1
+   {
+   if %_shipsy > %2
+    set %_destDir 1
+   if %_shipsy = %2
+    goto sailToMarkedEnd
+   if %_shipsy < %2
+    set %_destDir 5
+   }
+  if %_shipsx < %1
+   set %_destDir 3
+  }
+ if %_xdist = %_ydist
+  {
+  if %_shipsx > %1
+   set %_destDir 7
+  if %_shipsx = %1
+   goto sailToMarkedEnd
+  if %_shipsx < %1
+   set %_destDir 3
+  }
+ if %_xdist < %_ydist
+  {
+  if %_shipsy > %2
+   set %_destDir 1 ; (Garath) was set to 2
+  if %_shipsy = %2
+   {
+   if %_shipsx > %1
+    set %_destDir 7
+   if %_shipsx = %1
+    goto sailToMarkedEnd
+   if %_shipsx < %1
+    set %_destDir 3
+   }
+  if %_shipsy < %2
+   set %_destDir 5
+  }
+ set %_ ( %_destDir - %_shipsDir + 9 ) % 8
+ if %_ = 3 || %_ = 5 || %_ = 7
+  {
+  if %_ = 3
+   event macro %Say_Whisper_Yell 0 turn right
+  if %_ = 5
+   event macro %Say_Whisper_Yell 0 come about
+  if %_ = 7
+   event macro %Say_Whisper_Yell 0 turn left
+  wait 1s
+  set %_shipsDir %_destDir
+  }
+ ; set boat watches
+ if %1 <= %_shipsX
+  set %_watchX <=
+ if %1 > %_shipsX
+  set %_watchX >=
+ if %2 <= %_shipsY
+  set %_watchY <=
+ if %2 > %_shipsY
+  set %_watchY >=
+ ; sail the "diagonal"
+ if %1 < %_shipsX && %2 < %_shipsY
+  set %_destDir 0
+ if %1 = %_shipsX && %2 < %_shipsY
+  set %_destDir 1
+ if %1 > %_shipsX && %2 < %_shipsY
+  set %_destDir 2
+ if %1 > %_shipsX && %2 = %_shipsY
+  set %_destDir 3
+ if %1 > %_shipsX && %2 > %_shipsY
+  set %_destDir 4
+ if %1 = %_shipsX && %2 > %_shipsY
+  set %_destDir 5
+ if %1 < %_shipsX && %2 > %_shipsY
+  set %_destDir 6
+ if %1 < %_shipsX && %2 = %_shipsY
+  set %_destDir 7
+ if %1 = %_shipsX && %2 = %_shipsY
+  goto sailToMarkedEnd
+ if %_destDir in 0246
+  {
+  set %_ ( %_destDir - %_shipsDir + 9 ) % 8
+  if %_ = 0
+   event macro %Say_Whisper_Yell 0 forward left
+  if %_ = 2
+   event macro %Say_Whisper_Yell 0 forward right
+  set %_shipsTimer #scnt2 + 30
+  for %_ 1 1
+   {
+   if #menubutton = EUOButton2
+    {
+    event macro %Say_Whisper_Yell 0 stop
+    menu set status Ready!
+    goto sailToMarkedEnd
+    }
+   if #charposx / 16 <> %_charmapposx || #charposy / 16 <> %_charmapposy
+    {
+    gosub redrawPlayerPosition
+    }
+   gosub _getShipInfo
+   if %_shipsX , _ , %_shipsY <> %_shipsPos
+    {
+    set %_shipsPos %_shipsX , _ , %_shipsY
+    set %_shipsTimer #scnt2 + 30
+    }
+   if #scnt2 >= %_shipsTimer
+    {
+    event macro %Say_Whisper_Yell 0 stop
+    menu set status unable to reach marked SOS
+    goto sailToMarkedEnd
+    }
+   if ! ( %_shipsX %_watchX %1 || %_shipsY %_watchY %2 )
+    {
+    wait 1
+    set %_ 0
+    }
+   }
+  }
+ ; sail the straight
+ event macro %Say_Whisper_Yell 0 forward
+ set %_shipsTimer #scnt2 + 30
+ for %_ 1 1
+  {
+  if #menubutton = EUOButton2
+   {
+   event macro %Say_Whisper_Yell 0 stop
+   menu set status Ready!
+   goto sailToMarkedEnd
+   }
+  if #charposx / 16 <> %_charmapposx || #charposy / 16 <> %_charmapposy
+   gosub redrawPlayerPosition
+  gosub _getShipInfo
+  if %_shipsX , _ , %_shipsY <> %_shipsPos
+   {
+   set %_shipsPos %_shipsX , _ , %_shipsY
+   set %_shipsTimer #scnt2 + 30
+   }
+  if #scnt2 >= %_shipsTimer
+   {
+   event macro %Say_Whisper_Yell 0 stop
+   menu set status unable to reach marked SOS
+   goto sailToMarkedEnd
+   }
+  if ! ( %_shipsX %_watchX %1 && %_shipsY %_watchY %2 )
+   {
+   wait 1
+   set %_ 0
+   }
+  }
+ event macro %Say_Whisper_Yell 0 stop
+ ; turn boat west
+ wait 1s
+ set %_ ( 7 - %_shipsDir + 9 ) % 8
+ if %_ in 357
+  {
+  if %_ = 3
+   event macro %Say_Whisper_Yell 0 turn right
+  if %_ = 5
+   event macro %Say_Whisper_Yell 0 come about
+  if %_ = 7
+   event macro %Say_Whisper_Yell 0 turn left
+  wait 1s
+  set %_shipsDir %_destDir
+  }
+ menu set status sailed to marked SOS destination
+sailToMarkedEnd:
+ menu Delete EUOLabel1
+ menu Delete EUOLabel2
+ menu Delete EUOLabel3
+ menu Delete EUOLabel4
+ menu Delete EUOLabel5
+ menu Delete EUOLabel6
+ menu Delete EUOLabel7
+ menu Delete EUOButton2
+return
+
+sub _getShipInfo
+ finditem %_shipsHold
+ if #findtype in %holdNorthType
+  {
+  set %_shipsX #findx
+  set %_shipsY #findy + 4
+  set %_shipsDir 1
+  }
+ if #findtype in %holdEastType
+  {
+  set %_shipsX #findx - 4
+  set %_shipsY #findy
+  set %_shipsDir 3
+  }
+ if #findtype in %holdSouthType
+  {
+  set %_shipsX #findx
+  set %_shipsY #findy - 4
+  set %_shipsDir 5
+  }
+ if #findtype in %holdWestType
+  {
+  set %_shipsX #findx + 4
+  set %_shipsY #findy
+  set %_shipsDir 7
+  }
+return
+
+sub _findShipsHold
+ namespace push
+ namespace local _temp
+ set !_shipsHold n/a
+ set !_holdsDist 999
+ finditem %holdType g
+ for !_ #findcnt 1
+  {
+  finditem %holdType !_ g
+  set !_xdist #findx - #charposx abs
+  set !_ydist #findy - #charposy abs
+  set !_dist !_ydist
+  if !_xdist > !_ydist
+  set !_dist !_xdist
+  if !_dist < !_holdsDist
+   {
+   if #findtype in %holdNorthType && #charposy > #findy && !_xdist < 2
+    {
+    set !_holdsDist !_dist
+    set !_shipsHold #findid
+    }
+   if #findtype in %holdEastType && #charposx < #findx && !_ydist < 2
+    {
+    set !_holdsDist !_dist
+    set !_shipsHold #findid
+    }
+   if #findtype in %holdSouthType && #charposy < #findy && !_xdist < 2
+    {
+    set !_holdsDist !_dist
+    set !_shipsHold #findid
+    }
+   if #findtype in %holdWestType && #charposx > #findx && !_ydist < 2
+    {
+    set !_holdsDist !_dist
+    set !_shipsHold #findid
+    }
+   }
+  }
+ set #result !_shipsHold
+ namespace clear
+ namespace pop
+ set %_shipsHold #result
+return #result
+
+sub DeleteMarked
+ str len %_closestSOSID
+ str del ________ 1 #strres
+ set %1 %_closestSOSID , #strres
+ str pos %_SOSData %1
+ if #strres = 0
+  {
+  menu set status can not remove marked SOS
+  }
+ if #strres > 0
+  {
+  menu set status deleting marked SOS
+  str del %_SOSData #strres 18
+  set %_SOSData #strres
+  gosub redrawSOSOnMap
+  menu set status updating SOS marker
+  gosub markClosestSOSLocation
+  menu set status marked SOS removed
+  }
+return
+
+sub DragMarkedSOS
+ set #menubutton n/a
+ if #lliftedkind = 1
+  {
+  menu set status something "floating" on cursor
+  return
+  }
+ finditem %_closestSOSID
+ if #findkind = -1
+  menu set status Marked SOS not found
+ else
+  {
+  menu set status Marked SOS "floating" on cursor
+  event drag #findid
+  }
+return
+
+sub markClosestSOSLocation
+ set %_d 9999
+ set %_x 0
+ set %_y 0
+ set %_id x
+
+ str len %_SOSData
+ set %_temp %_SOSData
+ set #strres #strres / 18
+ for %_loop #strres 1
+  {
+  str mid %_temp 9 4
+  set %2 #strres + 0
+  str mid %_temp 13 4
+  set %3 #strres + 0
+
+  set %_1 %2 - #charposx abs
+  set %_2 %3 - #charposy abs
+  if %_1 > %_2
+  set %_ %_1
+  else
+  set %_ %_2
+
+  if %_ < %_d
+   {
+   str pos %_temp _
+   if #strres = 0 || #strres > 8
+    str mid %_temp 1 8
+   else
+    {
+    set #strres #strres - 1
+    str mid %_temp 1 #strres
+    }
+   set %_id #strres
+   set %_x %2
+   set %_y %3
+   set %_d %_
+   }
+  str del %_temp 1 18
+  set %_temp #strres
+  }
+
+ if %_id <> %_closestSOSID
+  {
+  set %_closestSOSx %_x
+  set %_closestSOSy %_y
+  ;set %_closestSOSDist %_d
+  set %_closestSOSID %_id
+  set %_1 %_x
+  set %_2 %_y
+  menu delete SOSMarker
+  gosub drawmarker SOSMarker %_x %_y %MapSOSMarkerColor
+  set %_x %_1
+  set %_y %_2
+  ;		set %1 %_x / 16 - 4
+  ;		set %2 %_y / 16 - 4
+  ;		menu delete SOSMarker
+  ;		menu shape SOSMarker %1 %2 10 10 2 7 1 $0000ff 2 0
+
+  set %1 20 ;%1 + 5 ; draw region # with "border"
+  set %2 10 ;%2 + 4
+  set %3 %1 + 2
+  set %4 %2 + 2
+  ;set %_id URSOSID
+  menu font color white
+  menu Font Name MS Sans Serif
+  menu font BGColor %MapWaterColor
+  for %5 %1 %3
+   {
+   for %6 %2 %4
+    {
+    menu delete SOSLabel
+    menu text SOSLabel %5 %6 %_id , $x %_x , $y %_y
+    }
+   }
+  set %1 %1 + 1
+  set %2 %2 + 1
+  menu font color white
+  menu font BGColor %MapWaterColor
+  menu delete SOSLabel
+  menu text SOSLabel %1 %2 %_id , $x %_x , $y %_y
+  menu Font BGColor BtnFace
+  }
+
+return
+
+sub drawMarker
+ ;display drawMarker %1 %2 %3
+ menu delete %1 , north
+ menu delete %1 , east
+ menu delete %1 , west
+ menu delete %1 , south
+ str len %_SOSData
+ if #strres = 0 || #strres = 1
+  return
+ set %_xpos %2 / 16
+ set %_ypos %3 / 16
+ set %_x %_xpos - 4
+ set %_y %_ypos - 4
+ menu shape %1 %_x %_y 10 10 2 7 1 %4 2 0
+ set %_x %_xpos - 6
+ menu shape %1 , north 2 %_ypos %_x 1 3 7 1 %4 2 0
+ set %_x %_xpos + 6
+ set %_l 318 - %_x
+ menu shape %1 , east %_x %_ypos %_l 1 3 7 1 %4 2 0
+ set %_l %_ypos - 6
+ menu shape %1 , west %_xpos 2 1 %_l 3 7 1 %4 2 0
+ set %_y %_ypos + 6
+ set %_l 254 - %_y
+ menu shape %1 , south %_xpos %_y 1 %_l 3 7 1 %4 2 0
+return
+
+sub scanSOS
+ namespace push
+ namespace local _temp
+ if #scnt2 < %_delay4actions
+  {
+  set !_ ( %_delay4actions - #scnt2 ) * 2
+  wait !_
+  }
+ set #lobjectid %1
+ event macro 17 0
+ for !_ 60 1
+  {
+  if #contsize <> %sosSize
+   wait 1
+  if #contsize = %sosSize
+   set %_ 1
+  }
+ if #contsize <> %sosSize
+  {
+  namespace clear
+  namespace pop
+  return #false
+  }
+ set %_delay4actions #scnt2 + 9
+ menu set status scanning unlisted SOS ( , %_index , )
+ gosub contpos 0 0 50 50
+ wait 7
+ gosub getsosinfo 0 0
+ click 50 50 r f dmc
+ set %_sosCoords !sos_coords
+ set %_sosWorldX !sos_worldx
+ set %_sosWorldY !sos_worldy
+ namespace clear
+ namespace pop
+return #true
+
+sub saveSOSData
+ set #menubutton n/a
+ menu set status saving sos info...
+ str len %_SOSData
+ if #strres = 0
+  return
+
+ gosub open 1 %curpath , sosdata.txt
+ gosub wipe 1
+
+ set %_temp set , #spc , % , _SOSData , #spc , %_SOSData
+ for %_ 1 1
+  {
+  str len %_temp
+  if #strres <= 80
+   {
+   gosub write 1 %_temp
+   set %_ 1
+   if #true 0
+   }
+  else
+   {
+   str left %_temp 80
+   gosub write 1 #strres
+   str del %_temp 1 80
+   set %_temp + , #strres
+   set %_ 0
+   }
+  }
+ gosub dump 1
+ menu set status sos info saved for next launch!
+return
+
+sub closed
+ set #menubutton n/a
+ halt
+return
+
+sub redrawPlayerPosition
+ set %_charmapposx #charposx / 16
+ set %_charmapposy #charposy / 16
+ set %_1 %_charmapposx - 2
+ set %_2 %_charmapposy - 2
+ menu delete playerPosition
+ menu shape playerPosition %_1 %_2 6 6 2 7 1 $000000 7 $0088ff
+return
+
+sub loadSOSData
+ if %_SOSData = n/a
+ set %_SOSData _
+ set %4 0
+ for %_ 1 %_sosregion_cnt
+  {
+  if %_sosregion_x1_ . %_ <= %1 && %_sosregion_y1_ . %_ <= %2 && %_sosregion_x2_ . %_ >= %1 && %_sosregion_y2_ . %_ >= %2
+  set %4 %_
+  }
+ if %4 = 0
+  {
+  set !_regionD 9999
+  for %i 1 %_sosregion_cnt
+   {
+   set !_xd abs ( %1 - ( %_sosregion_x1_ . %i + %_sosregion_x2_ . %i - %_sosregion_x1_ . %i ) )
+   set !_yd abs ( %2 - ( %_sosregion_y1_ . %i + %_sosregion_y2_ . %i - %_sosregion_y1_ . %i ) )
+   set !_dist !_xd
+   if !_yd > !_xd
+    set !_dist !_yd
+   if !_dist < !_regionD
+    {
+    set !_regionD !_dist
+    set %4 %i
+    }
+   }
+; resize region to fit...
+  if %4 <> 0
+   {
+   if %_sosregion_x1_ . %4 > %1
+    set %_sosregion_x1_ . %4 %1
+   if %_sosregion_y1_ . %4 > %2
+    set %_sosregion_y1_ . %4 %2
+   if %_sosregion_x2_ . %4 < %1
+    set %_sosregion_x2_ . %4 %1
+   if %_sosregion_y2_ . %4 < %2
+    set %_sosregion_y2_ . %4 %2
+   ;gosub redrawSOSRegions
+   }
+  ; finding a region for SOS failed!!!
+  else
+   {
+   gosub _getClosestRegion
+   }
+  }
+ gosub _loadSOSData
+ set %1 %1 / 16 - 2
+ set %2 %2 / 16 - 2
+ ;	pause
+ menu shape %3 %1 %2 6 6 2 7 1 $000000 7 %_sosregion_col_ . %4
+return
+
+sub _loadSOSData ; <x> <y> <id> <region>
+ str len %4
+ str del 00 1 #strres
+ set %_SOSData #strres , %4 , %_SOSData
+ str len %2
+ str del 0000 1 #strres
+ set %_SOSData #strres , %2 , %_SOSData
+ str len %1
+ str del 0000 1 #strres
+ set %_SOSData #strres , %1 , %_SOSData
+ str len %3
+ str del ________ 1 #strres
+ set %_SOSData %3 , #strres , %_SOSData
+return
+
+sub _getClosestRegion
+ menu Font Transparent #true
+ menu Font Name MS Sans Serif
+ menu Font Size 8
+ menu Font Style
+ menu Font Color WindowText
+ menu Font Align Left
+ menu Font Transparent #true
+ menu Text Label 328 116 Location shown on map via the
+ menu Text Label 328 128 crosshairs identifies a location
+ menu Text Label 328 140 outside any of the defined regions.
+ menu Text Label 328 152 You need to select the number for
+ menu Text Label 328 164 the region this SOS location
+ menu Text Label 328 176 belongs in so that the region
+ menu Text Label 328 188 definition file can be updated.
+ menu Font BGColor Window
+ menu Combo Create LabelR 328 224 165
+ menu Font BGColor BtnFace
+ menu Button Label 328 248 31 17 ok
+ menu Font Style b
+ menu Text Label 328 208 Select region then click ok
+ for !_ 1 %_sosregion_cnt
+  {
+  menu Combo Add LabelR sos region !_
+  }
+ menu delete sosmarker
+
+ set %_xpos %1 / 16
+ set %_ypos %2 / 16
+ menu shape label %_xpos 2 1 252 3 7 1 $ffffff 7 $ffffff
+ menu shape label 2 %_ypos 315 1 3 7 1 $ffffff 7 $ffffff
+ set %_xpos %_xpos - 3
+ set %_ypos %_ypos - 3
+ menu shape label %_xpos %_ypos 6 6 2 7 1 $ffffff 7 $ffffff
+ set #menubutton n/a
+ while #menubutton = n/a
+  {
+  wait 1
+  menu get labelR
+  if #menubutton <> n/a && #menures = 0
+   set #menubutton n/a
+  }
+ menu delete label
+ menu delete LabelR
+
+; enlarge region so that this location is bounded by it
+
+ if %1 < %_sosregion_x1_ . #menures
+  set %_sosregion_x1_ . #menures %1
+ if %2 < %_sosregion_y1_ . #menures
+  set %_sosregion_y1_ . #menures %2
+ if %1 > %_sosregion_x2_ . #menures
+  set %_sosregion_x2_ . #menures %1
+ if %2 > %_sosregion_y2_ . #menures
+  set %_sosregion_y2_ . #menures %2
+
+ set %_1 %1
+ set %_2 %2
+ set %_3 %3
+ set %_4 #menures
+ gosub redrawSOSRegions
+ gosub writeSOSRegionsFile
+ set %1 %_1
+ set %2 %_2
+ set %3 %_3
+ set %4 %_4
+return
+
+sub redrawSOSOnMap
+ menu delete %_CLOSESTSOSID
+ menu delete CLOSESTSOSTARGET
+ str len %_SOSData
+ if #strres = 0 || #strres = 1
+  return
+ set %_temp %_SOSData
+ set #strres #strres / 18
+ for %_loop #strres 1
+  {
+  str mid %_temp 9 4
+  set %2 #strres / 16 - 2
+  str mid %_temp 13 4
+  set %3 #strres / 16 - 2
+  str mid %_temp 17 2
+  set %4 #strres + 0
+  menu shape CLOSESTSOSTARGET %2 %3 6 6 2 7 1 $000000 7 %_sosregion_col_ . %4
+  str del %_temp 1 18
+  set %_temp #strres
+  }
+return
+
+sub redrawSOSRegions
+ gosub redrawSOSRegions_ , %regionDrawRoutine
+return
+
+sub redrawSOSRegions_Normal
+ menu font align left
+ menu font style
+ menu font size 8
+ menu font color $dddddd
+ menu font name lucida console
+ menu font BGColor %MapWaterColor
+ menu delete SOSRegions
+ for %_ 1 %_sosregion_cnt
+  {
+  set %1 %_sosregion_x1_ . %_ / 16 - 3
+  set %2 %_sosregion_y1_ . %_ / 16 - 3
+  set %3 %_sosregion_x2_ . %_ / 16 - %1 + 6
+  set %4 %_sosregion_y2_ . %_ / 16 - %2 + 6
+  set %5 Region . %_
+  menu shape %5 %1 %2 %3 %4 3 7 1 %MapRegionColor 2 0
+  set %1 %1 + 5 ; draw region # with "border"
+  set %2 %2 + 4
+  set %3 %1 + 2
+  set %4 %2 + 2
+  menu font color black
+  for %5 %1 %3
+  {
+  for %6 %2 %4
+   {
+   menu text SOSRegions %5 %6 %_
+   }
+  }
+ set %1 %1 + 1
+ set %2 %2 + 1
+ menu font color %MapRegionTColor
+ menu text SOSRegions %1 %2 %_
+ }
+return
+
+sub redrawSOSRegions_Alexandria
+ menu font align left
+ menu font style
+ menu font size 8
+ menu font color $dddddd
+ menu font name lucida console
+ menu delete SOSRegions
+ for %_ 1 %_sosregion_cnt
+  {
+  set %1 %_sosregion_x1_ . %_ / 16
+  set %2 %_sosregion_y1_ . %_ / 16
+  set %3 %_sosregion_x2_ . %_ / 16 - %1 + 1
+  set %4 %_sosregion_y2_ . %_ / 16 - %2 + 1
+  menu shape SOSRegions , #systime %1 %2 %3 %4 3 7 1 %MapRegionColor 2 0
+  set %1 %1 + 5 ; draw region # with "border"
+  set %2 %2 + 4
+  set %3 %1 + 2
+  set %4 %2 + 2
+  menu font color black
+  for %5 %1 %3
+   {
+   for %6 %2 %4
+    {
+    menu text SOSRegions %5 %6 %_
+    }
+   }
+  set %1 %1 + 1
+  set %2 %2 + 1
+  menu font color %MapRegionTColor
+  menu text SOSRegions %1 %2 %_
+  }
+return
+
+sub contpos
+ if #contposx = %1 && #contposy = %2
+  return
+ set %5 #cursorx
+ set %6 #cursory
+ if %0 = 2
+  {
+  set %3 50
+  set %4 20
+  }
+ set %1 %1 + %3
+ set %2 %2 + %4
+ set %3 #contposx + %3
+ set %4 #contposy + %4
+ click %3 %4 g f mc
+ for !_ 1 1
+  {
+  click %1 %2 n f mc
+  wait 3
+  if #cursorx <> %1 || #cursory <> %2
+   set !_ 0
+  }
+ click %1 %2 p f mc
+ click %5 %6 n f mc
+return
+
+sub getSOSInfo
+ if %shardType <> OSI
+  {
+  if %shardtype = Odessa
+   {
+   set !xorigin %1 + 112
+   set !yorigin %2 + 51
+   set !xpos %1 + 102
+   set !ypos %2 + 59
+   ;set !ycheck %2 + 245
+   }
+  else
+   {
+   set !xorigin %1 + 35
+   set !yorigin %2 + 240
+   set !xpos %1 + 71
+   set !ypos %2 + 270
+   ;set !ycheck %2 + 245
+   }
+  set !xextent !xorigin + 150
+  set !sos_coords
+  savepix !xpos !ypos 1
+  set !SOSTextColor #pixcol
+  while !xorigin < !xextent
+   {
+   if _ , %ShardType , _ in _Pandora_Odyssey_
+    gosub getchar !xorigin !yorigin = !SOSTextColor number
+   else
+    gosub readchar !xorigin !yorigin = !SOSTextColor ; number
+   if #result <> #spc 1
+    set !sos_coords !sos_coords , #result
+   set !xorigin !xorigin + %1
+   }
+  }
+ else
+  {
+;  if %shardtype = Pandora
+;   {
+;   ; coordinate text: x offset 30 y offset 240
+;   }
+
+; store gumps position
+
+  set !contposx %1
+  set !contposy %2
+
+; get number of lines on gump
+
+  set !offsetx !contposx + 27
+  set !offsety !contposy + 50
+  for !linecnt 1 20
+   {
+   gosub GetChar !offsetx !offsety = 524288 number
+   if %2 = #spc
+    {
+    set !temp !offsetx + 8
+    gosub GetChar !temp !offsety = 524288 number
+    }
+   if %2 = #spc
+    {
+    set !linecnt !linecnt - 1
+    break
+    }
+   set !offsety !offsety + 18
+   }
+
+; load text from gump
+
+  set !gumptext
+  set !labeltext
+  set !startline 1 ;!linecnt - 2
+  set !offsetx !contposx + 27
+  set !offsety !contposy + 32 + !startline * 18
+  for !lineidx !startline !linecnt
+   {
+   gosub GetText !offsetx !offsety = 524288 number 200
+   set !gumptext !gumptext , #strres , #spc
+   set !labeltext !labeltext , #strres , $
+   set !offsety !offsety + 18
+   }
+
+  ;menu delete EUOLabel9
+  ;menu Text EUOLabel9 328 118 !labeltext
+
+; extract coordinates from gumptext
+
+  str len !gumptext
+  set !textlen #strres
+  for !startpos 1 !textlen
+   {
+   ; for all coords not starting with 0
+   str mid !gumptext !startpos 1
+   str pos 123456789 #strres
+   if #strres > 0
+    break
+   ; for coords starting with 0
+   str mid !gumptext !startpos 3
+   if #strres = 0o , #spc
+    {
+    set !temp !startpos + 3
+    str mid !gumptext !temp 1
+    str pos 0123456789 #strres
+    if #strres > 0
+     break
+    }
+   }
+  for !endpos !startpos !textlen
+   {
+   str mid !gumptext !endpos 1
+   set #strres #strres , #spc
+   if #strres = W , #spc || #strres = E , #spc
+    {
+    set !endpos !endpos + 1
+    break
+    }
+   }
+  set !endpos !endpos - !startpos
+  str mid !gumptext !startpos !endpos
+  set !sos_coords #strres
+  }
+
+ set %1 !sos_coords
+
+ str pos %1 o
+ set #strres #strres - 1
+ str left %1 #strres
+ set !sos_worldy #strres * 60
+ str pos %1 o
+ str del %1 1 #strres
+ set %1 #strres
+ str pos %1 '
+ set #strres #strres - 1
+ str left %1 #strres
+ set !sos_worldy !sos_worldy + #strres
+ str pos %1 ,
+ str del %1 1 #strres
+ set %1 #strres
+ str pos %1 o
+ set #strres #strres - 1
+ str left %1 #strres
+ set !sos_worldx #strres * 60
+ str pos %1 o
+ str del %1 1 #strres
+ set %1 #strres
+ str pos %1 '
+ set #strres #strres - 1
+ str left %1 #strres
+ set !sos_worldx !sos_worldx + #strres
+ set !sos_worldy !sos_worldy , 0000000 / 52734375
+ if n in !sos_coords 3
+  set !sos_worldy 1624 - !sos_worldy
+ if !sos_worldy < 0
+  set !sos_worldy !sos_worldy + 4096
+ if s in !sos_coords 3
+  set !sos_worldy 1624 + !sos_worldy
+ if !sos_worldy >= 4096
+  set !sos_worldy !sos_worldy - 4096
+ set !sos_worldx !sos_worldx , 00000 / 421875
+ if w in !sos_coords 3
+  set !sos_worldx 1323 - !sos_worldx
+ if !sos_worldx < 0
+  set !sos_worldx !sos_worldx + 5120
+ if e in !sos_coords 3
+  set !sos_worldx 1323 + !sos_worldx
+ if !sos_worldx >= 5120
+  set !sos_worldx !sos_worldx - 5120
+
+;setuotitle #lobjectid !sos_worldx !sos_worldy !sos_coords
+return
+
+;--------- EasyUO Menu Designer Code Begin ---------
+sub showsubmenudesignarea
+ menu Clear
+ menu Window Title sub menu design area
+ menu Window Color BtnFace
+ menu Window Size 504 280
+ menu Font Transparent #true
+ menu Font Align Right
+ menu Font Name MS Sans Serif
+ menu Font Size 8
+ menu Font Style
+ menu Font Color WindowText
+ menu Font Align Left
+ menu Text EUOLabel1 328 8 Select the sos region number(s) to
+ menu Text EUOLabel2 328 20 you want written to a UOAM .map file
+ menu Text EUOLabel3 328 32 then click the "ok" button and the
+ menu Text EUOLabel4 328 44 script will create your file.
+ menu Button EUOButton1 332 256 43 17 ok
+ menu Button EUOButton2 380 256 75 17 cancel
+ menu Button EUOButton3 332 232 51 21 select all
+ menu Button EUOButton4 388 232 67 21 none
+ menu Show
+return
+
+sub showsosmastermenu
+ menu Clear
+ menu Window Title Kal In Ex - MIB, SOS
+ menu Window Color BtnFace
+ menu Window Size 504 280
+ menu Font Transparent #true
+ menu Font Align Right
+ menu Shape status_bkgnd 0 255 319 25 3 7 1 Black 7 White
+ menu Shape worldmap_bkgnd 0 0 319 255 3 7 1 Black 7 %MapWaterColor
+ menu Font Name MS Sans Serif
+ menu Font Size 8
+ menu Font Style b
+ menu Font Color WindowText
+ menu Font Align Left
+ menu Text status_label 4 260 Status:
+ menu Font Style
+ menu Text status 52 260 status
+ ; menu Button saveSOSData 4 260 75 17 save
+ menu Show
+return
+
+;--------- EasyUO Menu Designer Code End ---------
+sub WorldMap
+ ;==================================
+ ; Script Name: SOS Master (alpha)
+ ; Author: Kal In Ex
+ ; Version: 2.0
+ ; Client Tested with: 4.0.10b
+ ; EUO version tested with: 1.42.00a5
+ ; Shard OSI / FS: OSI
+ ; Revision Date: July 31, 2006
+ ; Public Release: November 25, 2004
+ ; Purpose: "worldmap.txt" of main script
+ ; Copyright: 2004, 2005, 2006 Kal In Ex
+ ;==================================
+
+ set %1 menu
+ set %2 image
+ set %3 line
+ set %4 %MapLandColor ; land
+ set %5 %MapMountainColor ; rock
+ set %6 %MapServerLColor ; server lines
+
+ for !x 0 318
+  {
+  menu image create bkgnd_ , !x !x 0 1 255
+  ;menu image floodfill bkgnd_ , !x 0 0 red
+  }
+ menu %2 %3 bkgnd_8 0 92 0 95 %4
+ menu %2 %3 bkgnd_9 0 85 0 87 %4
+ menu %2 %3 bkgnd_9 0 91 0 95 %4
+ menu %2 %3 bkgnd_10 0 84 0 89 %4
+ menu %2 %3 bkgnd_10 0 91 0 95 %4
+ menu %2 %3 bkgnd_11 0 84 0 95 %4
+ menu %2 %3 bkgnd_12 0 83 0 95 %4
+ menu %2 %3 bkgnd_13 0 47 0 49 %4
+ menu %2 %3 bkgnd_13 0 83 0 95 %4
+ menu %2 %3 bkgnd_14 0 45 0 52 %4
+ menu %2 %3 bkgnd_14 0 83 0 95 %4
+ menu %2 %3 bkgnd_15 0 45 0 52 %4
+ menu %2 %3 bkgnd_15 0 64 0 65 %4
+ menu %2 %3 bkgnd_15 0 83 0 95 %4
+ menu %2 %3 bkgnd_16 0 45 0 53 %4
+ menu %2 %3 bkgnd_16 0 63 0 65 %4
+ menu %2 %3 bkgnd_16 0 84 0 94 %4
+ menu %2 %3 bkgnd_17 0 45 0 53 %4
+ menu %2 %3 bkgnd_17 0 62 0 67 %4
+ menu %2 %3 bkgnd_17 0 84 0 94 %4
+ menu %2 %3 bkgnd_18 0 45 0 53 %4
+ menu %2 %3 bkgnd_18 0 59 0 67 %4
+ menu %2 %3 bkgnd_18 0 84 0 94 %4
+ menu %2 %3 bkgnd_19 0 46 0 54 %4
+ menu %2 %3 bkgnd_19 0 59 0 66 %4
+ menu %2 %3 bkgnd_19 0 84 0 95 %4
+ menu %2 %3 bkgnd_20 0 45 0 54 %4
+ menu %2 %3 bkgnd_20 0 59 0 68 %4
+ menu %2 %3 bkgnd_20 0 76 0 79 %4
+ menu %2 %3 bkgnd_20 0 84 0 95 %4
+ menu %2 %3 bkgnd_21 0 45 0 54 %4
+ menu %2 %3 bkgnd_21 0 55 0 56 %4
+ menu %2 %3 bkgnd_21 0 59 0 68 %4
+ menu %2 %3 bkgnd_21 0 76 0 80 %4
+ menu %2 %3 bkgnd_21 0 81 0 99 %4
+ menu %2 %3 bkgnd_22 0 46 0 54 %4
+ menu %2 %3 bkgnd_22 0 55 0 58 %4
+ menu %2 %3 bkgnd_22 0 59 0 67 %4
+ menu %2 %3 bkgnd_22 0 75 0 100 %4
+ menu %2 %3 bkgnd_23 0 47 0 66 %4
+ menu %2 %3 bkgnd_23 0 73 0 100 %4
+ menu %2 %3 bkgnd_24 0 47 0 53 %4
+ menu %2 %3 bkgnd_24 0 54 0 67 %4
+ menu %2 %3 bkgnd_24 0 73 0 99 %4
+ menu %2 %3 bkgnd_24 0 102 0 105 %4
+ menu %2 %3 bkgnd_25 0 49 0 50 %4
+ menu %2 %3 bkgnd_25 0 56 0 68 %4
+ menu %2 %3 bkgnd_25 0 73 0 106 %4
+ menu %2 %3 bkgnd_26 0 56 0 68 %4
+ menu %2 %3 bkgnd_26 0 73 0 107 %4
+ menu %2 %3 bkgnd_27 0 51 0 67 %4
+ menu %2 %3 bkgnd_27 0 76 0 107 %4
+ menu %2 %3 bkgnd_28 0 51 0 66 %4
+ menu %2 %3 bkgnd_28 0 69 0 72 %4
+ menu %2 %3 bkgnd_28 0 78 0 107 %4
+ menu %2 %3 bkgnd_28 0 128 0 130 %4
+ menu %2 %3 bkgnd_29 0 50 0 65 %4
+ menu %2 %3 bkgnd_29 0 67 0 72 %4
+ menu %2 %3 bkgnd_29 0 74 0 75 %4
+ menu %2 %3 bkgnd_29 0 79 0 84 %4
+ menu %2 %3 bkgnd_29 0 85 0 107 %4
+ menu %2 %3 bkgnd_29 0 128 0 133 %4
+ menu %2 %3 bkgnd_30 0 50 0 64 %4
+ menu %2 %3 bkgnd_30 0 67 0 76 %4
+ menu %2 %3 bkgnd_30 0 83 0 84 %4
+ menu %2 %3 bkgnd_30 0 85 0 107 %4
+ menu %2 %3 bkgnd_30 0 127 0 133 %4
+ menu %2 %3 bkgnd_31 0 50 0 78 %4
+ menu %2 %3 bkgnd_31 0 85 0 107 %4
+ menu %2 %3 bkgnd_31 0 126 0 129 %4
+ menu %2 %3 bkgnd_31 0 130 0 132 %4
+ menu %2 %3 bkgnd_32 0 50 0 82 %4
+ menu %2 %3 bkgnd_32 0 85 0 107 %4
+ menu %2 %3 bkgnd_32 0 126 0 128 %4
+ menu %2 %3 bkgnd_33 0 51 0 82 %4
+ menu %2 %3 bkgnd_33 0 85 0 105 %4
+ menu %2 %3 bkgnd_33 0 131 0 134 %4
+ menu %2 %3 bkgnd_33 0 139 0 140 %4
+ menu %2 %3 bkgnd_34 0 49 0 84 %4
+ menu %2 %3 bkgnd_34 0 87 0 106 %4
+ menu %2 %3 bkgnd_34 0 129 0 140 %4
+ menu %2 %3 bkgnd_35 0 49 0 86 %4
+ menu %2 %3 bkgnd_35 0 89 0 106 %4
+ menu %2 %3 bkgnd_35 0 129 0 141 %4
+ menu %2 %3 bkgnd_36 0 49 0 50 %4
+ menu %2 %3 bkgnd_36 0 51 0 110 %4
+ menu %2 %3 bkgnd_36 0 129 0 142 %4
+ menu %2 %3 bkgnd_37 0 49 0 55 %4
+ menu %2 %3 bkgnd_37 0 56 0 110 %4
+ menu %2 %3 bkgnd_37 0 130 0 144 %4
+ menu %2 %3 bkgnd_38 0 50 0 111 %4
+ menu %2 %3 bkgnd_38 0 130 0 144 %4
+ menu %2 %3 bkgnd_39 0 47 0 48 %4
+ menu %2 %3 bkgnd_39 0 50 0 112 %4
+ menu %2 %3 bkgnd_39 0 130 0 144 %4
+ menu %2 %3 bkgnd_40 0 47 0 112 %4
+ menu %2 %3 bkgnd_40 0 115 0 116 %4
+ menu %2 %3 bkgnd_40 0 129 0 142 %4
+ menu %2 %3 bkgnd_41 0 46 0 109 %4
+ menu %2 %3 bkgnd_41 0 114 0 116 %4
+ menu %2 %3 bkgnd_41 0 129 0 140 %4
+ menu %2 %3 bkgnd_42 0 45 0 108 %4
+ menu %2 %3 bkgnd_42 0 114 0 116 %4
+ menu %2 %3 bkgnd_42 0 129 0 138 %4
+ menu %2 %3 bkgnd_43 0 40 0 41 %4
+ menu %2 %3 bkgnd_43 0 43 0 108 %4
+ menu %2 %3 bkgnd_43 0 114 0 116 %4
+ menu %2 %3 bkgnd_43 0 131 0 137 %4
+ menu %2 %3 bkgnd_44 0 40 0 108 %4
+ menu %2 %3 bkgnd_44 0 114 0 115 %4
+ menu %2 %3 bkgnd_44 0 116 0 117 %4
+ menu %2 %3 bkgnd_44 0 119 0 120 %4
+ menu %2 %3 bkgnd_45 0 38 0 109 %4
+ menu %2 %3 bkgnd_45 0 113 0 123 %4
+ menu %2 %3 bkgnd_45 0 129 0 131 %4
+ menu %2 %3 bkgnd_45 0 133 0 134 %4
+ menu %2 %3 bkgnd_45 0 136 0 139 %4
+ menu %2 %3 bkgnd_46 0 37 0 110 %4
+ menu %2 %3 bkgnd_46 0 112 0 125 %4
+ menu %2 %3 bkgnd_46 0 129 0 143 %4
+ menu %2 %3 bkgnd_46 0 146 0 148 %4
+ menu %2 %3 bkgnd_47 0 35 0 110 %4
+ menu %2 %3 bkgnd_47 0 112 0 126 %4
+ menu %2 %3 bkgnd_47 0 129 0 148 %4
+ menu %2 %3 bkgnd_48 0 35 0 110 %4
+ menu %2 %3 bkgnd_48 0 112 0 126 %4
+ menu %2 %3 bkgnd_48 0 131 0 148 %4
+ menu %2 %3 bkgnd_49 0 28 0 30 %4
+ menu %2 %3 bkgnd_49 0 35 0 111 %4
+ menu %2 %3 bkgnd_49 0 112 0 126 %4
+ menu %2 %3 bkgnd_49 0 132 0 149 %4
+ menu %2 %3 bkgnd_50 0 28 0 32 %4
+ menu %2 %3 bkgnd_50 0 33 0 126 %4
+ menu %2 %3 bkgnd_50 0 132 0 149 %4
+ menu %2 %3 bkgnd_51 0 23 0 24 %4
+ menu %2 %3 bkgnd_51 0 27 0 126 %4
+ menu %2 %3 bkgnd_51 0 132 0 151 %4
+ menu %2 %3 bkgnd_52 0 19 0 20 %4
+ menu %2 %3 bkgnd_52 0 22 0 26 %4
+ menu %2 %3 bkgnd_52 0 27 0 126 %4
+ menu %2 %3 bkgnd_52 0 131 0 132 %4
+ menu %2 %3 bkgnd_52 0 133 0 152 %4
+ menu %2 %3 bkgnd_53 0 19 0 20 %4
+ menu %2 %3 bkgnd_53 0 21 0 127 %4
+ menu %2 %3 bkgnd_53 0 129 0 154 %4
+ menu %2 %3 bkgnd_54 0 21 0 24 %4
+ menu %2 %3 bkgnd_54 0 25 0 127 %4
+ menu %2 %3 bkgnd_54 0 129 0 154 %4
+ menu %2 %3 bkgnd_55 0 27 0 127 %4
+ menu %2 %3 bkgnd_55 0 130 0 155 %4
+ menu %2 %3 bkgnd_56 0 30 0 128 %4
+ menu %2 %3 bkgnd_56 0 129 0 158 %4
+ menu %2 %3 bkgnd_57 0 21 0 22 %4
+ menu %2 %3 bkgnd_57 0 26 0 27 %4
+ menu %2 %3 bkgnd_57 0 33 0 159 %4
+ menu %2 %3 bkgnd_58 0 21 0 23 %4
+ menu %2 %3 bkgnd_58 0 25 0 163 %4
+ menu %2 %3 bkgnd_59 0 18 0 19 %4
+ menu %2 %3 bkgnd_59 0 20 0 164 %4
+ menu %2 %3 bkgnd_60 0 17 0 166 %4
+ menu %2 %3 bkgnd_61 0 17 0 168 %4
+ menu %2 %3 bkgnd_62 0 17 0 27 %4
+ menu %2 %3 bkgnd_62 0 28 0 170 %4
+ menu %2 %3 bkgnd_63 0 19 0 25 %4
+ menu %2 %3 bkgnd_63 0 29 0 171 %4
+ menu %2 %3 bkgnd_64 0 20 0 26 %4
+ menu %2 %3 bkgnd_64 0 29 0 172 %4
+ menu %2 %3 bkgnd_65 0 21 0 26 %4
+ menu %2 %3 bkgnd_65 0 29 0 173 %4
+ menu %2 %3 bkgnd_65 0 197 0 202 %4
+ menu %2 %3 bkgnd_66 0 22 0 26 %4
+ menu %2 %3 bkgnd_66 0 30 0 173 %4
+ menu %2 %3 bkgnd_66 0 194 0 202 %4
+ menu %2 %3 bkgnd_66 0 218 0 219 %4
+ menu %2 %3 bkgnd_67 0 23 0 24 %4
+ menu %2 %3 bkgnd_67 0 31 0 44 %4
+ menu %2 %3 bkgnd_67 0 45 0 172 %4
+ menu %2 %3 bkgnd_67 0 194 0 201 %4
+ menu %2 %3 bkgnd_67 0 217 0 219 %4
+ menu %2 %3 bkgnd_68 0 23 0 24 %4
+ menu %2 %3 bkgnd_68 0 31 0 172 %4
+ menu %2 %3 bkgnd_68 0 186 0 188 %4
+ menu %2 %3 bkgnd_68 0 193 0 201 %4
+ menu %2 %3 bkgnd_68 0 217 0 220 %4
+ menu %2 %3 bkgnd_69 0 31 0 171 %4
+ menu %2 %3 bkgnd_69 0 175 0 179 %4
+ menu %2 %3 bkgnd_69 0 185 0 191 %4
+ menu %2 %3 bkgnd_69 0 193 0 202 %4
+ menu %2 %3 bkgnd_69 0 215 0 221 %4
+ menu %2 %3 bkgnd_69 0 222 0 226 %4
+ menu %2 %3 bkgnd_69 0 229 0 230 %4
+ menu %2 %3 bkgnd_70 0 10 0 13 %4
+ menu %2 %3 bkgnd_70 0 31 0 180 %4
+ menu %2 %3 bkgnd_70 0 184 0 191 %4
+ menu %2 %3 bkgnd_70 0 194 0 202 %4
+ menu %2 %3 bkgnd_70 0 211 0 227 %4
+ menu %2 %3 bkgnd_70 0 229 0 231 %4
+ menu %2 %3 bkgnd_71 0 10 0 15 %4
+ menu %2 %3 bkgnd_71 0 31 0 181 %4
+ menu %2 %3 bkgnd_71 0 183 0 189 %4
+ menu %2 %3 bkgnd_71 0 194 0 197 %4
+ menu %2 %3 bkgnd_71 0 200 0 201 %4
+ menu %2 %3 bkgnd_71 0 211 0 231 %4
+ menu %2 %3 bkgnd_72 0 10 0 16 %4
+ menu %2 %3 bkgnd_72 0 32 0 33 %4
+ menu %2 %3 bkgnd_72 0 34 0 54 %4
+ menu %2 %3 bkgnd_72 0 55 0 57 %4
+ menu %2 %3 bkgnd_72 0 60 0 188 %4
+ menu %2 %3 bkgnd_72 0 212 0 231 %4
+ menu %2 %3 bkgnd_73 0 10 0 20 %4
+ menu %2 %3 bkgnd_73 0 36 0 56 %4
+ menu %2 %3 bkgnd_73 0 58 0 188 %4
+ menu %2 %3 bkgnd_73 0 213 0 230 %4
+ menu %2 %3 bkgnd_74 0 8 0 21 %4
+ menu %2 %3 bkgnd_74 0 31 0 37 %4
+ menu %2 %3 bkgnd_74 0 38 0 56 %4
+ menu %2 %3 bkgnd_74 0 57 0 187 %4
+ menu %2 %3 bkgnd_74 0 215 0 229 %4
+ menu %2 %3 bkgnd_75 0 8 0 22 %4
+ menu %2 %3 bkgnd_75 0 30 0 55 %4
+ menu %2 %3 bkgnd_75 0 57 0 177 %4
+ menu %2 %3 bkgnd_75 0 180 0 188 %4
+ menu %2 %3 bkgnd_75 0 215 0 228 %4
+ menu %2 %3 bkgnd_76 0 9 0 10 %4
+ menu %2 %3 bkgnd_76 0 11 0 23 %4
+ menu %2 %3 bkgnd_76 0 27 0 51 %4
+ menu %2 %3 bkgnd_76 0 57 0 172 %4
+ menu %2 %3 bkgnd_76 0 173 0 178 %4
+ menu %2 %3 bkgnd_76 0 180 0 182 %4
+ menu %2 %3 bkgnd_76 0 183 0 188 %4
+ menu %2 %3 bkgnd_76 0 216 0 217 %4
+ menu %2 %3 bkgnd_76 0 222 0 227 %4
+ menu %2 %3 bkgnd_77 0 10 0 16 %4
+ menu %2 %3 bkgnd_77 0 18 0 42 %4
+ menu %2 %3 bkgnd_77 0 45 0 51 %4
+ menu %2 %3 bkgnd_77 0 53 0 54 %4
+ menu %2 %3 bkgnd_77 0 57 0 173 %4
+ menu %2 %3 bkgnd_77 0 175 0 178 %4
+ menu %2 %3 bkgnd_77 0 180 0 181 %4
+ menu %2 %3 bkgnd_77 0 183 0 187 %4
+ menu %2 %3 bkgnd_77 0 223 0 225 %4
+ menu %2 %3 bkgnd_78 0 10 0 15 %4
+ menu %2 %3 bkgnd_78 0 18 0 31 %4
+ menu %2 %3 bkgnd_78 0 37 0 41 %4
+ menu %2 %3 bkgnd_78 0 44 0 46 %4
+ menu %2 %3 bkgnd_78 0 48 0 51 %4
+ menu %2 %3 bkgnd_78 0 53 0 54 %4
+ menu %2 %3 bkgnd_78 0 57 0 173 %4
+ menu %2 %3 bkgnd_78 0 176 0 178 %4
+ menu %2 %3 bkgnd_78 0 183 0 188 %4
+ menu %2 %3 bkgnd_78 0 232 0 233 %4
+ menu %2 %3 bkgnd_79 0 10 0 13 %4
+ menu %2 %3 bkgnd_79 0 19 0 30 %4
+ menu %2 %3 bkgnd_79 0 33 0 34 %4
+ menu %2 %3 bkgnd_79 0 38 0 41 %4
+ menu %2 %3 bkgnd_79 0 44 0 46 %4
+ menu %2 %3 bkgnd_79 0 47 0 51 %4
+ menu %2 %3 bkgnd_79 0 53 0 54 %4
+ menu %2 %3 bkgnd_79 0 56 0 174 %4
+ menu %2 %3 bkgnd_79 0 184 0 189 %4
+ menu %2 %3 bkgnd_79 0 232 0 235 %4
+ menu %2 %3 bkgnd_80 0 10 0 13 %4
+ menu %2 %3 bkgnd_80 0 18 0 30 %4
+ menu %2 %3 bkgnd_80 0 33 0 35 %4
+ menu %2 %3 bkgnd_80 0 37 0 43 %4
+ menu %2 %3 bkgnd_80 0 47 0 50 %4
+ menu %2 %3 bkgnd_80 0 55 0 174 %4
+ menu %2 %3 bkgnd_80 0 184 0 186 %4
+ menu %2 %3 bkgnd_80 0 187 0 189 %4
+ menu %2 %3 bkgnd_80 0 231 0 235 %4
+ menu %2 %3 bkgnd_81 0 18 0 30 %4
+ menu %2 %3 bkgnd_81 0 33 0 35 %4
+ menu %2 %3 bkgnd_81 0 37 0 43 %4
+ menu %2 %3 bkgnd_81 0 45 0 50 %4
+ menu %2 %3 bkgnd_81 0 54 0 173 %4
+ menu %2 %3 bkgnd_81 0 178 0 179 %4
+ menu %2 %3 bkgnd_81 0 196 0 200 %4
+ menu %2 %3 bkgnd_81 0 228 0 236 %4
+ menu %2 %3 bkgnd_82 0 17 0 30 %4
+ menu %2 %3 bkgnd_82 0 35 0 43 %4
+ menu %2 %3 bkgnd_82 0 45 0 48 %4
+ menu %2 %3 bkgnd_82 0 53 0 172 %4
+ menu %2 %3 bkgnd_82 0 178 0 180 %4
+ menu %2 %3 bkgnd_82 0 196 0 200 %4
+ menu %2 %3 bkgnd_82 0 228 0 237 %4
+ menu %2 %3 bkgnd_83 0 14 0 31 %4
+ menu %2 %3 bkgnd_83 0 32 0 43 %4
+ menu %2 %3 bkgnd_83 0 46 0 47 %4
+ menu %2 %3 bkgnd_83 0 51 0 174 %4
+ menu %2 %3 bkgnd_83 0 177 0 180 %4
+ menu %2 %3 bkgnd_83 0 184 0 187 %4
+ menu %2 %3 bkgnd_83 0 191 0 200 %4
+ menu %2 %3 bkgnd_83 0 229 0 237 %4
+ menu %2 %3 bkgnd_84 0 14 0 42 %4
+ menu %2 %3 bkgnd_84 0 51 0 182 %4
+ menu %2 %3 bkgnd_84 0 184 0 200 %4
+ menu %2 %3 bkgnd_84 0 229 0 237 %4
+ menu %2 %3 bkgnd_84 0 238 0 244 %4
+ menu %2 %3 bkgnd_85 0 15 0 23 %4
+ menu %2 %3 bkgnd_85 0 24 0 36 %4
+ menu %2 %3 bkgnd_85 0 39 0 40 %4
+ menu %2 %3 bkgnd_85 0 48 0 49 %4
+ menu %2 %3 bkgnd_85 0 50 0 107 %4
+ menu %2 %3 bkgnd_85 0 108 0 200 %4
+ menu %2 %3 bkgnd_85 0 230 0 244 %4
+ menu %2 %3 bkgnd_86 0 15 0 23 %4
+ menu %2 %3 bkgnd_86 0 24 0 26 %4
+ menu %2 %3 bkgnd_86 0 29 0 36 %4
+ menu %2 %3 bkgnd_86 0 47 0 200 %4
+ menu %2 %3 bkgnd_86 0 230 0 245 %4
+ menu %2 %3 bkgnd_87 0 14 0 22 %4
+ menu %2 %3 bkgnd_87 0 25 0 27 %4
+ menu %2 %3 bkgnd_87 0 31 0 35 %4
+ menu %2 %3 bkgnd_87 0 47 0 200 %4
+ menu %2 %3 bkgnd_87 0 231 0 245 %4
+ menu %2 %3 bkgnd_87 0 250 0 253 %4
+ menu %2 %3 bkgnd_88 0 13 0 21 %4
+ menu %2 %3 bkgnd_88 0 24 0 28 %4
+ menu %2 %3 bkgnd_88 0 32 0 34 %4
+ menu %2 %3 bkgnd_88 0 47 0 111 %4
+ menu %2 %3 bkgnd_88 0 112 0 157 %4
+ menu %2 %3 bkgnd_88 0 158 0 200 %4
+ menu %2 %3 bkgnd_88 0 229 0 244 %4
+ menu %2 %3 bkgnd_88 0 249 0 253 %4
+ menu %2 %3 bkgnd_89 0 13 0 20 %4
+ menu %2 %3 bkgnd_89 0 24 0 28 %4
+ menu %2 %3 bkgnd_89 0 47 0 111 %4
+ menu %2 %3 bkgnd_89 0 112 0 136 %4
+ menu %2 %3 bkgnd_89 0 137 0 201 %4
+ menu %2 %3 bkgnd_89 0 228 0 244 %4
+ menu %2 %3 bkgnd_89 0 248 0 253 %4
+ menu %2 %3 bkgnd_90 0 12 0 18 %4
+ menu %2 %3 bkgnd_90 0 24 0 27 %4
+ menu %2 %3 bkgnd_90 0 46 0 136 %4
+ menu %2 %3 bkgnd_90 0 137 0 202 %4
+ menu %2 %3 bkgnd_90 0 227 0 245 %4
+ menu %2 %3 bkgnd_90 0 248 0 252 %4
+ menu %2 %3 bkgnd_91 0 11 0 17 %4
+ menu %2 %3 bkgnd_91 0 46 0 109 %4
+ menu %2 %3 bkgnd_91 0 110 0 112 %4
+ menu %2 %3 bkgnd_91 0 113 0 115 %4
+ menu %2 %3 bkgnd_91 0 117 0 153 %4
+ menu %2 %3 bkgnd_91 0 154 0 203 %4
+ menu %2 %3 bkgnd_91 0 226 0 245 %4
+ menu %2 %3 bkgnd_91 0 248 0 253 %4
+ menu %2 %3 bkgnd_92 0 10 0 18 %4
+ menu %2 %3 bkgnd_92 0 44 0 45 %4
+ menu %2 %3 bkgnd_92 0 46 0 92 %4
+ menu %2 %3 bkgnd_92 0 94 0 110 %4
+ menu %2 %3 bkgnd_92 0 118 0 203 %4
+ menu %2 %3 bkgnd_92 0 226 0 227 %4
+ menu %2 %3 bkgnd_92 0 230 0 244 %4
+ menu %2 %3 bkgnd_92 0 249 0 253 %4
+ menu %2 %3 bkgnd_93 0 10 0 18 %4
+ menu %2 %3 bkgnd_93 0 40 0 41 %4
+ menu %2 %3 bkgnd_93 0 43 0 90 %4
+ menu %2 %3 bkgnd_93 0 95 0 110 %4
+ menu %2 %3 bkgnd_93 0 117 0 204 %4
+ menu %2 %3 bkgnd_93 0 230 0 234 %4
+ menu %2 %3 bkgnd_93 0 236 0 243 %4
+ menu %2 %3 bkgnd_93 0 249 0 253 %4
+ menu %2 %3 bkgnd_94 0 10 0 18 %4
+ menu %2 %3 bkgnd_94 0 39 0 88 %4
+ menu %2 %3 bkgnd_94 0 90 0 91 %4
+ menu %2 %3 bkgnd_94 0 95 0 110 %4
+ menu %2 %3 bkgnd_94 0 117 0 204 %4
+ menu %2 %3 bkgnd_94 0 230 0 233 %4
+ menu %2 %3 bkgnd_94 0 235 0 237 %4
+ menu %2 %3 bkgnd_94 0 238 0 240 %4
+ menu %2 %3 bkgnd_94 0 241 0 242 %4
+ menu %2 %3 bkgnd_94 0 249 0 251 %4
+ menu %2 %3 bkgnd_95 0 12 0 19 %4
+ menu %2 %3 bkgnd_95 0 39 0 86 %4
+ menu %2 %3 bkgnd_95 0 89 0 92 %4
+ menu %2 %3 bkgnd_95 0 94 0 111 %4
+ menu %2 %3 bkgnd_95 0 117 0 204 %4
+ menu %2 %3 bkgnd_95 0 230 0 232 %4
+ menu %2 %3 bkgnd_95 0 235 0 237 %4
+ menu %2 %3 bkgnd_95 0 249 0 251 %4
+ menu %2 %3 bkgnd_96 0 13 0 19 %4
+ menu %2 %3 bkgnd_96 0 35 0 36 %4
+ menu %2 %3 bkgnd_96 0 39 0 85 %4
+ menu %2 %3 bkgnd_96 0 89 0 92 %4
+ menu %2 %3 bkgnd_96 0 94 0 113 %4
+ menu %2 %3 bkgnd_96 0 118 0 204 %4
+ menu %2 %3 bkgnd_96 0 249 0 251 %4
+ menu %2 %3 bkgnd_97 0 13 0 19 %4
+ menu %2 %3 bkgnd_97 0 35 0 36 %4
+ menu %2 %3 bkgnd_97 0 39 0 84 %4
+ menu %2 %3 bkgnd_97 0 89 0 92 %4
+ menu %2 %3 bkgnd_97 0 94 0 113 %4
+ menu %2 %3 bkgnd_97 0 118 0 130 %4
+ menu %2 %3 bkgnd_97 0 131 0 205 %4
+ menu %2 %3 bkgnd_98 0 13 0 14 %4
+ menu %2 %3 bkgnd_98 0 31 0 37 %4
+ menu %2 %3 bkgnd_98 0 39 0 84 %4
+ menu %2 %3 bkgnd_98 0 94 0 96 %4
+ menu %2 %3 bkgnd_98 0 97 0 113 %4
+ menu %2 %3 bkgnd_98 0 118 0 122 %4
+ menu %2 %3 bkgnd_98 0 123 0 125 %4
+ menu %2 %3 bkgnd_98 0 128 0 130 %4
+ menu %2 %3 bkgnd_98 0 131 0 207 %4
+ menu %2 %3 bkgnd_99 0 30 0 84 %4
+ menu %2 %3 bkgnd_99 0 92 0 111 %4
+ menu %2 %3 bkgnd_99 0 117 0 121 %4
+ menu %2 %3 bkgnd_99 0 124 0 125 %4
+ menu %2 %3 bkgnd_99 0 128 0 129 %4
+ menu %2 %3 bkgnd_99 0 131 0 132 %4
+ menu %2 %3 bkgnd_99 0 133 0 212 %4
+ menu %2 %3 bkgnd_99 0 214 0 216 %4
+ menu %2 %3 bkgnd_100 0 30 0 112 %4
+ menu %2 %3 bkgnd_100 0 117 0 120 %4
+ menu %2 %3 bkgnd_100 0 132 0 217 %4
+ menu %2 %3 bkgnd_100 0 220 0 222 %4
+ menu %2 %3 bkgnd_101 0 16 0 20 %4
+ menu %2 %3 bkgnd_101 0 29 0 112 %4
+ menu %2 %3 bkgnd_101 0 118 0 119 %4
+ menu %2 %3 bkgnd_101 0 129 0 217 %4
+ menu %2 %3 bkgnd_101 0 220 0 223 %4
+ menu %2 %3 bkgnd_102 0 15 0 20 %4
+ menu %2 %3 bkgnd_102 0 29 0 111 %4
+ menu %2 %3 bkgnd_102 0 129 0 213 %4
+ menu %2 %3 bkgnd_102 0 220 0 223 %4
+ menu %2 %3 bkgnd_103 0 15 0 19 %4
+ menu %2 %3 bkgnd_103 0 29 0 110 %4
+ menu %2 %3 bkgnd_103 0 127 0 128 %4
+ menu %2 %3 bkgnd_103 0 132 0 212 %4
+ menu %2 %3 bkgnd_103 0 220 0 224 %4
+ menu %2 %3 bkgnd_104 0 15 0 19 %4
+ menu %2 %3 bkgnd_104 0 29 0 108 %4
+ menu %2 %3 bkgnd_104 0 127 0 128 %4
+ menu %2 %3 bkgnd_104 0 135 0 214 %4
+ menu %2 %3 bkgnd_104 0 221 0 224 %4
+ menu %2 %3 bkgnd_105 0 15 0 19 %4
+ menu %2 %3 bkgnd_105 0 29 0 107 %4
+ menu %2 %3 bkgnd_105 0 124 0 125 %4
+ menu %2 %3 bkgnd_105 0 126 0 128 %4
+ menu %2 %3 bkgnd_105 0 135 0 138 %4
+ menu %2 %3 bkgnd_105 0 139 0 214 %4
+ menu %2 %3 bkgnd_105 0 221 0 224 %4
+ menu %2 %3 bkgnd_106 0 13 0 14 %4
+ menu %2 %3 bkgnd_106 0 15 0 18 %4
+ menu %2 %3 bkgnd_106 0 29 0 106 %4
+ menu %2 %3 bkgnd_106 0 123 0 127 %4
+ menu %2 %3 bkgnd_106 0 135 0 137 %4
+ menu %2 %3 bkgnd_106 0 139 0 213 %4
+ menu %2 %3 bkgnd_106 0 219 0 224 %4
+ menu %2 %3 bkgnd_107 0 13 0 18 %4
+ menu %2 %3 bkgnd_107 0 27 0 104 %4
+ menu %2 %3 bkgnd_107 0 122 0 127 %4
+ menu %2 %3 bkgnd_107 0 138 0 140 %4
+ menu %2 %3 bkgnd_107 0 141 0 213 %4
+ menu %2 %3 bkgnd_107 0 215 0 216 %4
+ menu %2 %3 bkgnd_107 0 218 0 223 %4
+ menu %2 %3 bkgnd_108 0 13 0 19 %4
+ menu %2 %3 bkgnd_108 0 27 0 102 %4
+ menu %2 %3 bkgnd_108 0 103 0 104 %4
+ menu %2 %3 bkgnd_108 0 122 0 127 %4
+ menu %2 %3 bkgnd_108 0 138 0 223 %4
+ menu %2 %3 bkgnd_109 0 14 0 20 %4
+ menu %2 %3 bkgnd_109 0 27 0 101 %4
+ menu %2 %3 bkgnd_109 0 124 0 128 %4
+ menu %2 %3 bkgnd_109 0 138 0 223 %4
+ menu %2 %3 bkgnd_110 0 13 0 20 %4
+ menu %2 %3 bkgnd_110 0 24 0 100 %4
+ menu %2 %3 bkgnd_110 0 125 0 128 %4
+ menu %2 %3 bkgnd_110 0 138 0 162 %4
+ menu %2 %3 bkgnd_110 0 164 0 222 %4
+ menu %2 %3 bkgnd_111 0 13 0 20 %4
+ menu %2 %3 bkgnd_111 0 23 0 100 %4
+ menu %2 %3 bkgnd_111 0 126 0 128 %4
+ menu %2 %3 bkgnd_111 0 135 0 161 %4
+ menu %2 %3 bkgnd_111 0 165 0 222 %4
+ menu %2 %3 bkgnd_112 0 14 0 20 %4
+ menu %2 %3 bkgnd_112 0 22 0 99 %4
+ menu %2 %3 bkgnd_112 0 135 0 161 %4
+ menu %2 %3 bkgnd_112 0 163 0 178 %4
+ menu %2 %3 bkgnd_112 0 179 0 221 %4
+ menu %2 %3 bkgnd_113 0 14 0 20 %4
+ menu %2 %3 bkgnd_113 0 22 0 99 %4
+ menu %2 %3 bkgnd_113 0 134 0 161 %4
+ menu %2 %3 bkgnd_113 0 162 0 220 %4
+ menu %2 %3 bkgnd_114 0 14 0 18 %4
+ menu %2 %3 bkgnd_114 0 20 0 99 %4
+ menu %2 %3 bkgnd_114 0 134 0 161 %4
+ menu %2 %3 bkgnd_114 0 162 0 220 %4
+ menu %2 %3 bkgnd_115 0 15 0 97 %4
+ menu %2 %3 bkgnd_115 0 130 0 131 %4
+ menu %2 %3 bkgnd_115 0 134 0 135 %4
+ menu %2 %3 bkgnd_115 0 138 0 161 %4
+ menu %2 %3 bkgnd_115 0 163 0 220 %4
+ menu %2 %3 bkgnd_116 0 15 0 98 %4
+ menu %2 %3 bkgnd_116 0 129 0 132 %4
+ menu %2 %3 bkgnd_116 0 138 0 161 %4
+ menu %2 %3 bkgnd_116 0 163 0 179 %4
+ menu %2 %3 bkgnd_116 0 180 0 220 %4
+ menu %2 %3 bkgnd_117 0 15 0 98 %4
+ menu %2 %3 bkgnd_117 0 129 0 132 %4
+ menu %2 %3 bkgnd_117 0 141 0 159 %4
+ menu %2 %3 bkgnd_117 0 163 0 220 %4
+ menu %2 %3 bkgnd_118 0 11 0 98 %4
+ menu %2 %3 bkgnd_118 0 129 0 134 %4
+ menu %2 %3 bkgnd_118 0 139 0 158 %4
+ menu %2 %3 bkgnd_118 0 163 0 181 %4
+ menu %2 %3 bkgnd_118 0 182 0 220 %4
+ menu %2 %3 bkgnd_119 0 10 0 42 %4
+ menu %2 %3 bkgnd_119 0 43 0 89 %4
+ menu %2 %3 bkgnd_119 0 92 0 98 %4
+ menu %2 %3 bkgnd_119 0 129 0 135 %4
+ menu %2 %3 bkgnd_119 0 139 0 158 %4
+ menu %2 %3 bkgnd_119 0 164 0 181 %4
+ menu %2 %3 bkgnd_119 0 182 0 188 %4
+ menu %2 %3 bkgnd_119 0 189 0 219 %4
+ menu %2 %3 bkgnd_120 0 4 0 5 %4
+ menu %2 %3 bkgnd_120 0 10 0 29 %4
+ menu %2 %3 bkgnd_120 0 32 0 89 %4
+ menu %2 %3 bkgnd_120 0 92 0 93 %4
+ menu %2 %3 bkgnd_120 0 96 0 98 %4
+ menu %2 %3 bkgnd_120 0 129 0 135 %4
+ menu %2 %3 bkgnd_120 0 143 0 153 %4
+ menu %2 %3 bkgnd_120 0 156 0 158 %4
+ menu %2 %3 bkgnd_120 0 164 0 181 %4
+ menu %2 %3 bkgnd_120 0 182 0 187 %4
+ menu %2 %3 bkgnd_120 0 190 0 218 %4
+ menu %2 %3 bkgnd_121 0 4 0 7 %4
+ menu %2 %3 bkgnd_121 0 10 0 30 %4
+ menu %2 %3 bkgnd_121 0 33 0 90 %4
+ menu %2 %3 bkgnd_121 0 129 0 135 %4
+ menu %2 %3 bkgnd_121 0 137 0 140 %4
+ menu %2 %3 bkgnd_121 0 142 0 153 %4
+ menu %2 %3 bkgnd_121 0 166 0 181 %4
+ menu %2 %3 bkgnd_121 0 182 0 187 %4
+ menu %2 %3 bkgnd_121 0 189 0 217 %4
+ menu %2 %3 bkgnd_122 0 3 0 8 %4
+ menu %2 %3 bkgnd_122 0 10 0 30 %4
+ menu %2 %3 bkgnd_122 0 33 0 91 %4
+ menu %2 %3 bkgnd_122 0 93 0 96 %4
+ menu %2 %3 bkgnd_122 0 129 0 132 %4
+ menu %2 %3 bkgnd_122 0 133 0 134 %4
+ menu %2 %3 bkgnd_122 0 137 0 140 %4
+ menu %2 %3 bkgnd_122 0 142 0 150 %4
+ menu %2 %3 bkgnd_122 0 152 0 153 %4
+ menu %2 %3 bkgnd_122 0 167 0 187 %4
+ menu %2 %3 bkgnd_122 0 189 0 216 %4
+ menu %2 %3 bkgnd_123 0 3 0 27 %4
+ menu %2 %3 bkgnd_123 0 28 0 29 %4
+ menu %2 %3 bkgnd_123 0 34 0 91 %4
+ menu %2 %3 bkgnd_123 0 92 0 97 %4
+ menu %2 %3 bkgnd_123 0 129 0 132 %4
+ menu %2 %3 bkgnd_123 0 138 0 150 %4
+ menu %2 %3 bkgnd_123 0 167 0 186 %4
+ menu %2 %3 bkgnd_123 0 189 0 215 %4
+ menu %2 %3 bkgnd_124 0 3 0 28 %4
+ menu %2 %3 bkgnd_124 0 34 0 98 %4
+ menu %2 %3 bkgnd_124 0 129 0 132 %4
+ menu %2 %3 bkgnd_124 0 139 0 149 %4
+ menu %2 %3 bkgnd_124 0 167 0 173 %4
+ menu %2 %3 bkgnd_124 0 174 0 185 %4
+ menu %2 %3 bkgnd_124 0 190 0 214 %4
+ menu %2 %3 bkgnd_125 0 3 0 28 %4
+ menu %2 %3 bkgnd_125 0 34 0 99 %4
+ menu %2 %3 bkgnd_125 0 125 0 126 %4
+ menu %2 %3 bkgnd_125 0 129 0 130 %4
+ menu %2 %3 bkgnd_125 0 139 0 150 %4
+ menu %2 %3 bkgnd_125 0 169 0 184 %4
+ menu %2 %3 bkgnd_125 0 191 0 214 %4
+ menu %2 %3 bkgnd_126 0 3 0 4 %4
+ menu %2 %3 bkgnd_126 0 5 0 27 %4
+ menu %2 %3 bkgnd_126 0 34 0 99 %4
+ menu %2 %3 bkgnd_126 0 121 0 122 %4
+ menu %2 %3 bkgnd_126 0 125 0 127 %4
+ menu %2 %3 bkgnd_126 0 136 0 137 %4
+ menu %2 %3 bkgnd_126 0 140 0 150 %4
+ menu %2 %3 bkgnd_126 0 169 0 184 %4
+ menu %2 %3 bkgnd_126 0 191 0 218 %4
+ menu %2 %3 bkgnd_127 0 1 0 27 %4
+ menu %2 %3 bkgnd_127 0 31 0 87 %4
+ menu %2 %3 bkgnd_127 0 96 0 98 %4
+ menu %2 %3 bkgnd_127 0 120 0 124 %4
+ menu %2 %3 bkgnd_127 0 125 0 128 %4
+ menu %2 %3 bkgnd_127 0 134 0 138 %4
+ menu %2 %3 bkgnd_127 0 140 0 141 %4
+ menu %2 %3 bkgnd_127 0 143 0 149 %4
+ menu %2 %3 bkgnd_127 0 169 0 183 %4
+ menu %2 %3 bkgnd_127 0 189 0 221 %4
+ menu %2 %3 bkgnd_128 0 1 0 27 %4
+ menu %2 %3 bkgnd_128 0 31 0 71 %4
+ menu %2 %3 bkgnd_128 0 74 0 83 %4
+ menu %2 %3 bkgnd_128 0 96 0 97 %4
+ menu %2 %3 bkgnd_128 0 120 0 128 %4
+ menu %2 %3 bkgnd_128 0 134 0 138 %4
+ menu %2 %3 bkgnd_128 0 143 0 149 %4
+ menu %2 %3 bkgnd_128 0 170 0 182 %4
+ menu %2 %3 bkgnd_128 0 189 0 224 %4
+ menu %2 %3 bkgnd_129 0 3 0 28 %4
+ menu %2 %3 bkgnd_129 0 31 0 71 %4
+ menu %2 %3 bkgnd_129 0 72 0 82 %4
+ menu %2 %3 bkgnd_129 0 120 0 128 %4
+ menu %2 %3 bkgnd_129 0 131 0 138 %4
+ menu %2 %3 bkgnd_129 0 142 0 149 %4
+ menu %2 %3 bkgnd_129 0 173 0 181 %4
+ menu %2 %3 bkgnd_129 0 186 0 187 %4
+ menu %2 %3 bkgnd_129 0 189 0 225 %4
+ menu %2 %3 bkgnd_130 0 3 0 4 %4
+ menu %2 %3 bkgnd_130 0 5 0 30 %4
+ menu %2 %3 bkgnd_130 0 31 0 70 %4
+ menu %2 %3 bkgnd_130 0 72 0 82 %4
+ menu %2 %3 bkgnd_130 0 121 0 128 %4
+ menu %2 %3 bkgnd_130 0 130 0 138 %4
+ menu %2 %3 bkgnd_130 0 141 0 149 %4
+ menu %2 %3 bkgnd_130 0 166 0 168 %4
+ menu %2 %3 bkgnd_130 0 174 0 176 %4
+ menu %2 %3 bkgnd_130 0 178 0 179 %4
+ menu %2 %3 bkgnd_130 0 180 0 181 %4
+ menu %2 %3 bkgnd_130 0 186 0 188 %4
+ menu %2 %3 bkgnd_130 0 189 0 190 %4
+ menu %2 %3 bkgnd_130 0 191 0 216 %4
+ menu %2 %3 bkgnd_130 0 221 0 226 %4
+ menu %2 %3 bkgnd_131 0 6 0 30 %4
+ menu %2 %3 bkgnd_131 0 32 0 69 %4
+ menu %2 %3 bkgnd_131 0 72 0 74 %4
+ menu %2 %3 bkgnd_131 0 76 0 82 %4
+ menu %2 %3 bkgnd_131 0 122 0 127 %4
+ menu %2 %3 bkgnd_131 0 129 0 135 %4
+ menu %2 %3 bkgnd_131 0 141 0 150 %4
+ menu %2 %3 bkgnd_131 0 166 0 169 %4
+ menu %2 %3 bkgnd_131 0 186 0 190 %4
+ menu %2 %3 bkgnd_131 0 191 0 203 %4
+ menu %2 %3 bkgnd_131 0 206 0 216 %4
+ menu %2 %3 bkgnd_131 0 223 0 227 %4
+ menu %2 %3 bkgnd_132 0 2 0 27 %4
+ menu %2 %3 bkgnd_132 0 29 0 30 %4
+ menu %2 %3 bkgnd_132 0 32 0 60 %4
+ menu %2 %3 bkgnd_132 0 61 0 66 %4
+ menu %2 %3 bkgnd_132 0 76 0 78 %4
+ menu %2 %3 bkgnd_132 0 80 0 81 %4
+ menu %2 %3 bkgnd_132 0 122 0 127 %4
+ menu %2 %3 bkgnd_132 0 129 0 136 %4
+ menu %2 %3 bkgnd_132 0 143 0 150 %4
+ menu %2 %3 bkgnd_132 0 166 0 176 %4
+ menu %2 %3 bkgnd_132 0 186 0 190 %4
+ menu %2 %3 bkgnd_132 0 194 0 202 %4
+ menu %2 %3 bkgnd_132 0 207 0 216 %4
+ menu %2 %3 bkgnd_132 0 224 0 227 %4
+ menu %2 %3 bkgnd_132 0 245 0 247 %4
+ menu %2 %3 bkgnd_133 0 2 0 25 %4
+ menu %2 %3 bkgnd_133 0 31 0 59 %4
+ menu %2 %3 bkgnd_133 0 76 0 78 %4
+ menu %2 %3 bkgnd_133 0 122 0 126 %4
+ menu %2 %3 bkgnd_133 0 129 0 136 %4
+ menu %2 %3 bkgnd_133 0 143 0 151 %4
+ menu %2 %3 bkgnd_133 0 167 0 177 %4
+ menu %2 %3 bkgnd_133 0 185 0 190 %4
+ menu %2 %3 bkgnd_133 0 192 0 201 %4
+ menu %2 %3 bkgnd_133 0 207 0 216 %4
+ menu %2 %3 bkgnd_133 0 224 0 227 %4
+ menu %2 %3 bkgnd_133 0 245 0 251 %4
+ menu %2 %3 bkgnd_134 0 3 0 23 %4
+ menu %2 %3 bkgnd_134 0 30 0 62 %4
+ menu %2 %3 bkgnd_134 0 84 0 85 %4
+ menu %2 %3 bkgnd_134 0 122 0 125 %4
+ menu %2 %3 bkgnd_134 0 129 0 136 %4
+ menu %2 %3 bkgnd_134 0 143 0 148 %4
+ menu %2 %3 bkgnd_134 0 149 0 151 %4
+ menu %2 %3 bkgnd_134 0 171 0 177 %4
+ menu %2 %3 bkgnd_134 0 185 0 186 %4
+ menu %2 %3 bkgnd_134 0 187 0 189 %4
+ menu %2 %3 bkgnd_134 0 191 0 198 %4
+ menu %2 %3 bkgnd_134 0 208 0 217 %4
+ menu %2 %3 bkgnd_134 0 224 0 229 %4
+ menu %2 %3 bkgnd_134 0 245 0 251 %4
+ menu %2 %3 bkgnd_135 0 10 0 22 %4
+ menu %2 %3 bkgnd_135 0 29 0 62 %4
+ menu %2 %3 bkgnd_135 0 82 0 87 %4
+ menu %2 %3 bkgnd_135 0 122 0 123 %4
+ menu %2 %3 bkgnd_135 0 129 0 138 %4
+ menu %2 %3 bkgnd_135 0 143 0 144 %4
+ menu %2 %3 bkgnd_135 0 172 0 175 %4
+ menu %2 %3 bkgnd_135 0 187 0 188 %4
+ menu %2 %3 bkgnd_135 0 190 0 197 %4
+ menu %2 %3 bkgnd_135 0 208 0 217 %4
+ menu %2 %3 bkgnd_135 0 225 0 229 %4
+ menu %2 %3 bkgnd_135 0 243 0 251 %4
+ menu %2 %3 bkgnd_136 0 11 0 14 %4
+ menu %2 %3 bkgnd_136 0 15 0 17 %4
+ menu %2 %3 bkgnd_136 0 19 0 21 %4
+ menu %2 %3 bkgnd_136 0 29 0 61 %4
+ menu %2 %3 bkgnd_136 0 74 0 78 %4
+ menu %2 %3 bkgnd_136 0 81 0 88 %4
+ menu %2 %3 bkgnd_136 0 132 0 138 %4
+ menu %2 %3 bkgnd_136 0 173 0 174 %4
+ menu %2 %3 bkgnd_136 0 189 0 193 %4
+ menu %2 %3 bkgnd_136 0 194 0 196 %4
+ menu %2 %3 bkgnd_136 0 208 0 215 %4
+ menu %2 %3 bkgnd_136 0 216 0 217 %4
+ menu %2 %3 bkgnd_136 0 226 0 229 %4
+ menu %2 %3 bkgnd_136 0 243 0 251 %4
+ menu %2 %3 bkgnd_137 0 18 0 21 %4
+ menu %2 %3 bkgnd_137 0 31 0 33 %4
+ menu %2 %3 bkgnd_137 0 36 0 42 %4
+ menu %2 %3 bkgnd_137 0 47 0 60 %4
+ menu %2 %3 bkgnd_137 0 71 0 89 %4
+ menu %2 %3 bkgnd_137 0 132 0 137 %4
+ menu %2 %3 bkgnd_137 0 189 0 191 %4
+ menu %2 %3 bkgnd_137 0 208 0 214 %4
+ menu %2 %3 bkgnd_137 0 243 0 246 %4
+ menu %2 %3 bkgnd_137 0 248 0 251 %4
+ menu %2 %3 bkgnd_138 0 17 0 21 %4
+ menu %2 %3 bkgnd_138 0 30 0 32 %4
+ menu %2 %3 bkgnd_138 0 36 0 42 %4
+ menu %2 %3 bkgnd_138 0 47 0 59 %4
+ menu %2 %3 bkgnd_138 0 70 0 84 %4
+ menu %2 %3 bkgnd_138 0 85 0 89 %4
+ menu %2 %3 bkgnd_138 0 133 0 136 %4
+ menu %2 %3 bkgnd_138 0 208 0 214 %4
+ menu %2 %3 bkgnd_138 0 249 0 251 %4
+ menu %2 %3 bkgnd_139 0 17 0 20 %4
+ menu %2 %3 bkgnd_139 0 29 0 32 %4
+ menu %2 %3 bkgnd_139 0 33 0 43 %4
+ menu %2 %3 bkgnd_139 0 48 0 58 %4
+ menu %2 %3 bkgnd_139 0 70 0 81 %4
+ menu %2 %3 bkgnd_139 0 85 0 87 %4
+ menu %2 %3 bkgnd_139 0 134 0 135 %4
+ menu %2 %3 bkgnd_139 0 208 0 214 %4
+ menu %2 %3 bkgnd_140 0 17 0 18 %4
+ menu %2 %3 bkgnd_140 0 23 0 25 %4
+ menu %2 %3 bkgnd_140 0 27 0 31 %4
+ menu %2 %3 bkgnd_140 0 33 0 43 %4
+ menu %2 %3 bkgnd_140 0 48 0 58 %4
+ menu %2 %3 bkgnd_140 0 70 0 81 %4
+ menu %2 %3 bkgnd_140 0 86 0 87 %4
+ menu %2 %3 bkgnd_140 0 210 0 214 %4
+ menu %2 %3 bkgnd_141 0 23 0 30 %4
+ menu %2 %3 bkgnd_141 0 32 0 35 %4
+ menu %2 %3 bkgnd_141 0 36 0 40 %4
+ menu %2 %3 bkgnd_141 0 42 0 43 %4
+ menu %2 %3 bkgnd_141 0 48 0 60 %4
+ menu %2 %3 bkgnd_141 0 65 0 66 %4
+ menu %2 %3 bkgnd_141 0 67 0 68 %4
+ menu %2 %3 bkgnd_141 0 73 0 80 %4
+ menu %2 %3 bkgnd_142 0 24 0 29 %4
+ menu %2 %3 bkgnd_142 0 32 0 34 %4
+ menu %2 %3 bkgnd_142 0 35 0 38 %4
+ menu %2 %3 bkgnd_142 0 40 0 41 %4
+ menu %2 %3 bkgnd_142 0 45 0 62 %4
+ menu %2 %3 bkgnd_142 0 65 0 72 %4
+ menu %2 %3 bkgnd_142 0 73 0 80 %4
+ menu %2 %3 bkgnd_143 0 25 0 28 %4
+ menu %2 %3 bkgnd_143 0 35 0 37 %4
+ menu %2 %3 bkgnd_143 0 40 0 65 %4
+ menu %2 %3 bkgnd_143 0 66 0 73 %4
+ menu %2 %3 bkgnd_143 0 74 0 80 %4
+ menu %2 %3 bkgnd_144 0 35 0 66 %4
+ menu %2 %3 bkgnd_144 0 68 0 80 %4
+ menu %2 %3 bkgnd_144 0 218 0 220 %4
+ menu %2 %3 bkgnd_145 0 4 0 7 %4
+ menu %2 %3 bkgnd_145 0 35 0 66 %4
+ menu %2 %3 bkgnd_145 0 68 0 79 %4
+ menu %2 %3 bkgnd_145 0 217 0 220 %4
+ menu %2 %3 bkgnd_146 0 4 0 9 %4
+ menu %2 %3 bkgnd_146 0 10 0 11 %4
+ menu %2 %3 bkgnd_146 0 35 0 66 %4
+ menu %2 %3 bkgnd_146 0 68 0 80 %4
+ menu %2 %3 bkgnd_146 0 216 0 221 %4
+ menu %2 %3 bkgnd_147 0 4 0 14 %4
+ menu %2 %3 bkgnd_147 0 35 0 67 %4
+ menu %2 %3 bkgnd_147 0 69 0 80 %4
+ menu %2 %3 bkgnd_147 0 213 0 221 %4
+ menu %2 %3 bkgnd_148 0 1 0 3 %4
+ menu %2 %3 bkgnd_148 0 6 0 14 %4
+ menu %2 %3 bkgnd_148 0 38 0 80 %4
+ menu %2 %3 bkgnd_148 0 212 0 222 %4
+ menu %2 %3 bkgnd_149 0 1 0 15 %4
+ menu %2 %3 bkgnd_149 0 40 0 79 %4
+ menu %2 %3 bkgnd_149 0 211 0 222 %4
+ menu %2 %3 bkgnd_150 0 1 0 15 %4
+ menu %2 %3 bkgnd_150 0 32 0 33 %4
+ menu %2 %3 bkgnd_150 0 35 0 36 %4
+ menu %2 %3 bkgnd_150 0 40 0 79 %4
+ menu %2 %3 bkgnd_150 0 211 0 222 %4
+ menu %2 %3 bkgnd_150 0 243 0 246 %4
+ menu %2 %3 bkgnd_151 0 1 0 15 %4
+ menu %2 %3 bkgnd_151 0 27 0 36 %4
+ menu %2 %3 bkgnd_151 0 41 0 80 %4
+ menu %2 %3 bkgnd_151 0 212 0 215 %4
+ menu %2 %3 bkgnd_151 0 216 0 221 %4
+ menu %2 %3 bkgnd_151 0 243 0 247 %4
+ menu %2 %3 bkgnd_152 0 2 0 15 %4
+ menu %2 %3 bkgnd_152 0 25 0 36 %4
+ menu %2 %3 bkgnd_152 0 42 0 80 %4
+ menu %2 %3 bkgnd_152 0 243 0 248 %4
+ menu %2 %3 bkgnd_153 0 2 0 18 %4
+ menu %2 %3 bkgnd_153 0 24 0 36 %4
+ menu %2 %3 bkgnd_153 0 42 0 80 %4
+ menu %2 %3 bkgnd_153 0 223 0 224 %4
+ menu %2 %3 bkgnd_153 0 225 0 226 %4
+ menu %2 %3 bkgnd_153 0 243 0 249 %4
+ menu %2 %3 bkgnd_154 0 1 0 18 %4
+ menu %2 %3 bkgnd_154 0 24 0 36 %4
+ menu %2 %3 bkgnd_154 0 42 0 80 %4
+ menu %2 %3 bkgnd_154 0 222 0 227 %4
+ menu %2 %3 bkgnd_154 0 228 0 229 %4
+ menu %2 %3 bkgnd_154 0 243 0 251 %4
+ menu %2 %3 bkgnd_155 0 1 0 17 %4
+ menu %2 %3 bkgnd_155 0 23 0 39 %4
+ menu %2 %3 bkgnd_155 0 40 0 41 %4
+ menu %2 %3 bkgnd_155 0 45 0 80 %4
+ menu %2 %3 bkgnd_155 0 221 0 229 %4
+ menu %2 %3 bkgnd_155 0 243 0 253 %4
+ menu %2 %3 bkgnd_156 0 2 0 15 %4
+ menu %2 %3 bkgnd_156 0 23 0 39 %4
+ menu %2 %3 bkgnd_156 0 40 0 41 %4
+ menu %2 %3 bkgnd_156 0 48 0 80 %4
+ menu %2 %3 bkgnd_156 0 221 0 229 %4
+ menu %2 %3 bkgnd_156 0 243 0 253 %4
+ menu %2 %3 bkgnd_157 0 3 0 15 %4
+ menu %2 %3 bkgnd_157 0 23 0 43 %4
+ menu %2 %3 bkgnd_157 0 47 0 80 %4
+ menu %2 %3 bkgnd_157 0 222 0 229 %4
+ menu %2 %3 bkgnd_157 0 243 0 253 %4
+ menu %2 %3 bkgnd_158 0 3 0 19 %4
+ menu %2 %3 bkgnd_158 0 23 0 45 %4
+ menu %2 %3 bkgnd_158 0 47 0 80 %4
+ menu %2 %3 bkgnd_158 0 223 0 229 %4
+ menu %2 %3 bkgnd_158 0 243 0 253 %4
+ menu %2 %3 bkgnd_159 0 2 0 20 %4
+ menu %2 %3 bkgnd_159 0 22 0 26 %4
+ menu %2 %3 bkgnd_159 0 27 0 45 %4
+ menu %2 %3 bkgnd_159 0 48 0 80 %4
+ menu %2 %3 bkgnd_159 0 223 0 229 %4
+ menu %2 %3 bkgnd_159 0 243 0 252 %4
+ menu %2 %3 bkgnd_160 0 1 0 21 %4
+ menu %2 %3 bkgnd_160 0 22 0 34 %4
+ menu %2 %3 bkgnd_160 0 35 0 80 %4
+ menu %2 %3 bkgnd_160 0 223 0 228 %4
+ menu %2 %3 bkgnd_161 0 1 0 34 %4
+ menu %2 %3 bkgnd_161 0 36 0 80 %4
+ menu %2 %3 bkgnd_162 0 1 0 35 %4
+ menu %2 %3 bkgnd_162 0 36 0 79 %4
+ menu %2 %3 bkgnd_162 0 128 0 134 %4
+ menu %2 %3 bkgnd_162 0 139 0 140 %4
+ menu %2 %3 bkgnd_163 0 2 0 23 %4
+ menu %2 %3 bkgnd_163 0 24 0 25 %4
+ menu %2 %3 bkgnd_163 0 26 0 35 %4
+ menu %2 %3 bkgnd_163 0 38 0 79 %4
+ menu %2 %3 bkgnd_163 0 128 0 134 %4
+ menu %2 %3 bkgnd_163 0 137 0 146 %4
+ menu %2 %3 bkgnd_164 0 2 0 18 %4
+ menu %2 %3 bkgnd_164 0 19 0 22 %4
+ menu %2 %3 bkgnd_164 0 24 0 25 %4
+ menu %2 %3 bkgnd_164 0 27 0 34 %4
+ menu %2 %3 bkgnd_164 0 38 0 80 %4
+ menu %2 %3 bkgnd_164 0 128 0 134 %4
+ menu %2 %3 bkgnd_164 0 135 0 146 %4
+ menu %2 %3 bkgnd_165 0 1 0 25 %4
+ menu %2 %3 bkgnd_165 0 28 0 31 %4
+ menu %2 %3 bkgnd_165 0 38 0 80 %4
+ menu %2 %3 bkgnd_165 0 127 0 146 %4
+ menu %2 %3 bkgnd_166 0 1 0 27 %4
+ menu %2 %3 bkgnd_166 0 30 0 37 %4
+ menu %2 %3 bkgnd_166 0 39 0 79 %4
+ menu %2 %3 bkgnd_166 0 127 0 146 %4
+ menu %2 %3 bkgnd_167 0 1 0 38 %4
+ menu %2 %3 bkgnd_167 0 40 0 73 %4
+ menu %2 %3 bkgnd_167 0 78 0 79 %4
+ menu %2 %3 bkgnd_167 0 127 0 146 %4
+ menu %2 %3 bkgnd_168 0 1 0 20 %4
+ menu %2 %3 bkgnd_168 0 21 0 38 %4
+ menu %2 %3 bkgnd_168 0 40 0 72 %4
+ menu %2 %3 bkgnd_168 0 126 0 147 %4
+ menu %2 %3 bkgnd_169 0 1 0 13 %4
+ menu %2 %3 bkgnd_169 0 15 0 16 %4
+ menu %2 %3 bkgnd_169 0 18 0 20 %4
+ menu %2 %3 bkgnd_169 0 21 0 38 %4
+ menu %2 %3 bkgnd_169 0 39 0 72 %4
+ menu %2 %3 bkgnd_169 0 126 0 137 %4
+ menu %2 %3 bkgnd_169 0 138 0 147 %4
+ menu %2 %3 bkgnd_170 0 1 0 13 %4
+ menu %2 %3 bkgnd_170 0 23 0 37 %4
+ menu %2 %3 bkgnd_170 0 39 0 72 %4
+ menu %2 %3 bkgnd_170 0 123 0 125 %4
+ menu %2 %3 bkgnd_170 0 126 0 147 %4
+ menu %2 %3 bkgnd_171 0 1 0 13 %4
+ menu %2 %3 bkgnd_171 0 16 0 22 %4
+ menu %2 %3 bkgnd_171 0 23 0 37 %4
+ menu %2 %3 bkgnd_171 0 39 0 71 %4
+ menu %2 %3 bkgnd_171 0 122 0 147 %4
+ menu %2 %3 bkgnd_172 0 2 0 3 %4
+ menu %2 %3 bkgnd_172 0 4 0 12 %4
+ menu %2 %3 bkgnd_172 0 16 0 35 %4
+ menu %2 %3 bkgnd_172 0 38 0 70 %4
+ menu %2 %3 bkgnd_172 0 122 0 147 %4
+ menu %2 %3 bkgnd_173 0 4 0 10 %4
+ menu %2 %3 bkgnd_173 0 15 0 33 %4
+ menu %2 %3 bkgnd_173 0 37 0 68 %4
+ menu %2 %3 bkgnd_173 0 123 0 134 %4
+ menu %2 %3 bkgnd_173 0 135 0 137 %4
+ menu %2 %3 bkgnd_173 0 138 0 146 %4
+ menu %2 %3 bkgnd_173 0 147 0 148 %4
+ menu %2 %3 bkgnd_173 0 220 0 223 %4
+ menu %2 %3 bkgnd_174 0 4 0 10 %4
+ menu %2 %3 bkgnd_174 0 15 0 34 %4
+ menu %2 %3 bkgnd_174 0 37 0 67 %4
+ menu %2 %3 bkgnd_174 0 124 0 134 %4
+ menu %2 %3 bkgnd_174 0 139 0 148 %4
+ menu %2 %3 bkgnd_174 0 215 0 223 %4
+ menu %2 %3 bkgnd_175 0 4 0 7 %4
+ menu %2 %3 bkgnd_175 0 9 0 10 %4
+ menu %2 %3 bkgnd_175 0 15 0 35 %4
+ menu %2 %3 bkgnd_175 0 37 0 66 %4
+ menu %2 %3 bkgnd_175 0 124 0 126 %4
+ menu %2 %3 bkgnd_175 0 132 0 134 %4
+ menu %2 %3 bkgnd_175 0 139 0 147 %4
+ menu %2 %3 bkgnd_175 0 215 0 223 %4
+ menu %2 %3 bkgnd_176 0 15 0 36 %4
+ menu %2 %3 bkgnd_176 0 38 0 58 %4
+ menu %2 %3 bkgnd_176 0 59 0 65 %4
+ menu %2 %3 bkgnd_176 0 132 0 135 %4
+ menu %2 %3 bkgnd_176 0 139 0 147 %4
+ menu %2 %3 bkgnd_176 0 215 0 223 %4
+ menu %2 %3 bkgnd_177 0 6 0 9 %4
+ menu %2 %3 bkgnd_177 0 14 0 20 %4
+ menu %2 %3 bkgnd_177 0 21 0 37 %4
+ menu %2 %3 bkgnd_177 0 39 0 49 %4
+ menu %2 %3 bkgnd_177 0 50 0 53 %4
+ menu %2 %3 bkgnd_177 0 54 0 61 %4
+ menu %2 %3 bkgnd_177 0 62 0 64 %4
+ menu %2 %3 bkgnd_177 0 132 0 135 %4
+ menu %2 %3 bkgnd_177 0 139 0 147 %4
+ menu %2 %3 bkgnd_177 0 215 0 222 %4
+ menu %2 %3 bkgnd_178 0 6 0 19 %4
+ menu %2 %3 bkgnd_178 0 21 0 37 %4
+ menu %2 %3 bkgnd_178 0 39 0 48 %4
+ menu %2 %3 bkgnd_178 0 50 0 61 %4
+ menu %2 %3 bkgnd_178 0 62 0 63 %4
+ menu %2 %3 bkgnd_178 0 132 0 134 %4
+ menu %2 %3 bkgnd_178 0 139 0 146 %4
+ menu %2 %3 bkgnd_178 0 217 0 223 %4
+ menu %2 %3 bkgnd_179 0 3 0 19 %4
+ menu %2 %3 bkgnd_179 0 21 0 38 %4
+ menu %2 %3 bkgnd_179 0 43 0 48 %4
+ menu %2 %3 bkgnd_179 0 50 0 61 %4
+ menu %2 %3 bkgnd_179 0 62 0 64 %4
+ menu %2 %3 bkgnd_179 0 132 0 133 %4
+ menu %2 %3 bkgnd_179 0 140 0 143 %4
+ menu %2 %3 bkgnd_179 0 217 0 223 %4
+ menu %2 %3 bkgnd_180 0 3 0 16 %4
+ menu %2 %3 bkgnd_180 0 21 0 38 %4
+ menu %2 %3 bkgnd_180 0 41 0 52 %4
+ menu %2 %3 bkgnd_180 0 53 0 59 %4
+ menu %2 %3 bkgnd_180 0 62 0 64 %4
+ menu %2 %3 bkgnd_180 0 140 0 142 %4
+ menu %2 %3 bkgnd_180 0 213 0 215 %4
+ menu %2 %3 bkgnd_180 0 217 0 224 %4
+ menu %2 %3 bkgnd_181 0 3 0 15 %4
+ menu %2 %3 bkgnd_181 0 21 0 38 %4
+ menu %2 %3 bkgnd_181 0 41 0 51 %4
+ menu %2 %3 bkgnd_181 0 53 0 54 %4
+ menu %2 %3 bkgnd_181 0 56 0 58 %4
+ menu %2 %3 bkgnd_181 0 62 0 63 %4
+ menu %2 %3 bkgnd_181 0 212 0 215 %4
+ menu %2 %3 bkgnd_181 0 217 0 224 %4
+ menu %2 %3 bkgnd_182 0 5 0 9 %4
+ menu %2 %3 bkgnd_182 0 12 0 13 %4
+ menu %2 %3 bkgnd_182 0 20 0 39 %4
+ menu %2 %3 bkgnd_182 0 41 0 48 %4
+ menu %2 %3 bkgnd_182 0 49 0 52 %4
+ menu %2 %3 bkgnd_182 0 53 0 55 %4
+ menu %2 %3 bkgnd_182 0 56 0 58 %4
+ menu %2 %3 bkgnd_182 0 59 0 63 %4
+ menu %2 %3 bkgnd_182 0 210 0 215 %4
+ menu %2 %3 bkgnd_182 0 217 0 223 %4
+ menu %2 %3 bkgnd_183 0 4 0 8 %4
+ menu %2 %3 bkgnd_183 0 18 0 40 %4
+ menu %2 %3 bkgnd_183 0 42 0 47 %4
+ menu %2 %3 bkgnd_183 0 49 0 52 %4
+ menu %2 %3 bkgnd_183 0 53 0 55 %4
+ menu %2 %3 bkgnd_183 0 56 0 58 %4
+ menu %2 %3 bkgnd_183 0 59 0 63 %4
+ menu %2 %3 bkgnd_183 0 140 0 141 %4
+ menu %2 %3 bkgnd_183 0 209 0 215 %4
+ menu %2 %3 bkgnd_183 0 218 0 223 %4
+ menu %2 %3 bkgnd_184 0 3 0 7 %4
+ menu %2 %3 bkgnd_184 0 17 0 40 %4
+ menu %2 %3 bkgnd_184 0 42 0 44 %4
+ menu %2 %3 bkgnd_184 0 47 0 48 %4
+ menu %2 %3 bkgnd_184 0 49 0 51 %4
+ menu %2 %3 bkgnd_184 0 53 0 56 %4
+ menu %2 %3 bkgnd_184 0 58 0 60 %4
+ menu %2 %3 bkgnd_184 0 61 0 63 %4
+ menu %2 %3 bkgnd_184 0 134 0 141 %4
+ menu %2 %3 bkgnd_184 0 209 0 214 %4
+ menu %2 %3 bkgnd_184 0 218 0 223 %4
+ menu %2 %3 bkgnd_185 0 3 0 6 %4
+ menu %2 %3 bkgnd_185 0 14 0 15 %4
+ menu %2 %3 bkgnd_185 0 16 0 41 %4
+ menu %2 %3 bkgnd_185 0 44 0 48 %4
+ menu %2 %3 bkgnd_185 0 51 0 53 %4
+ menu %2 %3 bkgnd_185 0 54 0 57 %4
+ menu %2 %3 bkgnd_185 0 58 0 60 %4
+ menu %2 %3 bkgnd_185 0 133 0 140 %4
+ menu %2 %3 bkgnd_185 0 209 0 220 %4
+ menu %2 %3 bkgnd_185 0 221 0 223 %4
+ menu %2 %3 bkgnd_185 0 224 0 228 %4
+ menu %2 %3 bkgnd_186 0 4 0 5 %4
+ menu %2 %3 bkgnd_186 0 11 0 15 %4
+ menu %2 %3 bkgnd_186 0 16 0 21 %4
+ menu %2 %3 bkgnd_186 0 22 0 43 %4
+ menu %2 %3 bkgnd_186 0 44 0 47 %4
+ menu %2 %3 bkgnd_186 0 48 0 49 %4
+ menu %2 %3 bkgnd_186 0 51 0 53 %4
+ menu %2 %3 bkgnd_186 0 54 0 57 %4
+ menu %2 %3 bkgnd_186 0 58 0 59 %4
+ menu %2 %3 bkgnd_186 0 133 0 139 %4
+ menu %2 %3 bkgnd_186 0 209 0 219 %4
+ menu %2 %3 bkgnd_186 0 221 0 228 %4
+ menu %2 %3 bkgnd_187 0 10 0 21 %4
+ menu %2 %3 bkgnd_187 0 23 0 30 %4
+ menu %2 %3 bkgnd_187 0 32 0 43 %4
+ menu %2 %3 bkgnd_187 0 46 0 47 %4
+ menu %2 %3 bkgnd_187 0 48 0 50 %4
+ menu %2 %3 bkgnd_187 0 51 0 57 %4
+ menu %2 %3 bkgnd_187 0 135 0 137 %4
+ menu %2 %3 bkgnd_187 0 209 0 216 %4
+ menu %2 %3 bkgnd_187 0 223 0 227 %4
+ menu %2 %3 bkgnd_188 0 10 0 20 %4
+ menu %2 %3 bkgnd_188 0 24 0 27 %4
+ menu %2 %3 bkgnd_188 0 29 0 30 %4
+ menu %2 %3 bkgnd_188 0 32 0 45 %4
+ menu %2 %3 bkgnd_188 0 47 0 50 %4
+ menu %2 %3 bkgnd_188 0 51 0 54 %4
+ menu %2 %3 bkgnd_188 0 209 0 217 %4
+ menu %2 %3 bkgnd_188 0 220 0 227 %4
+ menu %2 %3 bkgnd_189 0 5 0 20 %4
+ menu %2 %3 bkgnd_189 0 24 0 26 %4
+ menu %2 %3 bkgnd_189 0 32 0 46 %4
+ menu %2 %3 bkgnd_189 0 47 0 50 %4
+ menu %2 %3 bkgnd_189 0 51 0 53 %4
+ menu %2 %3 bkgnd_189 0 209 0 218 %4
+ menu %2 %3 bkgnd_189 0 220 0 227 %4
+ menu %2 %3 bkgnd_190 0 5 0 21 %4
+ menu %2 %3 bkgnd_190 0 25 0 26 %4
+ menu %2 %3 bkgnd_190 0 31 0 46 %4
+ menu %2 %3 bkgnd_190 0 47 0 50 %4
+ menu %2 %3 bkgnd_190 0 209 0 218 %4
+ menu %2 %3 bkgnd_190 0 220 0 227 %4
+ menu %2 %3 bkgnd_191 0 5 0 19 %4
+ menu %2 %3 bkgnd_191 0 20 0 21 %4
+ menu %2 %3 bkgnd_191 0 31 0 47 %4
+ menu %2 %3 bkgnd_191 0 48 0 49 %4
+ menu %2 %3 bkgnd_191 0 209 0 218 %4
+ menu %2 %3 bkgnd_191 0 223 0 226 %4
+ menu %2 %3 bkgnd_192 0 4 0 18 %4
+ menu %2 %3 bkgnd_192 0 29 0 49 %4
+ menu %2 %3 bkgnd_192 0 209 0 216 %4
+ menu %2 %3 bkgnd_192 0 217 0 218 %4
+ menu %2 %3 bkgnd_192 0 225 0 226 %4
+ menu %2 %3 bkgnd_193 0 4 0 18 %4
+ menu %2 %3 bkgnd_193 0 19 0 21 %4
+ menu %2 %3 bkgnd_193 0 24 0 49 %4
+ menu %2 %3 bkgnd_193 0 225 0 226 %4
+ menu %2 %3 bkgnd_194 0 4 0 17 %4
+ menu %2 %3 bkgnd_194 0 19 0 22 %4
+ menu %2 %3 bkgnd_194 0 24 0 41 %4
+ menu %2 %3 bkgnd_194 0 44 0 45 %4
+ menu %2 %3 bkgnd_195 0 4 0 15 %4
+ menu %2 %3 bkgnd_195 0 21 0 23 %4
+ menu %2 %3 bkgnd_195 0 24 0 46 %4
+ menu %2 %3 bkgnd_196 0 4 0 14 %4
+ menu %2 %3 bkgnd_196 0 21 0 47 %4
+ menu %2 %3 bkgnd_197 0 2 0 6 %4
+ menu %2 %3 bkgnd_197 0 8 0 12 %4
+ menu %2 %3 bkgnd_197 0 22 0 50 %4
+ menu %2 %3 bkgnd_198 0 1 0 6 %4
+ menu %2 %3 bkgnd_198 0 12 0 14 %4
+ menu %2 %3 bkgnd_198 0 20 0 22 %4
+ menu %2 %3 bkgnd_198 0 23 0 51 %4
+ menu %2 %3 bkgnd_199 0 1 0 7 %4
+ menu %2 %3 bkgnd_199 0 10 0 14 %4
+ menu %2 %3 bkgnd_199 0 19 0 52 %4
+ menu %2 %3 bkgnd_200 0 2 0 3 %4
+ menu %2 %3 bkgnd_200 0 4 0 7 %4
+ menu %2 %3 bkgnd_200 0 9 0 18 %4
+ menu %2 %3 bkgnd_200 0 19 0 52 %4
+ menu %2 %3 bkgnd_201 0 9 0 50 %4
+ menu %2 %3 bkgnd_202 0 6 0 10 %4
+ menu %2 %3 bkgnd_202 0 13 0 48 %4
+ menu %2 %3 bkgnd_203 0 6 0 45 %4
+ menu %2 %3 bkgnd_204 0 6 0 44 %4
+ menu %2 %3 bkgnd_205 0 6 0 41 %4
+ menu %2 %3 bkgnd_205 0 45 0 47 %4
+ menu %2 %3 bkgnd_206 0 7 0 11 %4
+ menu %2 %3 bkgnd_206 0 12 0 13 %4
+ menu %2 %3 bkgnd_206 0 14 0 47 %4
+ menu %2 %3 bkgnd_207 0 8 0 9 %4
+ menu %2 %3 bkgnd_207 0 16 0 45 %4
+ menu %2 %3 bkgnd_208 0 14 0 43 %4
+ menu %2 %3 bkgnd_209 0 13 0 42 %4
+ menu %2 %3 bkgnd_210 0 12 0 42 %4
+ menu %2 %3 bkgnd_210 0 165 0 170 %4
+ menu %2 %3 bkgnd_211 0 12 0 42 %4
+ menu %2 %3 bkgnd_211 0 162 0 172 %4
+ menu %2 %3 bkgnd_212 0 12 0 35 %4
+ menu %2 %3 bkgnd_212 0 37 0 43 %4
+ menu %2 %3 bkgnd_212 0 159 0 174 %4
+ menu %2 %3 bkgnd_213 0 12 0 34 %4
+ menu %2 %3 bkgnd_213 0 38 0 43 %4
+ menu %2 %3 bkgnd_213 0 158 0 174 %4
+ menu %2 %3 bkgnd_214 0 13 0 32 %4
+ menu %2 %3 bkgnd_214 0 37 0 43 %4
+ menu %2 %3 bkgnd_214 0 155 0 175 %4
+ menu %2 %3 bkgnd_215 0 7 0 9 %4
+ menu %2 %3 bkgnd_215 0 13 0 17 %4
+ menu %2 %3 bkgnd_215 0 18 0 22 %4
+ menu %2 %3 bkgnd_215 0 23 0 31 %4
+ menu %2 %3 bkgnd_215 0 36 0 42 %4
+ menu %2 %3 bkgnd_215 0 154 0 175 %4
+ menu %2 %3 bkgnd_216 0 7 0 9 %4
+ menu %2 %3 bkgnd_216 0 12 0 16 %4
+ menu %2 %3 bkgnd_216 0 19 0 22 %4
+ menu %2 %3 bkgnd_216 0 24 0 31 %4
+ menu %2 %3 bkgnd_216 0 35 0 39 %4
+ menu %2 %3 bkgnd_216 0 40 0 41 %4
+ menu %2 %3 bkgnd_216 0 153 0 176 %4
+ menu %2 %3 bkgnd_217 0 8 0 16 %4
+ menu %2 %3 bkgnd_217 0 19 0 23 %4
+ menu %2 %3 bkgnd_217 0 25 0 28 %4
+ menu %2 %3 bkgnd_217 0 29 0 31 %4
+ menu %2 %3 bkgnd_217 0 34 0 39 %4
+ menu %2 %3 bkgnd_217 0 149 0 175 %4 ; -178
+ menu %2 %3 bkgnd_218 0 9 0 15 %4
+ menu %2 %3 bkgnd_218 0 19 0 24 %4
+ menu %2 %3 bkgnd_218 0 26 0 28 %4
+ menu %2 %3 bkgnd_218 0 34 0 39 %4
+ menu %2 %3 bkgnd_218 0 148 0 176 %4 ; -179
+ menu %2 %3 bkgnd_219 0 11 0 13 %4
+ menu %2 %3 bkgnd_219 0 18 0 21 %4
+ menu %2 %3 bkgnd_219 0 22 0 24 %4
+ menu %2 %3 bkgnd_219 0 35 0 36 %4
+ menu %2 %3 bkgnd_219 0 71 0 74 %4
+ menu %2 %3 bkgnd_219 0 148 0 166 %4
+ menu %2 %3 bkgnd_219 0 168 0 175 %4 ; -181?
+ menu %2 %3 bkgnd_220 0 18 0 21 %4
+ menu %2 %3 bkgnd_220 0 22 0 24 %4
+ menu %2 %3 bkgnd_220 0 69 0 74 %4
+ menu %2 %3 bkgnd_220 0 75 0 77 %4
+ menu %2 %3 bkgnd_220 0 149 0 163 %4
+ menu %2 %3 bkgnd_220 0 164 0 170 %4
+ menu %2 %3 bkgnd_220 0 171 0 175 %4 ; -181?
+ menu %2 %3 bkgnd_221 0 69 0 77 %4
+ menu %2 %3 bkgnd_221 0 134 0 135 %4
+ menu %2 %3 bkgnd_221 0 148 0 162 %4
+ menu %2 %3 bkgnd_221 0 164 0 171 %4
+ menu %2 %3 bkgnd_221 0 172 0 175 %4 ; -181?
+ menu %2 %3 bkgnd_222 0 70 0 77 %4
+ menu %2 %3 bkgnd_222 0 133 0 136 %4
+ menu %2 %3 bkgnd_222 0 148 0 162 %4
+ menu %2 %3 bkgnd_222 0 172 0 174 %4 ; -181?
+ menu %2 %3 bkgnd_223 0 71 0 78 %4
+ menu %2 %3 bkgnd_223 0 132 0 136 %4
+ menu %2 %3 bkgnd_223 0 149 0 161 %4 ; -171?
+ menu %2 %3 bkgnd_224 0 74 0 79 %4
+ menu %2 %3 bkgnd_224 0 132 0 136 %4
+ menu %2 %3 bkgnd_224 0 149 0 164 %4
+ menu %2 %3 bkgnd_225 0 74 0 81 %4
+ menu %2 %3 bkgnd_225 0 132 0 137 %4
+ menu %2 %3 bkgnd_225 0 149 0 165 %4
+ menu %2 %3 bkgnd_226 0 75 0 81 %4
+ menu %2 %3 bkgnd_226 0 82 0 83 %4
+ menu %2 %3 bkgnd_226 0 132 0 137 %4
+ menu %2 %3 bkgnd_226 0 148 0 165 %4
+ menu %2 %3 bkgnd_227 0 72 0 74 %4
+ menu %2 %3 bkgnd_227 0 75 0 83 %4
+ menu %2 %3 bkgnd_227 0 131 0 139 %4
+ menu %2 %3 bkgnd_227 0 148 0 166 %4
+ menu %2 %3 bkgnd_228 0 67 0 84 %4
+ menu %2 %3 bkgnd_228 0 129 0 140 %4
+ menu %2 %3 bkgnd_228 0 148 0 168 %4
+ menu %2 %3 bkgnd_229 0 66 0 84 %4
+ menu %2 %3 bkgnd_229 0 128 0 142 %4
+ menu %2 %3 bkgnd_229 0 143 0 144 %4
+ menu %2 %3 bkgnd_229 0 151 0 168 %4
+ menu %2 %3 bkgnd_230 0 66 0 86 %4
+ menu %2 %3 bkgnd_230 0 127 0 142 %4
+ menu %2 %3 bkgnd_230 0 143 0 144 %4
+ menu %2 %3 bkgnd_230 0 150 0 168 %4
+ menu %2 %3 bkgnd_231 0 66 0 86 %4
+ menu %2 %3 bkgnd_231 0 127 0 142 %4
+ menu %2 %3 bkgnd_231 0 143 0 144 %4
+ menu %2 %3 bkgnd_231 0 149 0 166 %4 ; -182?
+ menu %2 %3 bkgnd_232 0 68 0 89 %4
+ menu %2 %3 bkgnd_232 0 127 0 142 %4
+ menu %2 %3 bkgnd_232 0 149 0 169 %4 ; -182?
+ menu %2 %3 bkgnd_233 0 74 0 89 %4
+ menu %2 %3 bkgnd_233 0 127 0 141 %4
+ menu %2 %3 bkgnd_233 0 151 0 170 %4 ; -180?
+ menu %2 %3 bkgnd_234 0 73 0 89 %4
+ menu %2 %3 bkgnd_234 0 127 0 142 %4
+ menu %2 %3 bkgnd_234 0 153 0 170 %4 ; -174?
+ menu %2 %3 bkgnd_235 0 70 0 71 %4
+ menu %2 %3 bkgnd_235 0 72 0 86 %4
+ menu %2 %3 bkgnd_235 0 87 0 89 %4
+ menu %2 %3 bkgnd_235 0 128 0 135 %4
+ menu %2 %3 bkgnd_235 0 137 0 143 %4
+ menu %2 %3 bkgnd_235 0 155 0 172 %4 ; -175?
+ menu %2 %3 bkgnd_236 0 70 0 86 %4
+ menu %2 %3 bkgnd_236 0 128 0 135 %4
+ menu %2 %3 bkgnd_236 0 137 0 143 %4
+ menu %2 %3 bkgnd_236 0 156 0 171 %4
+ menu %2 %3 bkgnd_236 0 172 0 173 %4 ; -175?
+ menu %2 %3 bkgnd_237 0 69 0 83 %4
+ menu %2 %3 bkgnd_237 0 84 0 86 %4
+ menu %2 %3 bkgnd_237 0 130 0 135 %4
+ menu %2 %3 bkgnd_237 0 140 0 143 %4
+ menu %2 %3 bkgnd_237 0 157 0 159 %4
+ menu %2 %3 bkgnd_237 0 161 0 164 %4
+ menu %2 %3 bkgnd_237 0 167 0 168 %4
+ menu %2 %3 bkgnd_237 0 169 0 170 %4
+ menu %2 %3 bkgnd_237 0 172 0 175 %4
+ menu %2 %3 bkgnd_238 0 69 0 73 %4
+ menu %2 %3 bkgnd_238 0 74 0 77 %4
+ menu %2 %3 bkgnd_238 0 78 0 82 %4
+ menu %2 %3 bkgnd_238 0 131 0 135 %4
+ menu %2 %3 bkgnd_238 0 140 0 143 %4
+ menu %2 %3 bkgnd_238 0 173 0 175 %4
+ menu %2 %3 bkgnd_239 0 76 0 77 %4
+ menu %2 %3 bkgnd_239 0 79 0 80 %4
+ menu %2 %3 bkgnd_239 0 140 0 143 %4
+ menu %2 %3 bkgnd_242 0 15 0 18 %4
+ menu %2 %3 bkgnd_243 0 14 0 19 %4
+ menu %2 %3 bkgnd_244 0 13 0 20 %4
+ menu %2 %3 bkgnd_244 0 23 0 29 %4
+ menu %2 %3 bkgnd_245 0 11 0 31 %4
+ menu %2 %3 bkgnd_246 0 11 0 32 %4
+ menu %2 %3 bkgnd_247 0 13 0 34 %4
+ menu %2 %3 bkgnd_248 0 13 0 35 %4
+ menu %2 %3 bkgnd_249 0 12 0 37 %4
+ menu %2 %3 bkgnd_250 0 12 0 39 %4
+ menu %2 %3 bkgnd_251 0 12 0 40 %4
+ menu %2 %3 bkgnd_252 0 12 0 41 %4
+ menu %2 %3 bkgnd_253 0 13 0 41 %4
+ menu %2 %3 bkgnd_254 0 16 0 41 %4
+ menu %2 %3 bkgnd_255 0 18 0 41 %4
+ menu %2 %3 bkgnd_256 0 19 0 41 %4
+ menu %2 %3 bkgnd_257 0 19 0 41 %4
+ menu %2 %3 bkgnd_257 0 235 0 236 %4
+ menu %2 %3 bkgnd_258 0 18 0 41 %4
+ menu %2 %3 bkgnd_258 0 235 0 237 %4
+ menu %2 %3 bkgnd_259 0 18 0 41 %4
+ menu %2 %3 bkgnd_259 0 230 0 233 %4
+ menu %2 %3 bkgnd_259 0 235 0 237 %4
+ menu %2 %3 bkgnd_260 0 23 0 41 %4
+ menu %2 %3 bkgnd_260 0 230 0 234 %4
+ menu %2 %3 bkgnd_260 0 235 0 236 %4
+ menu %2 %3 bkgnd_261 0 23 0 43 %4
+ menu %2 %3 bkgnd_261 0 230 0 235 %4
+ menu %2 %3 bkgnd_262 0 22 0 44 %4
+ menu %2 %3 bkgnd_262 0 230 0 235 %4
+ menu %2 %3 bkgnd_263 0 22 0 45 %4
+ menu %2 %3 bkgnd_263 0 229 0 233 %4
+ menu %2 %3 bkgnd_263 0 234 0 236 %4
+ menu %2 %3 bkgnd_264 0 22 0 23 %4
+ menu %2 %3 bkgnd_264 0 27 0 46 %4
+ menu %2 %3 bkgnd_264 0 229 0 237 %4
+ menu %2 %3 bkgnd_265 0 31 0 47 %4
+ menu %2 %3 bkgnd_265 0 228 0 237 %4
+ menu %2 %3 bkgnd_266 0 32 0 48 %4
+ menu %2 %3 bkgnd_266 0 59 0 60 %4
+ menu %2 %3 bkgnd_266 0 228 0 237 %4
+ menu %2 %3 bkgnd_267 0 36 0 48 %4
+ menu %2 %3 bkgnd_267 0 58 0 60 %4
+ menu %2 %3 bkgnd_267 0 62 0 63 %4
+ menu %2 %3 bkgnd_267 0 66 0 67 %4
+ menu %2 %3 bkgnd_267 0 70 0 72 %4
+ menu %2 %3 bkgnd_267 0 228 0 237 %4
+ menu %2 %3 bkgnd_268 0 44 0 48 %4
+ menu %2 %3 bkgnd_268 0 56 0 67 %4
+ menu %2 %3 bkgnd_268 0 68 0 73 %4
+ menu %2 %3 bkgnd_268 0 228 0 238 %4
+ menu %2 %3 bkgnd_269 0 45 0 48 %4
+ menu %2 %3 bkgnd_269 0 56 0 73 %4
+ menu %2 %3 bkgnd_269 0 228 0 238 %4
+ menu %2 %3 bkgnd_270 0 56 0 74 %4
+ menu %2 %3 bkgnd_270 0 229 0 238 %4
+ menu %2 %3 bkgnd_271 0 57 0 76 %4
+ menu %2 %3 bkgnd_271 0 229 0 237 %4
+ menu %2 %3 bkgnd_272 0 59 0 77 %4
+ menu %2 %3 bkgnd_272 0 229 0 237 %4
+ menu %2 %3 bkgnd_273 0 60 0 79 %4
+ menu %2 %3 bkgnd_273 0 196 0 197 %4
+ menu %2 %3 bkgnd_273 0 216 0 218 %4
+ menu %2 %3 bkgnd_273 0 230 0 237 %4
+ menu %2 %3 bkgnd_274 0 60 0 62 %4
+ menu %2 %3 bkgnd_274 0 63 0 65 %4
+ menu %2 %3 bkgnd_274 0 66 0 79 %4
+ menu %2 %3 bkgnd_274 0 194 0 201 %4
+ menu %2 %3 bkgnd_274 0 211 0 213 %4
+ menu %2 %3 bkgnd_274 0 215 0 218 %4
+ menu %2 %3 bkgnd_274 0 230 0 237 %4
+ menu %2 %3 bkgnd_275 0 60 0 61 %4
+ menu %2 %3 bkgnd_275 0 64 0 80 %4
+ menu %2 %3 bkgnd_275 0 91 0 92 %4
+ menu %2 %3 bkgnd_275 0 93 0 94 %4
+ menu %2 %3 bkgnd_275 0 193 0 201 %4
+ menu %2 %3 bkgnd_275 0 210 0 213 %4
+ menu %2 %3 bkgnd_275 0 215 0 218 %4
+ menu %2 %3 bkgnd_275 0 229 0 237 %4
+ menu %2 %3 bkgnd_276 0 64 0 82 %4
+ menu %2 %3 bkgnd_276 0 87 0 88 %4
+ menu %2 %3 bkgnd_276 0 89 0 95 %4
+ menu %2 %3 bkgnd_276 0 193 0 200 %4
+ menu %2 %3 bkgnd_276 0 205 0 212 %4
+ menu %2 %3 bkgnd_276 0 214 0 218 %4
+ menu %2 %3 bkgnd_276 0 220 0 221 %4
+ menu %2 %3 bkgnd_276 0 229 0 238 %4
+ menu %2 %3 bkgnd_277 0 64 0 95 %4
+ menu %2 %3 bkgnd_277 0 193 0 201 %4
+ menu %2 %3 bkgnd_277 0 204 0 211 %4
+ menu %2 %3 bkgnd_277 0 214 0 218 %4
+ menu %2 %3 bkgnd_277 0 220 0 222 %4
+ menu %2 %3 bkgnd_277 0 228 0 238 %4
+ menu %2 %3 bkgnd_277 0 244 0 245 %4
+ menu %2 %3 bkgnd_278 0 61 0 93 %4
+ menu %2 %3 bkgnd_278 0 193 0 209 %4
+ menu %2 %3 bkgnd_278 0 215 0 218 %4
+ menu %2 %3 bkgnd_278 0 220 0 222 %4
+ menu %2 %3 bkgnd_278 0 228 0 238 %4
+ menu %2 %3 bkgnd_278 0 243 0 248 %4
+ menu %2 %3 bkgnd_279 0 61 0 94 %4
+ menu %2 %3 bkgnd_279 0 194 0 208 %4
+ menu %2 %3 bkgnd_279 0 215 0 218 %4
+ menu %2 %3 bkgnd_279 0 219 0 222 %4
+ menu %2 %3 bkgnd_279 0 227 0 238 %4
+ menu %2 %3 bkgnd_279 0 243 0 249 %4
+ menu %2 %3 bkgnd_280 0 60 0 94 %4
+ menu %2 %3 bkgnd_280 0 194 0 208 %4
+ menu %2 %3 bkgnd_280 0 213 0 222 %4
+ menu %2 %3 bkgnd_280 0 226 0 238 %4
+ menu %2 %3 bkgnd_280 0 243 0 249 %4
+ menu %2 %3 bkgnd_281 0 60 0 94 %4
+ menu %2 %3 bkgnd_281 0 194 0 209 %4
+ menu %2 %3 bkgnd_281 0 212 0 222 %4
+ menu %2 %3 bkgnd_281 0 225 0 238 %4
+ menu %2 %3 bkgnd_281 0 243 0 248 %4
+ menu %2 %3 bkgnd_282 0 55 0 95 %4
+ menu %2 %3 bkgnd_282 0 193 0 209 %4
+ menu %2 %3 bkgnd_282 0 212 0 237 %4
+ menu %2 %3 bkgnd_282 0 243 0 249 %4
+ menu %2 %3 bkgnd_283 0 52 0 95 %4
+ menu %2 %3 bkgnd_283 0 193 0 206 %4
+ menu %2 %3 bkgnd_283 0 212 0 213 %4
+ menu %2 %3 bkgnd_283 0 215 0 237 %4
+ menu %2 %3 bkgnd_283 0 242 0 249 %4
+ menu %2 %3 bkgnd_284 0 51 0 95 %4
+ menu %2 %3 bkgnd_284 0 193 0 204 %4
+ menu %2 %3 bkgnd_284 0 215 0 236 %4
+ menu %2 %3 bkgnd_284 0 237 0 239 %4
+ menu %2 %3 bkgnd_284 0 241 0 249 %4
+ menu %2 %3 bkgnd_285 0 51 0 74 %4
+ menu %2 %3 bkgnd_285 0 76 0 96 %4
+ menu %2 %3 bkgnd_285 0 193 0 249 %4
+ menu %2 %3 bkgnd_286 0 51 0 67 %4
+ menu %2 %3 bkgnd_286 0 69 0 75 %4
+ menu %2 %3 bkgnd_286 0 80 0 96 %4
+ menu %2 %3 bkgnd_286 0 193 0 248 %4
+ menu %2 %3 bkgnd_287 0 55 0 57 %4
+ menu %2 %3 bkgnd_287 0 58 0 60 %4
+ menu %2 %3 bkgnd_287 0 61 0 66 %4
+ menu %2 %3 bkgnd_287 0 71 0 77 %4
+ menu %2 %3 bkgnd_287 0 80 0 94 %4
+ menu %2 %3 bkgnd_287 0 194 0 199 %4
+ menu %2 %3 bkgnd_287 0 201 0 245 %4
+ menu %2 %3 bkgnd_288 0 71 0 78 %4
+ menu %2 %3 bkgnd_288 0 80 0 94 %4
+ menu %2 %3 bkgnd_288 0 203 0 244 %4
+ menu %2 %3 bkgnd_289 0 71 0 78 %4
+ menu %2 %3 bkgnd_289 0 79 0 94 %4
+ menu %2 %3 bkgnd_289 0 204 0 244 %4
+ menu %2 %3 bkgnd_290 0 71 0 77 %4
+ menu %2 %3 bkgnd_290 0 79 0 94 %4
+ menu %2 %3 bkgnd_290 0 204 0 244 %4
+ menu %2 %3 bkgnd_291 0 70 0 78 %4
+ menu %2 %3 bkgnd_291 0 80 0 94 %4
+ menu %2 %3 bkgnd_291 0 205 0 244 %4
+ menu %2 %3 bkgnd_292 0 70 0 78 %4
+ menu %2 %3 bkgnd_292 0 86 0 90 %4
+ menu %2 %3 bkgnd_292 0 207 0 244 %4
+ menu %2 %3 bkgnd_293 0 70 0 78 %4
+ menu %2 %3 bkgnd_293 0 86 0 90 %4
+ menu %2 %3 bkgnd_293 0 209 0 244 %4
+ menu %2 %3 bkgnd_294 0 69 0 78 %4
+ menu %2 %3 bkgnd_294 0 88 0 90 %4
+ menu %2 %3 bkgnd_294 0 210 0 240 %4
+ menu %2 %3 bkgnd_295 0 69 0 74 %4
+ menu %2 %3 bkgnd_295 0 76 0 77 %4
+ menu %2 %3 bkgnd_295 0 88 0 90 %4
+ menu %2 %3 bkgnd_295 0 211 0 240 %4
+ menu %2 %3 bkgnd_296 0 69 0 72 %4
+ menu %2 %3 bkgnd_296 0 89 0 90 %4
+ menu %2 %3 bkgnd_296 0 212 0 221 %4
+ menu %2 %3 bkgnd_296 0 222 0 240 %4
+ menu %2 %3 bkgnd_297 0 213 0 241 %4
+ menu %2 %3 bkgnd_298 0 215 0 241 %4
+ menu %2 %3 bkgnd_299 0 218 0 241 %4
+ menu %2 %3 bkgnd_300 0 219 0 241 %4
+ menu %2 %3 bkgnd_284 0 146 0 149 %4 ; 284-288, 143-143 is Sea Market
+ menu %2 %3 bkgnd_285 0 143 0 145 %4
+ menu %2 %3 bkgnd_285 0 147 0 147 %4
+ menu %2 %3 bkgnd_285 0 149 0 150 %4
+ menu %2 %3 bkgnd_286 0 143 0 149 %4
+ menu %2 %3 bkgnd_287 0 145 0 145 %4
+ menu %2 %3 bkgnd_287 0 147 0 147 %4
+ menu %2 %3 bkgnd_287 0 149 0 149 %4
+ menu %2 %3 bkgnd_288 0 146 0 149 %4
+ menu %2 %3 bkgnd_251 0 201 0 202 %4 ; 251-273, 192-222 is volcano area of fire island (trammel)
+ menu %2 %3 bkgnd_252 0 200 0 201 %4
+ menu %2 %3 bkgnd_253 0 200 0 203 %4
+ menu %2 %3 bkgnd_254 0 194 0 213 %4
+ menu %2 %3 bkgnd_255 0 194 0 214 %4
+ menu %2 %3 bkgnd_256 0 193 0 215 %4
+ menu %2 %3 bkgnd_257 0 192 0 217 %4
+ menu %2 %3 bkgnd_258 0 192 0 221 %4
+ menu %2 %3 bkgnd_259 0 192 0 222 %4
+ menu %2 %3 bkgnd_260 0 192 0 222 %4
+ menu %2 %3 bkgnd_261 0 192 0 222 %4
+ menu %2 %3 bkgnd_262 0 192 0 222 %4
+ menu %2 %3 bkgnd_263 0 192 0 222 %4
+ menu %2 %3 bkgnd_264 0 193 0 221 %4
+ menu %2 %3 bkgnd_265 0 193 0 218 %4
+ menu %2 %3 bkgnd_266 0 193 0 217 %4
+ menu %2 %3 bkgnd_267 0 193 0 216 %4
+ menu %2 %3 bkgnd_268 0 193 0 216 %4
+ menu %2 %3 bkgnd_269 0 198 0 200 %4
+ menu %2 %3 bkgnd_269 0 203 0 216 %4
+ menu %2 %3 bkgnd_270 0 202 0 216 %4
+ menu %2 %3 bkgnd_271 0 204 0 216 %4
+ menu %2 %3 bkgnd_272 0 203 0 217 %4
+ menu %2 %3 bkgnd_273 0 197 0 199 %4
+ menu %2 %3 bkgnd_273 0 204 0 218 %4
+ menu %2 %3 bkgnd_257 0 226 0 229 %4 ; trammel volcano on fire island (this fills in gaps - but doesn't take away some pixels)
+ menu %2 %3 bkgnd_258 0 226 0 230 %4
+ menu %2 %3 bkgnd_259 0 225 0 229 %4
+ menu %2 %3 bkgnd_260 0 225 0 235 %4
+ menu %2 %3 bkgnd_261 0 225 0 236 %4
+ menu %2 %3 bkgnd_262 0 225 0 229 %4
+ menu %2 %3 bkgnd_263 0 225 0 228 %4
+ menu %2 %3 bkgnd_264 0 225 0 228 %4
+ menu %2 %3 bkgnd_265 0 226 0 227 %4
+ menu %2 %3 bkgnd_266 0 226 0 227 %4
+ menu %2 %3 bkgnd_267 0 225 0 227 %4
+ menu %2 %3 bkgnd_268 0 227 0 227 %4
+ menu %2 %3 bkgnd_269 0 227 0 227 %4
+ menu %2 %3 bkgnd_270 0 228 0 228 %4
+ menu %2 %3 bkgnd_271 0 227 0 228 %4
+ menu %2 %3 bkgnd_272 0 227 0 228 %4
+ menu %2 %3 bkgnd_273 0 227 0 229 %4
+ menu %2 %3 bkgnd_274 0 227 0 229 %4
+ menu %2 %3 bkgnd_275 0 227 0 228 %4
+ menu %2 %3 bkgnd_276 0 227 0 228 %4
+ menu %2 %3 bkgnd_277 0 226 0 227 %4
+ menu %2 %3 bkgnd_278 0 204 0 227 %4
+ menu %2 %3 bkgnd_279 0 192 0 226 %4
+ menu %2 %3 bkgnd_280 0 194 0 225 %4
+ menu %2 %3 bkgnd_281 0 193 0 224 %4
+ menu %2 %3 bkgnd_282 0 192 0 211 %4
+ menu %2 %3 bkgnd_283 0 192 0 214 %4
+ menu %2 %3 bkgnd_284 0 192 0 214 %4
+ menu %2 %3 bkgnd_285 0 192 0 192 %4
+ menu %2 %3 bkgnd_286 0 192 0 192 %4
+ menu %2 %3 bkgnd_287 0 200 0 246 %4
+ menu %2 %3 bkgnd_288 0 195 0 197 %4
+ menu %2 %3 bkgnd_288 0 245 0 245 %4
+ menu %2 %3 bkgnd_292 0 206 0 206 %4
+ menu %2 %3 bkgnd_293 0 206 0 208 %4
+ menu %2 %3 bkgnd_294 0 241 0 243 %4
+ menu %2 %3 bkgnd_295 0 242 0 243 %4
+ menu %2 %3 bkgnd_298 0 212 0 214 %4
+ menu %2 %3 bkgnd_299 0 216 0 217 %4
+ menu %2 %3 bkgnd_301 0 221 0 237 %4
+ menu %2 %3 bkgnd_301 0 239 0 241 %4
+ menu %2 %3 bkgnd_302 0 223 0 235 %4
+ menu %2 %3 bkgnd_303 0 224 0 234 %4
+ menu %2 %3 bkgnd_304 0 223 0 234 %4
+ menu %2 %3 bkgnd_305 0 228 0 233 %4 ; end trammel volcano on fire island
+ menu %2 %3 bkgnd_26 0 204 0 205 %4  ; Approximate serpent pillar west of Jhelom
+ menu %2 %3 bkgnd_186 0 180 0 181 %4 ; Approximate serpent pillar east of Trinsic
+
+ if %MapMountainColor <> n/a
+  {
+  menu %2 %3 bkgnd_16 0 89 0 89 %5
+  menu %2 %3 bkgnd_17 0 87 0  %5
+  menu %2 %3 bkgnd_18 0 86 0  %5
+  menu %2 %3 bkgnd_19 0 86 0  %5
+  menu %2 %3 bkgnd_20 0 86 0  %5
+  menu %2 %3 bkgnd_21 0 86 0 91 %5
+  menu %2 %3 bkgnd_21 0 93 0 94 %5
+  menu %2 %3 bkgnd_22 0 86 0 91 %5
+  menu %2 %3 bkgnd_22 0 94 0 95 %5
+  menu %2 %3 bkgnd_23 0 87 0 91 %5
+  menu %2 %3 bkgnd_23 0 94 0 96 %5
+  menu %2 %3 bkgnd_24 0 87 0 91 %5
+  menu %2 %3 bkgnd_24 0 93 0 97 %5
+  menu %2 %3 bkgnd_25 0 87 0 90 %5
+  menu %2 %3 bkgnd_25 0 92 0 97 %5
+  menu %2 %3 bkgnd_26 0 88 0 89 %5
+  menu %2 %3 bkgnd_26 0 92 0 98 %5
+  menu %2 %3 bkgnd_27 0 88 0 89 %5
+  menu %2 %3 bkgnd_27 0 91 0 98 %5
+  menu %2 %3 bkgnd_28 0 90 0 98 %5
+  menu %2 %3 bkgnd_29 0 90 0 98 %5
+  menu %2 %3 bkgnd_30 0 92 0 98 %5
+  menu %2 %3 bkgnd_31 0 92 0 98 %5
+  menu %2 %3 bkgnd_32 0 92 0 97 %5
+  menu %2 %3 bkgnd_33 0 93 0 98 %5
+  menu %2 %3 bkgnd_34 0 93 0 100 %5
+  menu %2 %3 bkgnd_35 0 94 0 101 %5
+  menu %2 %3 bkgnd_36 0 94 0 102 %5
+  menu %2 %3 bkgnd_37 0 94 0 103 %5
+  menu %2 %3 bkgnd_38 0 94 0 103 %5
+  menu %2 %3 bkgnd_39 0 95 0 104 %5
+  menu %2 %3 bkgnd_40 0 88 0 89 %5
+  menu %2 %3 bkgnd_40 0 95 0 104 %5
+  menu %2 %3 bkgnd_40 0 132 0 133 %5
+  menu %2 %3 bkgnd_41 0 48 0 49 %5
+  menu %2 %3 bkgnd_41 0 96 0 105 %5
+  menu %2 %3 bkgnd_41 0 132 0 133 %5
+  menu %2 %3 bkgnd_42 0 48 0 49 %5
+  menu %2 %3 bkgnd_42 0 97 0 105 %5
+  menu %2 %3 bkgnd_43 0 50 0 51 %5
+  menu %2 %3 bkgnd_43 0 98 0 106 %5
+  menu %2 %3 bkgnd_44 0 50 0 51 %5
+  menu %2 %3 bkgnd_44 0 98 0 106 %5
+  menu %2 %3 bkgnd_45 0 98 0 106 %5
+  menu %2 %3 bkgnd_46 0 79 0 80 %5
+  menu %2 %3 bkgnd_46 0 99 0 106 %5
+  menu %2 %3 bkgnd_47 0 74 0 75 %5
+  menu %2 %3 bkgnd_47 0 79 0 80 %5
+  menu %2 %3 bkgnd_47 0 91 0 92 %5
+  menu %2 %3 bkgnd_47 0 99 0 106 %5
+  menu %2 %3 bkgnd_47 0 116 0 117 %5
+  menu %2 %3 bkgnd_48 0 38 0 39 %5
+  menu %2 %3 bkgnd_48 0 46 0 47 %5
+  menu %2 %3 bkgnd_48 0 74 0 75 %5
+  menu %2 %3 bkgnd_48 0 91 0 92 %5
+  menu %2 %3 bkgnd_48 0 99 0 106 %5
+  menu %2 %3 bkgnd_48 0 116 0 117 %5
+  menu %2 %3 bkgnd_49 0 38 0 39 %5
+  menu %2 %3 bkgnd_49 0 46 0 47 %5
+  menu %2 %3 bkgnd_49 0 99 0 105 %5
+  menu %2 %3 bkgnd_50 0 78 0 79 %5
+  menu %2 %3 bkgnd_50 0 100 0 105 %5
+  menu %2 %3 bkgnd_51 0 78 0 79 %5
+  menu %2 %3 bkgnd_51 0 103 0 105 %5
+  menu %2 %3 bkgnd_52 0 37 0 38 %5
+  menu %2 %3 bkgnd_52 0 82 0 84 %5
+  menu %2 %3 bkgnd_53 0 37 0 38 %5
+  menu %2 %3 bkgnd_53 0 52 0 53 %5
+  menu %2 %3 bkgnd_53 0 81 0 86 %5
+  menu %2 %3 bkgnd_54 0 52 0 53 %5
+  menu %2 %3 bkgnd_54 0 81 0 87 %5
+  menu %2 %3 bkgnd_55 0 57 0 58 %5
+  menu %2 %3 bkgnd_55 0 81 0 89 %5
+  menu %2 %3 bkgnd_56 0 57 0 58 %5
+  menu %2 %3 bkgnd_56 0 81 0 92 %5
+  menu %2 %3 bkgnd_57 0 81 0 94 %5
+  menu %2 %3 bkgnd_58 0 71 0 72 %5
+  menu %2 %3 bkgnd_58 0 81 0 97 %5
+  menu %2 %3 bkgnd_59 0 59 0 60 %5
+  menu %2 %3 bkgnd_59 0 71 0 72 %5
+  menu %2 %3 bkgnd_59 0 82 0 98 %5
+  menu %2 %3 bkgnd_60 0 59 0 60 %5
+  menu %2 %3 bkgnd_60 0 83 0 99 %5
+  menu %2 %3 bkgnd_60 0 138 0 139 %5
+  menu %2 %3 bkgnd_61 0 84 0 100 %5
+  menu %2 %3 bkgnd_61 0 131 0 133 %5
+  menu %2 %3 bkgnd_61 0 138 0 139 %5
+  menu %2 %3 bkgnd_62 0 86 0 100 %5
+  menu %2 %3 bkgnd_62 0 131 0 133 %5
+  menu %2 %3 bkgnd_63 0 88 0 101 %5
+  menu %2 %3 bkgnd_63 0 107 0 108 %5
+  menu %2 %3 bkgnd_64 0 90 0 103 %5
+  menu %2 %3 bkgnd_64 0 107 0 108 %5
+  menu %2 %3 bkgnd_65 0 91 0 103 %5
+  menu %2 %3 bkgnd_65 0 112 0 113 %5
+  menu %2 %3 bkgnd_65 0 158 0 163 %5
+  menu %2 %3 bkgnd_66 0 93 0 106 %5
+  menu %2 %3 bkgnd_66 0 110 0 119 %5
+  menu %2 %3 bkgnd_66 0 158 0 164 %5
+  menu %2 %3 bkgnd_67 0 79 0 85 %5
+  menu %2 %3 bkgnd_67 0 91 0 120 %5
+  menu %2 %3 bkgnd_67 0 158 0 169 %5
+  menu %2 %3 bkgnd_68 0 77 0 87 %5
+  menu %2 %3 bkgnd_68 0 88 0 121 %5
+  menu %2 %3 bkgnd_68 0 158 0 169 %5
+  menu %2 %3 bkgnd_69 0 72 0 73 %5
+  menu %2 %3 bkgnd_69 0 76 0 121 %5
+  menu %2 %3 bkgnd_69 0 123 0 126 %5
+  menu %2 %3 bkgnd_69 0 158 0 169 %5
+  menu %2 %3 bkgnd_70 0 72 0 73 %5
+  menu %2 %3 bkgnd_70 0 74 0 100 %5
+  menu %2 %3 bkgnd_70 0 104 0 112 %5
+  menu %2 %3 bkgnd_70 0 114 0 127 %5
+  menu %2 %3 bkgnd_70 0 158 0 168 %5
+  menu %2 %3 bkgnd_71 0 53 0 54 %5
+  menu %2 %3 bkgnd_71 0 73 0 99 %5
+  menu %2 %3 bkgnd_71 0 104 0 110 %5
+  menu %2 %3 bkgnd_71 0 115 0 127 %5
+  menu %2 %3 bkgnd_71 0 158 0 166 %5
+  menu %2 %3 bkgnd_72 0 53 0 54 %5
+  menu %2 %3 bkgnd_72 0 73 0 96 %5
+  menu %2 %3 bkgnd_72 0 105 0 111 %5
+  menu %2 %3 bkgnd_72 0 116 0 127 %5
+  menu %2 %3 bkgnd_72 0 158 0 166 %5
+  menu %2 %3 bkgnd_73 0 72 0 96 %5
+  menu %2 %3 bkgnd_73 0 97 0 98 %5
+  menu %2 %3 bkgnd_73 0 108 0 111 %5
+  menu %2 %3 bkgnd_73 0 117 0 127 %5
+  menu %2 %3 bkgnd_73 0 159 0 166 %5
+  menu %2 %3 bkgnd_73 0 224 0 225 %5
+  menu %2 %3 bkgnd_74 0 49 0 50 %5
+  menu %2 %3 bkgnd_74 0 70 0 84 %5
+  menu %2 %3 bkgnd_74 0 87 0 95 %5
+  menu %2 %3 bkgnd_74 0 97 0 98 %5
+  menu %2 %3 bkgnd_74 0 109 0 112 %5
+  menu %2 %3 bkgnd_74 0 118 0 127 %5
+  menu %2 %3 bkgnd_74 0 160 0 165 %5
+  menu %2 %3 bkgnd_74 0 224 0 225 %5
+  menu %2 %3 bkgnd_75 0 49 0 50 %5
+  menu %2 %3 bkgnd_75 0 68 0 84 %5
+  menu %2 %3 bkgnd_75 0 90 0 91 %5
+  menu %2 %3 bkgnd_75 0 109 0 112 %5
+  menu %2 %3 bkgnd_75 0 119 0 127 %5
+  menu %2 %3 bkgnd_75 0 160 0 166 %5
+  menu %2 %3 bkgnd_76 0 65 0 83 %5
+  menu %2 %3 bkgnd_76 0 122 0 127 %5
+  menu %2 %3 bkgnd_76 0 156 0 157 %5
+  menu %2 %3 bkgnd_76 0 161 0 167 %5
+  menu %2 %3 bkgnd_77 0 62 0 83 %5
+  menu %2 %3 bkgnd_77 0 122 0 125 %5
+  menu %2 %3 bkgnd_77 0 156 0 157 %5
+  menu %2 %3 bkgnd_77 0 161 0 169 %5
+  menu %2 %3 bkgnd_78 0 59 0 78 %5
+  menu %2 %3 bkgnd_78 0 79 0 81 %5
+  menu %2 %3 bkgnd_78 0 162 0 169 %5
+  menu %2 %3 bkgnd_79 0 57 0 78 %5
+  menu %2 %3 bkgnd_79 0 79 0 80 %5
+  menu %2 %3 bkgnd_79 0 162 0 166 %5
+  menu %2 %3 bkgnd_79 0 167 0 169 %5
+  menu %2 %3 bkgnd_79 0 233 0 234 %5
+  menu %2 %3 bkgnd_80 0 56 0 80 %5
+  menu %2 %3 bkgnd_80 0 161 0 166 %5
+  menu %2 %3 bkgnd_80 0 167 0 169 %5
+  menu %2 %3 bkgnd_80 0 233 0 234 %5
+  menu %2 %3 bkgnd_81 0 56 0 80 %5
+  menu %2 %3 bkgnd_81 0 84 0 85 %5
+  menu %2 %3 bkgnd_81 0 161 0 166 %5
+  menu %2 %3 bkgnd_82 0 20 0 21 %5
+  menu %2 %3 bkgnd_82 0 56 0 67 %5
+  menu %2 %3 bkgnd_82 0 68 0 79 %5
+  menu %2 %3 bkgnd_82 0 84 0 85 %5
+  menu %2 %3 bkgnd_82 0 161 0 167 %5
+  menu %2 %3 bkgnd_83 0 20 0 21 %5
+  menu %2 %3 bkgnd_83 0 60 0 61 %5
+  menu %2 %3 bkgnd_83 0 62 0 66 %5
+  menu %2 %3 bkgnd_83 0 69 0 78 %5
+  menu %2 %3 bkgnd_83 0 162 0 170 %5
+  menu %2 %3 bkgnd_83 0 171 0 172 %5
+  menu %2 %3 bkgnd_84 0 55 0 66 %5
+  menu %2 %3 bkgnd_84 0 68 0 78 %5
+  menu %2 %3 bkgnd_84 0 163 0 172 %5
+  menu %2 %3 bkgnd_85 0 54 0 77 %5
+  menu %2 %3 bkgnd_85 0 94 0 95 %5
+  menu %2 %3 bkgnd_85 0 163 0 171 %5
+  menu %2 %3 bkgnd_86 0 53 0 57 %5
+  menu %2 %3 bkgnd_86 0 58 0 62 %5
+  menu %2 %3 bkgnd_86 0 63 0 78 %5
+  menu %2 %3 bkgnd_86 0 94 0 95 %5
+  menu %2 %3 bkgnd_86 0 163 0 171 %5
+  menu %2 %3 bkgnd_86 0 173 0 174 %5
+  menu %2 %3 bkgnd_86 0 196 0 197 %5
+  menu %2 %3 bkgnd_87 0 52 0 62 %5
+  menu %2 %3 bkgnd_87 0 63 0 70 %5
+  menu %2 %3 bkgnd_87 0 71 0 78 %5
+  menu %2 %3 bkgnd_87 0 107 0 108 %5
+  menu %2 %3 bkgnd_87 0 121 0 122 %5
+  menu %2 %3 bkgnd_87 0 165 0 175 %5
+  menu %2 %3 bkgnd_87 0 179 0 183 %5
+  menu %2 %3 bkgnd_87 0 196 0 197 %5
+  menu %2 %3 bkgnd_88 0 51 0 54 %5
+  menu %2 %3 bkgnd_88 0 55 0 60 %5
+  menu %2 %3 bkgnd_88 0 61 0 62 %5
+  menu %2 %3 bkgnd_88 0 63 0 69 %5
+  menu %2 %3 bkgnd_88 0 72 0 78 %5
+  menu %2 %3 bkgnd_88 0 107 0 108 %5
+  menu %2 %3 bkgnd_88 0 121 0 122 %5
+  menu %2 %3 bkgnd_88 0 166 0 175 %5
+  menu %2 %3 bkgnd_88 0 178 0 184 %5
+  menu %2 %3 bkgnd_89 0 51 0 54 %5
+  menu %2 %3 bkgnd_89 0 56 0 62 %5
+  menu %2 %3 bkgnd_89 0 63 0 68 %5
+  menu %2 %3 bkgnd_89 0 73 0 79 %5
+  menu %2 %3 bkgnd_89 0 166 0 184 %5
+  menu %2 %3 bkgnd_90 0 51 0 56 %5
+  menu %2 %3 bkgnd_90 0 57 0 58 %5
+  menu %2 %3 bkgnd_90 0 59 0 61 %5
+  menu %2 %3 bkgnd_90 0 63 0 68 %5
+  menu %2 %3 bkgnd_90 0 73 0 79 %5
+  menu %2 %3 bkgnd_90 0 151 0 152 %5
+  menu %2 %3 bkgnd_90 0 168 0 183 %5
+  menu %2 %3 bkgnd_90 0 188 0 189 %5
+  menu %2 %3 bkgnd_91 0 51 0 68 %5
+  menu %2 %3 bkgnd_91 0 73 0 79 %5
+  menu %2 %3 bkgnd_91 0 151 0 152 %5
+  menu %2 %3 bkgnd_91 0 168 0 186 %5
+  menu %2 %3 bkgnd_91 0 188 0 189 %5
+  menu %2 %3 bkgnd_92 0 51 0 53 %5
+  menu %2 %3 bkgnd_92 0 55 0 67 %5
+  menu %2 %3 bkgnd_92 0 73 0 79 %5
+  menu %2 %3 bkgnd_92 0 169 0 188 %5
+  menu %2 %3 bkgnd_93 0 56 0 60 %5
+  menu %2 %3 bkgnd_93 0 63 0 66 %5
+  menu %2 %3 bkgnd_93 0 72 0 79 %5
+  menu %2 %3 bkgnd_93 0 159 0 160 %5
+  menu %2 %3 bkgnd_93 0 170 0 189 %5
+  menu %2 %3 bkgnd_94 0 71 0 79 %5
+  menu %2 %3 bkgnd_94 0 159 0 160 %5
+  menu %2 %3 bkgnd_94 0 170 0 189 %5
+  menu %2 %3 bkgnd_95 0 71 0 79 %5
+  menu %2 %3 bkgnd_95 0 174 0 177 %5
+  menu %2 %3 bkgnd_95 0 178 0 189 %5
+  menu %2 %3 bkgnd_95 0 196 0 197 %5
+  menu %2 %3 bkgnd_96 0 42 0 43 %5
+  menu %2 %3 bkgnd_96 0 71 0 79 %5
+  menu %2 %3 bkgnd_96 0 181 0 182 %5
+  menu %2 %3 bkgnd_96 0 196 0 197 %5
+  menu %2 %3 bkgnd_97 0 42 0 43 %5
+  menu %2 %3 bkgnd_97 0 70 0 78 %5
+  menu %2 %3 bkgnd_97 0 179 0 180 %5
+  menu %2 %3 bkgnd_97 0 181 0 182 %5
+  menu %2 %3 bkgnd_98 0 70 0 78 %5
+  menu %2 %3 bkgnd_98 0 179 0 180 %5
+  menu %2 %3 bkgnd_98 0 187 0 188 %5
+  menu %2 %3 bkgnd_98 0 190 0 191 %5
+  menu %2 %3 bkgnd_98 0 199 0 202 %5
+  menu %2 %3 bkgnd_99 0 55 0 60 %5
+  menu %2 %3 bkgnd_99 0 70 0 78 %5
+  menu %2 %3 bkgnd_99 0 184 0 185 %5
+  menu %2 %3 bkgnd_99 0 187 0 188 %5
+  menu %2 %3 bkgnd_99 0 190 0 191 %5
+  menu %2 %3 bkgnd_99 0 199 0 202 %5
+  menu %2 %3 bkgnd_99 0 207 0 208 %5
+  menu %2 %3 bkgnd_100 0 54 0 63 %5
+  menu %2 %3 bkgnd_100 0 70 0 78 %5
+  menu %2 %3 bkgnd_100 0 158 0 159 %5
+  menu %2 %3 bkgnd_100 0 184 0 185 %5
+  menu %2 %3 bkgnd_100 0 204 0 206 %5
+  menu %2 %3 bkgnd_100 0 207 0 208 %5
+  menu %2 %3 bkgnd_101 0 53 0 65 %5
+  menu %2 %3 bkgnd_101 0 70 0 78 %5
+  menu %2 %3 bkgnd_101 0 158 0 159 %5
+  menu %2 %3 bkgnd_101 0 204 0 207 %5
+  menu %2 %3 bkgnd_102 0 53 0 66 %5
+  menu %2 %3 bkgnd_102 0 70 0 77 %5
+  menu %2 %3 bkgnd_102 0 162 0 163 %5
+  menu %2 %3 bkgnd_102 0 205 0 208 %5
+  menu %2 %3 bkgnd_103 0 53 0 61 %5
+  menu %2 %3 bkgnd_103 0 62 0 67 %5
+  menu %2 %3 bkgnd_103 0 70 0 77 %5
+  menu %2 %3 bkgnd_103 0 162 0 163 %5
+  menu %2 %3 bkgnd_103 0 183 0 187 %5
+  menu %2 %3 bkgnd_103 0 197 0 198 %5
+  menu %2 %3 bkgnd_103 0 206 0 208 %5
+  menu %2 %3 bkgnd_104 0 53 0 76 %5
+  menu %2 %3 bkgnd_104 0 183 0 189 %5
+  menu %2 %3 bkgnd_104 0 197 0 198 %5
+  menu %2 %3 bkgnd_104 0 207 0 208 %5
+  menu %2 %3 bkgnd_104 0 211 0 212 %5
+  menu %2 %3 bkgnd_105 0 54 0 76 %5
+  menu %2 %3 bkgnd_105 0 183 0 185 %5
+  menu %2 %3 bkgnd_105 0 187 0 189 %5
+  menu %2 %3 bkgnd_105 0 211 0 212 %5
+  menu %2 %3 bkgnd_106 0 55 0 76 %5
+  menu %2 %3 bkgnd_106 0 184 0 187 %5
+  menu %2 %3 bkgnd_106 0 188 0 190 %5
+  menu %2 %3 bkgnd_107 0 55 0 56 %5
+  menu %2 %3 bkgnd_107 0 57 0 76 %5
+  menu %2 %3 bkgnd_107 0 185 0 187 %5
+  menu %2 %3 bkgnd_107 0 188 0 191 %5
+  menu %2 %3 bkgnd_108 0 58 0 62 %5
+  menu %2 %3 bkgnd_108 0 63 0 76 %5
+  menu %2 %3 bkgnd_108 0 96 0 97 %5
+  menu %2 %3 bkgnd_108 0 100 0 101 %5
+  menu %2 %3 bkgnd_108 0 189 0 191 %5
+  menu %2 %3 bkgnd_108 0 198 0 199 %5
+  menu %2 %3 bkgnd_109 0 29 0 30 %5
+  menu %2 %3 bkgnd_109 0 65 0 76 %5
+  menu %2 %3 bkgnd_109 0 96 0 97 %5
+  menu %2 %3 bkgnd_109 0 100 0 101 %5
+  menu %2 %3 bkgnd_109 0 196 0 199 %5
+  menu %2 %3 bkgnd_109 0 217 0 218 %5
+  menu %2 %3 bkgnd_110 0 29 0 30 %5
+  menu %2 %3 bkgnd_110 0 32 0 33 %5
+  menu %2 %3 bkgnd_110 0 53 0 63 %5
+  menu %2 %3 bkgnd_110 0 66 0 74 %5
+  menu %2 %3 bkgnd_110 0 78 0 79 %5
+  menu %2 %3 bkgnd_110 0 99 0 100 %5
+  menu %2 %3 bkgnd_110 0 196 0 198 %5
+  menu %2 %3 bkgnd_110 0 217 0 218 %5
+  menu %2 %3 bkgnd_111 0 32 0 33 %5
+  menu %2 %3 bkgnd_111 0 50 0 64 %5
+  menu %2 %3 bkgnd_111 0 74 0 76 %5
+  menu %2 %3 bkgnd_111 0 78 0 79 %5
+  menu %2 %3 bkgnd_111 0 84 0 85 %5
+  menu %2 %3 bkgnd_111 0 99 0 100 %5
+  menu %2 %3 bkgnd_111 0 214 0 215 %5
+  menu %2 %3 bkgnd_112 0 48 0 77 %5
+  menu %2 %3 bkgnd_112 0 84 0 85 %5
+  menu %2 %3 bkgnd_112 0 214 0 215 %5
+  menu %2 %3 bkgnd_113 0 48 0 77 %5
+  menu %2 %3 bkgnd_113 0 84 0 85 %5
+  menu %2 %3 bkgnd_113 0 194 0 195 %5
+  menu %2 %3 bkgnd_114 0 26 0 27 %5
+  menu %2 %3 bkgnd_114 0 51 0 53 %5
+  menu %2 %3 bkgnd_114 0 54 0 65 %5
+  menu %2 %3 bkgnd_114 0 67 0 77 %5
+  menu %2 %3 bkgnd_114 0 184 0 185 %5
+  menu %2 %3 bkgnd_114 0 194 0 195 %5
+  menu %2 %3 bkgnd_114 0 218 0 219 %5
+  menu %2 %3 bkgnd_115 0 26 0 27 %5
+  menu %2 %3 bkgnd_115 0 51 0 52 %5
+  menu %2 %3 bkgnd_115 0 57 0 59 %5
+  menu %2 %3 bkgnd_115 0 61 0 65 %5
+  menu %2 %3 bkgnd_115 0 71 0 76 %5
+  menu %2 %3 bkgnd_115 0 87 0 88 %5
+  menu %2 %3 bkgnd_115 0 89 0 90 %5
+  menu %2 %3 bkgnd_115 0 156 0 157 %5
+  menu %2 %3 bkgnd_115 0 184 0 185 %5
+  menu %2 %3 bkgnd_115 0 218 0 219 %5
+  menu %2 %3 bkgnd_116 0 57 0 59 %5
+  menu %2 %3 bkgnd_116 0 61 0 64 %5
+  menu %2 %3 bkgnd_116 0 73 0 74 %5
+  menu %2 %3 bkgnd_116 0 87 0 88 %5
+  menu %2 %3 bkgnd_116 0 89 0 90 %5
+  menu %2 %3 bkgnd_116 0 156 0 157 %5
+  menu %2 %3 bkgnd_117 0 20 0 23 %5
+  menu %2 %3 bkgnd_117 0 61 0 63 %5
+  menu %2 %3 bkgnd_117 0 198 0 199 %5
+  menu %2 %3 bkgnd_118 0 12 0 13 %5
+  menu %2 %3 bkgnd_118 0 17 0 27 %5
+  menu %2 %3 bkgnd_118 0 61 0 63 %5
+  menu %2 %3 bkgnd_118 0 198 0 199 %5
+  menu %2 %3 bkgnd_119 0 12 0 13 %5
+  menu %2 %3 bkgnd_119 0 16 0 27 %5
+  menu %2 %3 bkgnd_119 0 61 0 63 %5
+  menu %2 %3 bkgnd_120 0 15 0 23 %5
+  menu %2 %3 bkgnd_120 0 24 0 27 %5
+  menu %2 %3 bkgnd_120 0 61 0 63 %5
+  menu %2 %3 bkgnd_120 0 195 0 196 %5
+  menu %2 %3 bkgnd_121 0 15 0 23 %5
+  menu %2 %3 bkgnd_121 0 24 0 27 %5
+  menu %2 %3 bkgnd_121 0 60 0 62 %5
+  menu %2 %3 bkgnd_121 0 195 0 196 %5
+  menu %2 %3 bkgnd_122 0 4 0 6 %5
+  menu %2 %3 bkgnd_122 0 14 0 20 %5
+  menu %2 %3 bkgnd_122 0 59 0 62 %5
+  menu %2 %3 bkgnd_123 0 4 0 7 %5
+  menu %2 %3 bkgnd_123 0 13 0 20 %5
+  menu %2 %3 bkgnd_123 0 41 0 42 %5
+  menu %2 %3 bkgnd_123 0 58 0 61 %5
+  menu %2 %3 bkgnd_124 0 4 0 7 %5
+  menu %2 %3 bkgnd_124 0 12 0 19 %5
+  menu %2 %3 bkgnd_124 0 41 0 42 %5
+  menu %2 %3 bkgnd_124 0 57 0 60 %5
+  menu %2 %3 bkgnd_124 0 172 0 173 %5
+  menu %2 %3 bkgnd_125 0 5 0 7 %5
+  menu %2 %3 bkgnd_125 0 11 0 19 %5
+  menu %2 %3 bkgnd_125 0 56 0 59 %5
+  menu %2 %3 bkgnd_125 0 172 0 173 %5
+  menu %2 %3 bkgnd_125 0 207 0 208 %5
+  menu %2 %3 bkgnd_126 0 10 0 16 %5
+  menu %2 %3 bkgnd_126 0 18 0 20 %5
+  menu %2 %3 bkgnd_126 0 56 0 58 %5
+  menu %2 %3 bkgnd_126 0 169 0 170 %5
+  menu %2 %3 bkgnd_126 0 207 0 208 %5
+  menu %2 %3 bkgnd_127 0 9 0 15 %5
+  menu %2 %3 bkgnd_127 0 18 0 23 %5
+  menu %2 %3 bkgnd_127 0 54 0 57 %5
+  menu %2 %3 bkgnd_127 0 169 0 170 %5
+  menu %2 %3 bkgnd_127 0 216 0 217 %5
+  menu %2 %3 bkgnd_128 0 8 0 14 %5
+  menu %2 %3 bkgnd_128 0 17 0 24 %5
+  menu %2 %3 bkgnd_128 0 54 0 56 %5
+  menu %2 %3 bkgnd_128 0 216 0 217 %5
+  menu %2 %3 bkgnd_128 0 221 0 222 %5
+  menu %2 %3 bkgnd_129 0 8 0 25 %5
+  menu %2 %3 bkgnd_129 0 221 0 222 %5
+  menu %2 %3 bkgnd_130 0 12 0 25 %5
+  menu %2 %3 bkgnd_130 0 76 0 77 %5
+  menu %2 %3 bkgnd_131 0 13 0 23 %5
+  menu %2 %3 bkgnd_131 0 76 0 77 %5
+  menu %2 %3 bkgnd_131 0 208 0 209 %5
+  menu %2 %3 bkgnd_131 0 211 0 212 %5
+  menu %2 %3 bkgnd_132 0 16 0 22 %5
+  menu %2 %3 bkgnd_132 0 76 0 77 %5
+  menu %2 %3 bkgnd_132 0 208 0 209 %5
+  menu %2 %3 bkgnd_132 0 211 0 212 %5
+  menu %2 %3 bkgnd_133 0 17 0 21 %5
+  menu %2 %3 bkgnd_133 0 76 0 77 %5
+  menu %2 %3 bkgnd_133 0 187 0 188 %5
+  menu %2 %3 bkgnd_134 0 187 0 188 %5
+  menu %2 %3 bkgnd_136 0 75 0 77 %5
+  menu %2 %3 bkgnd_137 0 72 0 80 %5
+  menu %2 %3 bkgnd_138 0 17 0 18 %5
+  menu %2 %3 bkgnd_138 0 70 0 80 %5
+  menu %2 %3 bkgnd_139 0 17 0 18 %5
+  menu %2 %3 bkgnd_139 0 30 0 31 %5
+  menu %2 %3 bkgnd_139 0 70 0 73 %5
+  menu %2 %3 bkgnd_139 0 76 0 80 %5
+  menu %2 %3 bkgnd_140 0 30 0 31 %5
+  menu %2 %3 bkgnd_140 0 77 0 80 %5
+  menu %2 %3 bkgnd_141 0 25 0 26 %5
+  menu %2 %3 bkgnd_141 0 27 0 29 %5
+  menu %2 %3 bkgnd_141 0 78 0 80 %5
+  menu %2 %3 bkgnd_142 0 25 0 26 %5
+  menu %2 %3 bkgnd_142 0 27 0 29 %5
+  menu %2 %3 bkgnd_142 0 36 0 37 %5
+  menu %2 %3 bkgnd_142 0 78 0 80 %5
+  menu %2 %3 bkgnd_143 0 36 0 37 %5
+  menu %2 %3 bkgnd_143 0 78 0 79 %5
+  menu %2 %3 bkgnd_145 0 50 0 51 %5
+  menu %2 %3 bkgnd_145 0 52 0 54 %5
+  menu %2 %3 bkgnd_146 0 50 0 54 %5
+  menu %2 %3 bkgnd_146 0 56 0 59 %5
+  menu %2 %3 bkgnd_147 0 50 0 52 %5
+  menu %2 %3 bkgnd_147 0 53 0 54 %5
+  menu %2 %3 bkgnd_147 0 55 0 59 %5
+  menu %2 %3 bkgnd_147 0 78 0 79 %5
+  menu %2 %3 bkgnd_148 0 1 0 3 %5
+  menu %2 %3 bkgnd_148 0 6 0 10 %5
+  menu %2 %3 bkgnd_148 0 52 0 54 %5
+  menu %2 %3 bkgnd_148 0 55 0 56 %5
+  menu %2 %3 bkgnd_148 0 57 0 59 %5
+  menu %2 %3 bkgnd_148 0 78 0 79 %5
+  menu %2 %3 bkgnd_149 0 1 0 13 %5
+  menu %2 %3 bkgnd_149 0 52 0 56 %5
+  menu %2 %3 bkgnd_149 0 57 0 59 %5
+  menu %2 %3 bkgnd_150 0 1 0 13 %5
+  menu %2 %3 bkgnd_150 0 52 0 56 %5
+  menu %2 %3 bkgnd_150 0 58 0 59 %5
+  menu %2 %3 bkgnd_151 0 1 0 13 %5
+  menu %2 %3 bkgnd_151 0 52 0 56 %5
+  menu %2 %3 bkgnd_151 0 57 0 58 %5
+  menu %2 %3 bkgnd_152 0 2 0 11 %5
+  menu %2 %3 bkgnd_152 0 12 0 13 %5
+  menu %2 %3 bkgnd_152 0 52 0 58 %5
+  menu %2 %3 bkgnd_153 0 2 0 6 %5
+  menu %2 %3 bkgnd_153 0 7 0 11 %5
+  menu %2 %3 bkgnd_153 0 53 0 55 %5
+  menu %2 %3 bkgnd_153 0 56 0 59 %5
+  menu %2 %3 bkgnd_154 0 1 0 6 %5
+  menu %2 %3 bkgnd_154 0 7 0 9 %5
+  menu %2 %3 bkgnd_154 0 53 0 56 %5
+  menu %2 %3 bkgnd_154 0 57 0 59 %5
+  menu %2 %3 bkgnd_155 0 1 0 5 %5
+  menu %2 %3 bkgnd_155 0 52 0 54 %5
+  menu %2 %3 bkgnd_155 0 55 0 59 %5
+  menu %2 %3 bkgnd_156 0 2 0 5 %5
+  menu %2 %3 bkgnd_156 0 52 0 59 %5
+  menu %2 %3 bkgnd_156 0 62 0 63 %5
+  menu %2 %3 bkgnd_157 0 3 0 5 %5
+  menu %2 %3 bkgnd_157 0 52 0 58 %5
+  menu %2 %3 bkgnd_157 0 62 0 63 %5
+  menu %2 %3 bkgnd_158 0 3 0 5 %5
+  menu %2 %3 bkgnd_158 0 53 0 58 %5
+  menu %2 %3 bkgnd_159 0 2 0 4 %5
+  menu %2 %3 bkgnd_159 0 53 0 59 %5
+  menu %2 %3 bkgnd_160 0 1 0 4 %5
+  menu %2 %3 bkgnd_160 0 25 0 31 %5
+  menu %2 %3 bkgnd_160 0 53 0 59 %5
+  menu %2 %3 bkgnd_160 0 70 0 71 %5
+  menu %2 %3 bkgnd_161 0 1 0 4 %5
+  menu %2 %3 bkgnd_161 0 25 0 31 %5
+  menu %2 %3 bkgnd_161 0 53 0 59 %5
+  menu %2 %3 bkgnd_161 0 70 0 71 %5
+  menu %2 %3 bkgnd_162 0 1 0 5 %5
+  menu %2 %3 bkgnd_162 0 25 0 30 %5
+  menu %2 %3 bkgnd_162 0 53 0 55 %5
+  menu %2 %3 bkgnd_162 0 56 0 59 %5
+  menu %2 %3 bkgnd_162 0 65 0 66 %5
+  menu %2 %3 bkgnd_162 0 128 0 129 %5
+  menu %2 %3 bkgnd_163 0 2 0 5 %5
+  menu %2 %3 bkgnd_163 0 26 0 29 %5
+  menu %2 %3 bkgnd_163 0 53 0 55 %5
+  menu %2 %3 bkgnd_163 0 56 0 57 %5
+  menu %2 %3 bkgnd_163 0 65 0 66 %5
+  menu %2 %3 bkgnd_163 0 128 0 129 %5
+  menu %2 %3 bkgnd_164 0 2 0 5 %5
+  menu %2 %3 bkgnd_164 0 27 0 29 %5
+  menu %2 %3 bkgnd_164 0 53 0 55 %5
+  menu %2 %3 bkgnd_164 0 56 0 57 %5
+  menu %2 %3 bkgnd_165 0 1 0 3 %5
+  menu %2 %3 bkgnd_165 0 4 0 6 %5
+  menu %2 %3 bkgnd_165 0 56 0 57 %5
+  menu %2 %3 bkgnd_166 0 1 0 6 %5
+  menu %2 %3 bkgnd_166 0 12 0 16 %5
+  menu %2 %3 bkgnd_167 0 1 0 6 %5
+  menu %2 %3 bkgnd_167 0 11 0 16 %5
+  menu %2 %3 bkgnd_168 0 1 0 6 %5
+  menu %2 %3 bkgnd_168 0 11 0 16 %5
+  menu %2 %3 bkgnd_169 0 1 0 8 %5
+  menu %2 %3 bkgnd_169 0 10 0 13 %5
+  menu %2 %3 bkgnd_169 0 15 0 16 %5
+  menu %2 %3 bkgnd_170 0 1 0 8 %5
+  menu %2 %3 bkgnd_170 0 9 0 13 %5
+  menu %2 %3 bkgnd_170 0 134 0 135 %5
+  menu %2 %3 bkgnd_171 0 1 0 13 %5
+  menu %2 %3 bkgnd_171 0 67 0 68 %5
+  menu %2 %3 bkgnd_171 0 134 0 135 %5
+  menu %2 %3 bkgnd_172 0 2 0 3 %5
+  menu %2 %3 bkgnd_172 0 4 0 12 %5
+  menu %2 %3 bkgnd_172 0 18 0 19 %5
+  menu %2 %3 bkgnd_172 0 67 0 68 %5
+  menu %2 %3 bkgnd_173 0 4 0 10 %5
+  menu %2 %3 bkgnd_173 0 18 0 19 %5
+  menu %2 %3 bkgnd_174 0 4 0 10 %5
+  menu %2 %3 bkgnd_175 0 4 0 7 %5
+  menu %2 %3 bkgnd_175 0 9 0 10 %5
+  menu %2 %3 bkgnd_175 0 40 0 41 %5
+  menu %2 %3 bkgnd_176 0 40 0 41 %5
+  menu %2 %3 bkgnd_180 0 11 0 12 %5
+  menu %2 %3 bkgnd_180 0 220 0 221 %5
+  menu %2 %3 bkgnd_181 0 11 0 12 %5
+  menu %2 %3 bkgnd_181 0 220 0 221 %5
+  menu %2 %3 bkgnd_182 0 214 0 215 %5
+  menu %2 %3 bkgnd_183 0 35 0 36 %5
+  menu %2 %3 bkgnd_183 0 209 0 210 %5
+  menu %2 %3 bkgnd_183 0 214 0 215 %5
+  menu %2 %3 bkgnd_184 0 35 0 36 %5
+  menu %2 %3 bkgnd_184 0 209 0 210 %5
+  menu %2 %3 bkgnd_198 0 1 0 2 %5
+  menu %2 %3 bkgnd_199 0 1 0 2 %5
+  menu %2 %3 bkgnd_200 0 14 0 15 %5
+  menu %2 %3 bkgnd_201 0 14 0 15 %5
+  menu %2 %3 bkgnd_211 0 25 0 26 %5
+  menu %2 %3 bkgnd_212 0 25 0 26 %5
+  menu %2 %3 bkgnd_246 0 28 0 30 %5
+  menu %2 %3 bkgnd_247 0 17 0 20 %5
+  menu %2 %3 bkgnd_247 0 27 0 31 %5
+  menu %2 %3 bkgnd_248 0 17 0 23 %5
+  menu %2 %3 bkgnd_248 0 27 0 31 %5
+  menu %2 %3 bkgnd_249 0 17 0 31 %5
+  menu %2 %3 bkgnd_250 0 17 0 31 %5
+  menu %2 %3 bkgnd_251 0 17 0 31 %5
+  menu %2 %3 bkgnd_252 0 18 0 20 %5
+  menu %2 %3 bkgnd_252 0 22 0 31 %5
+  menu %2 %3 bkgnd_253 0 19 0 27 %5
+  menu %2 %3 bkgnd_253 0 28 0 31 %5
+  menu %2 %3 bkgnd_254 0 20 0 31 %5
+  menu %2 %3 bkgnd_255 0 22 0 31 %5
+  menu %2 %3 bkgnd_256 0 23 0 27 %5
+  menu %2 %3 bkgnd_256 0 28 0 31 %5
+  menu %2 %3 bkgnd_257 0 25 0 27 %5
+  menu %2 %3 bkgnd_257 0 28 0 32 %5
+  menu %2 %3 bkgnd_258 0 25 0 32 %5
+  menu %2 %3 bkgnd_259 0 26 0 33 %5
+  menu %2 %3 bkgnd_260 0 27 0 35 %5
+  menu %2 %3 bkgnd_261 0 28 0 36 %5
+  menu %2 %3 bkgnd_262 0 29 0 38 %5
+  menu %2 %3 bkgnd_263 0 30 0 38 %5
+  menu %2 %3 bkgnd_264 0 32 0 35 %5
+  menu %2 %3 bkgnd_264 0 37 0 39 %5
+  menu %2 %3 bkgnd_265 0 33 0 39 %5
+  menu %2 %3 bkgnd_265 0 231 0 232 %5
+  menu %2 %3 bkgnd_265 0 234 0 236 %5
+  menu %2 %3 bkgnd_266 0 34 0 38 %5
+  menu %2 %3 bkgnd_266 0 231 0 232 %5
+  menu %2 %3 bkgnd_266 0 234 0 236 %5
+  menu %2 %3 bkgnd_267 0 234 0 236 %5
+  menu %2 %3 bkgnd_268 0 230 0 233 %5
+  menu %2 %3 bkgnd_268 0 234 0 236 %5
+  menu %2 %3 bkgnd_269 0 230 0 233 %5
+  menu %2 %3 bkgnd_269 0 234 0 237 %5
+  menu %2 %3 bkgnd_270 0 231 0 237 %5
+  menu %2 %3 bkgnd_271 0 232 0 234 %5
+  menu %2 %3 bkgnd_271 0 235 0 236 %5
+  menu %2 %3 bkgnd_278 0 235 0 236 %5
+  menu %2 %3 bkgnd_279 0 235 0 236 %5
+  menu %2 %3 bkgnd_280 0 83 0 84 %5
+  menu %2 %3 bkgnd_281 0 83 0 84 %5
+  menu %2 %3 bkgnd_282 0 197 0 200 %5
+  menu %2 %3 bkgnd_282 0 225 0 226 %5
+  menu %2 %3 bkgnd_283 0 196 0 201 %5
+  menu %2 %3 bkgnd_283 0 219 0 220 %5
+  menu %2 %3 bkgnd_283 0 225 0 226 %5
+  menu %2 %3 bkgnd_283 0 243 0 244 %5
+  menu %2 %3 bkgnd_284 0 195 0 204 %5
+  menu %2 %3 bkgnd_284 0 219 0 220 %5
+  menu %2 %3 bkgnd_284 0 243 0 244 %5
+  menu %2 %3 bkgnd_285 0 195 0 204 %5
+  menu %2 %3 bkgnd_285 0 237 0 239 %5
+  menu %2 %3 bkgnd_285 0 242 0 244 %5
+  menu %2 %3 bkgnd_286 0 195 0 198 %5
+  menu %2 %3 bkgnd_286 0 201 0 206 %5
+ 	menu %2 %3 bkgnd_286 0 236 0 239 %5
+ 	menu %2 %3 bkgnd_286 0 242 0 244 %5
+ 	menu %2 %3 bkgnd_287 0 203 0 206 %5
+ 	menu %2 %3 bkgnd_287 0 210 0 211 %5
+ 	menu %2 %3 bkgnd_287 0 236 0 240 %5
+ 	menu %2 %3 bkgnd_287 0 242 0 243 %5
+ 	menu %2 %3 bkgnd_288 0 208 0 209 %5
+ 	menu %2 %3 bkgnd_288 0 210 0 211 %5
+ 	menu %2 %3 bkgnd_288 0 236 0 240 %5
+ 	menu %2 %3 bkgnd_289 0 208 0 209 %5
+ 	menu %2 %3 bkgnd_289 0 223 0 224 %5
+ 	menu %2 %3 bkgnd_289 0 236 0 240 %5
+ 	menu %2 %3 bkgnd_290 0 208 0 209 %5
+ 	menu %2 %3 bkgnd_290 0 211 0 212 %5
+ 	menu %2 %3 bkgnd_290 0 223 0 224 %5
+ 	menu %2 %3 bkgnd_290 0 236 0 240 %5
+ 	menu %2 %3 bkgnd_291 0 208 0 209 %5
+ 	menu %2 %3 bkgnd_291 0 211 0 212 %5
+ 	menu %2 %3 bkgnd_291 0 214 0 215 %5
+ 	menu %2 %3 bkgnd_291 0 227 0 228 %5
+ 	menu %2 %3 bkgnd_291 0 236 0 240 %5
+ 	menu %2 %3 bkgnd_292 0 73 0 74 %5
+ 	menu %2 %3 bkgnd_292 0 214 0 215 %5
+ 	menu %2 %3 bkgnd_292 0 227 0 228 %5
+ 	menu %2 %3 bkgnd_292 0 229 0 230 %5
+ 	menu %2 %3 bkgnd_292 0 235 0 239 %5
+ 	menu %2 %3 bkgnd_293 0 73 0 74 %5
+ 	menu %2 %3 bkgnd_293 0 229 0 230 %5
+ 	menu %2 %3 bkgnd_293 0 235 0 239 %5
+ 	menu %2 %3 bkgnd_294 0 223 0 224 %5
+ 	menu %2 %3 bkgnd_294 0 231 0 232 %5
+ 	menu %2 %3 bkgnd_294 0 235 0 239 %5
+ 	menu %2 %3 bkgnd_295 0 223 0 224 %5
+ 	menu %2 %3 bkgnd_295 0 231 0 232 %5
+ 	menu %2 %3 bkgnd_295 0 233 0 239 %5
+ 	menu %2 %3 bkgnd_296 0 232 0 239 %5
+ 	menu %2 %3 bkgnd_297 0 222 0 229 %5
+ 	menu %2 %3 bkgnd_297 0 231 0 239 %5
+ 	menu %2 %3 bkgnd_298 0 222 0 239 %5
+ 	menu %2 %3 bkgnd_299 0 222 0 234 %5
+ 	menu %2 %3 bkgnd_300 0 223 0 233 %5
+ 	menu %2 %3 bkgnd_301 0 223 0 233 %5
+ 	menu %2 %3 bkgnd_302 0 224 0 226 %5
+ 	menu %2 %3 bkgnd_302 0 230 0 231 %5
+  }
+ if %MapServerLColor <> n/a
+  {
+  set %format shape
+  set %name worldmap
+  ;menu %format %name 0 79 167 1 3 5 1 %6 2 0
+  ;menu %format %name 0 75 167 1 3 5 1 red 2 0
+  ;menu %format %name 0 65 167 1 3 7 1 red 2 0
+  ;gosub gregline %name 0 70 167 1 red 3
+  ;menu %format %name   0 127 167 1 3 5 1 %6 2 0
+  ;menu %format %name  97 0 1  79 3 5 1 %6 2 0
+  ;menu %format %name 167 0 1 255 3 5 1 %6 2 0
+  ;menu %format %name 240 0 1 255 3 5 1 %6 2 0
+  gosub Dotted_line %name , 1 , _  0  79 167   1 %6 3 h
+  gosub Dotted_line %name , 2 , _   0 127 167   1 %6 3 h
+  gosub Dotted_line %name , 3 , _  97   0   1  79 %6 3 v
+  gosub Dotted_line %name , 4 , _ 167   0   1 255 %6 3 v
+  gosub Dotted_line %name , 5 , _ 240   0   1 255 %6 3 v
+
+  }
+return
+
+; shapename %1
+; x %2
+; y %3
+; x2 %4
+; height %5
+; color %6
+; interval %7
+; orientation = (h)orizontal|(v)ertical
+sub Dotted_line
+ set %gl_shapename %1
+ set %gl_x %2
+ set %gl_y %3
+ set %gl_x2 %4
+ set %gl_y2 %5
+ set %gl_color %6
+ set %gl_interval %7
+ set %gl_orientation %8
+ if %gl_orientation = h
+  {
+  while %gl_x <= %gl_x2
+   {
+   menu shape %gl_shapename , %gl_x %gl_x %gl_y %gl_interval %gl_y2 3 7 1 %gl_color 2 0
+   set %gl_x %gl_x + ( %gl_interval * 2 )
+   }
+  }
+ else
+  {
+  while %gl_y <= %gl_y2
+   {
+   menu shape %gl_shapename , %gl_y %gl_x %gl_y %gl_x2 %gl_interval 3 7 1 %gl_color 2 0
+   set %gl_y %gl_y + ( %gl_interval * 2 )
+   }
+  }
+return
+;==================================
+; Script Name: FAST OCR to get text information from UO gumps
+; Author: Kal In Ex
+; Version: 5.13 (minimal hacked version)
+; Client Tested with: 5.0.2 (Patch 13)
+; EUO version tested with: 1.5.74
+; Shard OSI / FS: OSI
+; Revision Date: March 1, 2008
+; Public Release: January 22, 2004
+; Purpose: get text information from gumps into EasyUO for scripting
+; Copyright: 2004, 2005, 2006, 2007, 2008 Kal In Ex
+;==================================
+
+sub KalOCRInit
+ namespace push
+ namespace local kalocr
+ set !KalOCR_SPC #spc
+ set !KalOCR_A A
+ set !KalOCR_B B
+ set !KalOCR_C C
+ set !KalOCR_D D
+ set !KalOCR_E E
+ set !KalOCR_F F
+ set !KalOCR_G G
+ set !KalOCR_H H
+ set !KalOCR_I I
+ set !KalOCR_J J
+ set !KalOCR_K K
+ set !KalOCR_L L
+ set !KalOCR_M M
+ set !KalOCR_N N
+ set !KalOCR_O O
+ set !KalOCR_P P
+ set !KalOCR_Q Q
+ set !KalOCR_R R
+ set !KalOCR_S S
+ set !KalOCR_T T
+ set !KalOCR_U U
+ set !KalOCR_V V
+ set !KalOCR_W W
+ set !KalOCR_X X
+ set !KalOCR_Y Y
+ set !KalOCR_Z Z
+ namespace pop
+return
+
+sub getChar
+ namespace push
+ namespace local kalocr
+ gosub readchar %1 %2 %3 %4 %5
+ set %2 #result
+ namespace pop
+ if _ , %ShardType , _ in _Pandora_Odyssey_
+  return %2
+return
+
+sub getText
+ namespace push
+ namespace local kalocr
+ gosub readtext %1 %2 %3 %4 %5 %6
+ namespace pop
+return
+
+; %1 = left edge of text
+; %2 = base line of text - 13
+; %3 = operator such as =, <>, notin and in
+; %4 = text colors like 12345_23456_34567 (#pixcol values)
+; %5 = number | text
+;	on return...
+; #result = character
+; %1 = character width
+
+; note: since 'O's and ZEROs have the same shape and it is shape that
+; sub readchar relies on to recognize text parameter %5 is necessary.
+; this allows both characters to be returned but its more like an on/off
+; switch as there is no way for this routine to distinguish between them
+; you specify "number" to cause it to return ZEROs instead of 'O's
+
+; note: in version 2.00 sub readchar parameters changed
+
+sub readchar
+ set %4 _ , %4 , _
+ set %7 %2 + 5
+ savepix %1 %7 1
+ if _ , #pixcol , _ %3 %4 261 ; 256
+  set %7 %2 + 13
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 136
+   set %7 %2 + 4
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 98
+    set %7 %2 + 3
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 12
+     set %7 %2 + 2
+     savepix %1 %7 1
+     if _ , #pixcol , _ %3 %4 2
+      set %1 4
+      return [
+     set %7 %2 + 15
+     savepix %1 %7 1
+     if _ , #pixcol , _ %3 %4 2
+      set %1 2
+      return |
+     set %1 4
+     return (
+    set %6 %1 + 2
+    set %7 %2 + 4
+    savepix %6 %7 1
+    if _ , #pixcol , _ %3 %4 37
+     set %6 %1 + 2
+     set %7 %2 + 8
+     savepix %6 %7 1
+     if _ , #pixcol , _ %3 %4 14
+      set %6 %1 + 2
+      set %7 %2 + 13
+      savepix %6 %7 1
+      if _ , #pixcol , _ %3 %4 8
+       set %6 %1 + 4
+       set %7 %2 + 5
+       savepix %6 %7 1
+       if _ , #pixcol , _ %3 %4 2
+        set %1 8
+        return !KalOCR_B
+       set %1 7
+       return !KalOCR_E
+      set %1 7
+      return !KalOCR_F
+     set %6 %1 + 2
+     set %7 %2 + 9
+     savepix %6 %7 1
+     if _ , #pixcol , _ %3 %4 8
+      set %6 %1 + 2
+      set %7 %2 + 10
+      savepix %6 %7 1
+      if _ , #pixcol , _ %3 %4 2
+       set %1 8
+       return !KalOCR_R
+      set %1 8
+      return !KalOCR_P
+     set %7 %2 + 7
+     savepix %1 %7 1
+     if _ , #pixcol , _ %3 %4 2
+      set %1 8
+      return !KalOCR_D
+     set %1 10
+     return %
+    set %6 %1 + 2
+    set %7 %2 + 8
+    savepix %6 %7 1
+    if _ , #pixcol , _ %3 %4 19
+     set %6 %1 + 2
+     set %7 %2 + 6
+     savepix %6 %7 1
+     if _ , #pixcol , _ %3 %4 7
+      set %7 %2 + 7
+      savepix %1 %7 1
+      if _ , #pixcol , _ %3 %4 2
+       set %1 8
+       return !KalOCR_N
+      set %1 8
+      return !KalOCR_X
+     set %6 %1 + 2
+     set %7 %2 + 9
+     savepix %6 %7 1
+     if _ , #pixcol , _ %3 %4 2
+      set %1 8
+      return !KalOCR_K
+     set %1 8
+     return !KalOCR_H
+    set %7 %2 + 11
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 14
+     set %6 %1 + 2
+     set %7 %2 + 5
+     savepix %6 %7 1
+     if _ , #pixcol , _ %3 %4 2
+      set %1 10
+      return !KalOCR_M
+     set %6 %1 + 2
+     set %7 %2 + 13
+     savepix %6 %7 1
+     if _ , #pixcol , _ %3 %4 2
+      set %1 7
+      return !KalOCR_L
+     set %1 3
+     return !KalOCR_I
+    set %1 3
+    return !
+   set %6 %1 + 2
+   set %7 %2 + 11
+   savepix %6 %7 1
+   if _ , #pixcol , _ %3 %4 12
+    set %7 %2 + 6
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 7
+     set %7 %2 + 8
+     savepix %1 %7 1
+     if _ , #pixcol , _ %3 %4 2
+      set %1 6
+      return k
+     set %1 8
+     return 2
+    set %1 8
+    return >
+   set %6 %1 + 2
+   set %7 %2 + 8
+   savepix %6 %7 1
+   if _ , #pixcol , _ %3 %4 8
+    set %6 %1 + 2
+    set %7 %2 + 13
+    savepix %6 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 6
+     return b
+    set %1 6
+    return h
+   set %7 %2 + 7
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 2
+    set %1 3
+    return l
+   set %1 3
+   return i
+  set %7 %2 + 11
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 53
+   set %6 %1 + 3
+   set %7 %2 + 8
+   savepix %6 %7 1
+   if _ , #pixcol , _ %3 %4 22
+    set %7 %2 + 7
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 12
+     set %7 %2 + 4
+     savepix %1 %7 1
+     if _ , #pixcol , _ %3 %4 2
+      set %1 8
+      return 5
+     set %7 %2 + 8
+     savepix %1 %7 1
+     if _ , #pixcol , _ %3 %4 2
+      set %1 8
+      return !KalOCR_G
+     set %1 8
+     return !KalOCR_S
+    set %7 %2 + 10
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 8
+     return 8
+    set %1 8
+    return 3
+   set %6 %1 + 4
+   set %7 %2 + 5
+   savepix %6 %7 1
+   if _ , #pixcol , _ %3 %4 16
+    set %6 %1 + 3
+    set %7 %2 + 9
+    savepix %6 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 9
+     return !KalOCR_Q
+    set %6 %1 + 5
+    set %7 %2 + 8
+    savepix %6 %7 1
+    if _ , #pixcol , _ %3 %4 4
+     set %1 8
+     if %0 = 5 && %5 = number
+     return 0
+     return !KalOCR_O
+    set %1 8
+    return !KalOCR_C
+   set %7 %2 + 4
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 2
+    set %1 8
+    return !KalOCR_U
+   set %1 8
+   return 6
+  set %6 %1 + 2
+  set %7 %2 + 9
+  savepix %6 %7 1
+  if _ , #pixcol , _ %3 %4 28
+   set %7 %2 + 4
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 13
+    set %7 %2 + 7
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 8
+     set %6 %1 + 6
+     set %7 %2 + 4
+     savepix %6 %7 1
+     if _ , #pixcol , _ %3 %4 2
+      set %1 8
+      return !KalOCR_V
+     set %1 12
+     return !KalOCR_W
+    set %1 9
+    return !KalOCR_Y
+   set %7 %2 + 6
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 7
+    set %7 %2 + 7
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 8
+     return 9
+    set %1 7
+    return ?
+   set %1 4
+   return 1
+  set %6 %1 + 1
+  set %7 %2 + 6
+  savepix %6 %7 1
+  if _ , #pixcol , _ %3 %4 12
+   set %7 %2 + 4
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 7
+    set %7 %2 + 6
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 8
+     return 4
+    set %1 3
+    return '
+   set %1 9
+   return \
+  set %7 %2 + 6
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 8
+   set %6 %1 + 1
+   set %7 %2 + 4
+   savepix %6 %7 1
+   if _ , #pixcol , _ %3 %4 2
+    set %1 3
+    return `
+   set %1 4
+   return "
+ set %7 %2 + 2
+ savepix %1 %7 1
+ if _ , #pixcol , _ %3 %4 2
+  set %1 5
+  return o ; instead of Â°
+  set %1 8
+  return 7
+ set %7 %2 + 9
+ savepix %1 %7 1
+ if _ , #pixcol , _ %3 %4 124
+  set %6 %1 + 4
+  set %7 %2 + 13
+  savepix %6 %7 1
+  if _ , #pixcol , _ %3 %4 61
+   set %7 %2 + 8
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 28
+    set %7 %2 + 12
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 13
+     set %7 %2 + 13
+     savepix %1 %7 1
+     if _ , #pixcol , _ %3 %4 8
+      set %6 %1 + 5
+      set %7 %2 + 8
+      savepix %6 %7 1
+      if _ , #pixcol , _ %3 %4 2
+       set %1 9
+       return m
+      set %1 6
+      return n
+     set %1 6
+     return y
+    set %7 %2 + 7
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 12
+     return @
+    set %7 %2 + 10
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 8
+     return w
+    set %1 6
+    return x
+   set %6 %1 + 2
+   set %7 %2 + 11
+   savepix %6 %7 1
+   if _ , #pixcol , _ %3 %4 7
+    set %7 %2 + 10
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 6
+     return e
+    set %1 8
+    return <
+   set %6 %1 + 3
+   set %7 %2 + 14
+   savepix %6 %7 1
+   if _ , #pixcol , _ %3 %4 7
+    set %7 %2 + 15
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 6
+     return g
+    set %1 6
+    return q
+   set %6 %1 + 3
+   set %7 %2 + 5
+   savepix %6 %7 1
+   if _ , #pixcol , _ %3 %4 2
+    set %1 6
+    return d
+   set %1 6
+   return a
+  set %7 %2 + 12
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 28
+   set %7 %2 + 13
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 12
+    set %7 %2 + 6
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 8
+     return !KalOCR_A
+    set %7 %2 + 14
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 6
+     return p
+    set %1 6
+    return r
+   set %7 %2 + 8
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 2
+    set %1 6
+    return u
+   set %6 %1 + 3
+   set %7 %2 + 11
+   savepix %6 %7 1
+   if _ , #pixcol , _ %3 %4 2
+    set %1 6
+    return o
+   set %1 6
+   return c
+  set %7 %2 + 8
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 12
+   set %7 %2 + 10
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 7
+    set %7 %2 + 11
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 6
+     return v
+    set %1 10
+    return ^
+   set %1 7
+   return +
+  set %7 %2 + 10
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 2
+   set %1 6
+   return s
+  set %6 %1 + 1
+  set %7 %2 + 4
+  savepix %6 %7 1
+  if _ , #pixcol , _ %3 %4 2
+   set %1 5
+   return {
+  set %1 6
+  return -
+ set %6 %1 + 1
+ set %7 %2 + 13
+ savepix %6 %7 1
+ if _ , #pixcol , _ %3 %4 55
+  set %7 %2 + 13
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 24
+   set %6 %1 + 1
+   set %7 %2 + 11
+   savepix %6 %7 1
+   if _ , #pixcol , _ %3 %4 7
+    set %7 %2 + 4
+    savepix %1 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 8
+     return !KalOCR_Z
+    set %1 6
+    return z
+   set %7 %2 + 12
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 8
+    set %6 %1 + 1
+    set %7 %2 + 14
+    savepix %6 %7 1
+    if _ , #pixcol , _ %3 %4 2
+     set %1 3
+     return ,
+    set %1 3
+    return #dot
+   set %1 6
+   return j
+  set %7 %2 + 11
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 13
+   set %7 %2 + 6
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 2
+    set %1 3
+    return #smc
+   set %6 %1 + 1
+   set %7 %2 + 5
+   savepix %6 %7 1
+   if _ , #pixcol , _ %3 %4 2
+    set %1 11
+    return &
+   set %1 8
+   return !KalOCR_J
+  set %7 %2 + 2
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 2
+   set %1 4
+   return )
+  set %7 %2 + 3
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 2
+   set %1 5
+   return }
+  set %1 6
+  return f
+ set %6 %1 + 2
+ set %7 %2 + 9
+ savepix %6 %7 1
+ if _ , #pixcol , _ %3 %4 28
+  set %6 %1 + 1
+  set %7 %2 + 10
+  savepix %6 %7 1
+  if _ , #pixcol , _ %3 %4 12
+   set %7 %2 + 8
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 2
+    set %1 6
+    return t
+   set %7 %2 + 10
+   savepix %1 %7 1
+   if _ , #pixcol , _ %3 %4 2
+    set %1 12
+    return #
+   set %1 9
+   return /
+  set %7 %2 + 2
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 2
+   set %1 5
+   return ]
+  set %7 %2 + 4
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 2
+   set %1 7
+   return !KalOCR_T
+  set %1 9
+  return $
+ set %6 %1 + 1
+ set %7 %2 + 11
+ savepix %6 %7 1
+ if _ , #pixcol , _ %3 %4 12
+  set %7 %2 + 4
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 2
+   set %1 10
+   return *
+  set %7 %2 + 6
+  savepix %1 %7 1
+  if _ , #pixcol , _ %3 %4 2
+   set %1 3
+   return :
+  set %1 6
+  return =
+ set %7 %2 + 1
+ savepix %1 %7 1
+ if _ , #pixcol , _ %3 %4 2
+  set %1 6
+  return ~
+ set %7 %2 + 15
+ savepix %1 %7 1
+ if _ , #pixcol , _ %3 %4 2
+  set %1 8
+  return _
+ set %1 8
+return !KalOCR_SPC
+
+; %1 = xpos
+; %2 = ypos
+; %3 = operator
+; %4 = color(s)
+; %5 = number | text | both
+; %6 = extent (position beyond %1 to scan for text)
+; 	...on return
+; %1 = text that was read
+
+; use to read lines of text
+
+sub readtext
+ namespace push
+ namespace local kalocr
+ set !rt_xpos %1
+ set !rt_ypos %2
+ set !rt_op %3
+ set !rt_color %4
+ set !rt_mode %5
+ set !rt_extent !rt_xpos + %6
+ set !rt_text
+ while #true
+  {
+  gosub readchar !rt_xpos !rt_ypos !rt_op !rt_color !rt_mode
+  if #pixcol = 4294967295
+   break
+  set !rt_xpos !rt_xpos + %1
+  if !rt_xpos > !rt_extent
+   break
+  set !rt_text !rt_text , #result
+  }
+ set %1 !rt_text
+ str len !rt_text
+ for !Trim #strres 1
+  {
+  str mid !rt_text !Trim 1
+  if #strres <> !KalOCR_SPC
+   break
+  }
+ if !Trim = 0
+  set !rt_text
+ str left !rt_text !Trim
+ set %1 #strres
+ namespace pop
+return
