@@ -50,7 +50,7 @@ pushlist! 'RunXY' 'Southwest'
 pushlist! 'RunXY' 'West'
 pushlist! 'RunXY' 'Northeast'
 if not @findobject 'runebookmining'
-  headmsg 'Selecione o seu runebook. PRIMEIRA runa MINA e SEGUNDA runa BANCO cidade safe.'
+  headmsg 'Selecione o seu runebook. PRIMEIRA runa BANCO com guardas e forge ao lado e SEGUNDA runa MINA .'
   promptalias 'runebookmining'
 endif
 if not @findalias 'bankminerios'
