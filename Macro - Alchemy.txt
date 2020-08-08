@@ -27,7 +27,7 @@ endif
 if @counttype 0xf0e 68 'backpack' >= 200
   useobject 'Baualchemy'
   headmsg 'Guardando Lesser Poison'
-  @movetypeoffset 0x1bd7 'backpack' 'Baualchemy' (0 0 0) 68
+  @movetypeoffset 0xf0e 'backpack' 'Baualchemy' (0 0 0) 68
   pause 1000
 endif
 // Fazer 1 Lesser Poison
@@ -59,4 +59,4 @@ elseif @gumpexists 0x485
   @replygump 0x485 10101
   waitforgump 0x485 15000
 endif
-//by tork
+
