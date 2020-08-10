@@ -1,0 +1,23 @@
+///////
+// Macro de Healing
+// Cast Magic Arrow, usa bandage e medita
+///////
+if mana <= 4
+  while mana < maxmana
+    useskill 'Meditation'
+    pause 3500
+  endwhile
+endif
+if counttype 0xe21 'any' 'backpack' > 0
+  autotargetself!
+  cast "Magic Arrow"
+  pause 2000
+  if diffhits > 1
+    usetype 0xe21
+    waitfortarget 15000
+    target! 'self'
+    pause 5000
+  endif
+else
+  headmsg 'Sem Bandage'
+endif
