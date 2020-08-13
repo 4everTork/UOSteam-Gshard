@@ -1,0 +1,63 @@
+////
+// Macro de Inscription com Poison Scroll
+// Ter um bau perto (ou banco) com Blank Scroll e Nightshade
+// Ter Pen and Ink na backpack
+////
+if not @findobject 'BauInscription'
+  headmsg 'Selecione o bau com Blank Scroll e Sulfurous Ash.'
+  promptalias 'BauInscription'
+  useobject 'BauInscription'
+else
+  useobject 'BauInscription'
+endif
+// Se acabar os Blank Scrolls
+if @counttype 0xe34 0 'backpack' == 0
+  headmsg 'Restockando Blank Scroll'
+  movetype 0xe34 'BauInscription' 'Backpack' (0 0 0) 0 100 4
+  pause 1000
+endif
+// Se acabar os Nightshade
+if @counttype 0xf88 0 'backpack' == 0
+  headmsg 'Restockando Nightshade'
+  movetype 0xf88 'BauInscription' 'Backpack' (0 0 0) 0 100 4
+  pause 1000
+endif
+// Se tiver mais que 100 Poison Scrolls
+if @counttype 0x1f40 0 'backpack' >= 100
+  useobject 'BauInscription'
+  headmsg 'Guardando Poison Scrolls'
+  @movetypeoffset 0x1f40 'backpack' 'BauInscription' (0 0 0).
+  pause 1000
+  if @counttype 0x1f40 0 'BauInscription' > 1999
+    stop
+  endif
+endif
+// Fazer 1 Poison Scroll
+if @gumpexists 0x483
+  @replygump 0x483 0
+elseif @gumpexists 0x484
+  @replygump 0x484 0
+elseif @gumpexists 0x485
+  @replygump 0x485 0
+endif
+usetype 0xfbf 'backpack'
+waitforgump 'any' 15000
+//Gump 1
+if @gumpexists 0x483
+  replygump 0x483 3
+  waitforgump 0x483 15000
+  replygump 0x483 10104
+  waitforgump 0x483 15000
+  //Gump 2
+elseif @gumpexists 0x484
+  replygump 0x484 3
+  waitforgump 0x484 15000
+  replygump 0x484 10104
+  waitforgump 0x484 15000
+  //Gump 3
+elseif @gumpexists 0x485
+  replygump 0x485 3
+  waitforgump 0x485 15000
+  replygump 0x485 10104
+  waitforgump 0x485 15000
+endif
