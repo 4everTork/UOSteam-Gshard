@@ -28,9 +28,6 @@ if @counttype 0x1f40 0 'backpack' >= 100
   headmsg 'Guardando Poison Scrolls'
   @movetypeoffset 0x1f40 'backpack' 'BauInscription' (0 0 0).
   pause 1000
-  if @counttype 0x1f40 0 'BauInscription' > 1999
-    stop
-  endif
 endif
 // Fazer 1 Poison Scroll
 if @gumpexists 0x483
