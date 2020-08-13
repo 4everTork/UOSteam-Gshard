@@ -490,7 +490,6 @@ for %cnt 1 15
 call %reconect
 if #weight > %peso
 goto guardar
-gosub stealth
 event sysmessage Lumberjacking Lugar %target de %MAXWPTS
 set #lobjectid %machado
 event macro 17 0
