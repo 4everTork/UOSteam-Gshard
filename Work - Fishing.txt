@@ -81,12 +81,11 @@ for 0 to 12
       endif
     endfor
   endfor
-endfor
   msg 'Forward'
   pause 6000
   msg 'Stop'
   pause 1000
-
+endfor
 //
 // CORTAR
 //
@@ -177,12 +176,11 @@ for 0 to 12
       endif
     endfor
   endfor
-endfor
   msg 'Back'
   pause 6000
   msg 'Stop'
   pause 1000
-
+endfor
 //
 // CORTAR
 //
