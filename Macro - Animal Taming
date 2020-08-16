@@ -11,7 +11,7 @@ msg 'ALL Release'
 autotargetobject! 'tamingtreino'
 useskill 'Animal Taming'
 while not @injournal 'nao conseguiu'
-pause 250
+pause 100
   if @injournal 'aceitou voce'
     replay
   endif
