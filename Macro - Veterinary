@@ -30,11 +30,8 @@ while diffhits 'veterinary1' > 2 and diffhits 'veterinary2' > 2
       useobject 'found'
       pause 4750
     else
-      headmsg 'Limpando bandage.'
-      findtype 0xe20 'any' 'backpack'
-      autotargetobject 0x40355084
-      useobject 'found'
-      pause 250
+      headmsg 'Sem bandage.'
+      pause 2000
     endif
   endif
   if hits 'veterinary2' < maxhits
@@ -43,11 +40,8 @@ while diffhits 'veterinary1' > 2 and diffhits 'veterinary2' > 2
       useobject 'found'
       pause 4750
     else
-      headmsg 'Limpando bandage.'
-      findtype 0xe20 'any' 'backpack'
-      autotargetobject 0x40355084
-      useobject 'found'
-      pause 250
+      headmsg 'Sem bandage.'
+      pause 2000
     endif
   endif
 endwhile
