@@ -28,7 +28,7 @@ while diffhits 'veterinary1' > 2 and diffhits 'veterinary2' > 2
     if findtype 0xe21 'any' 'backpack'
       autotargetobject 'veterinary1'
       useobject 'found'
-      pause 4750
+      pause 5250
     else
       headmsg 'Sem bandage.'
       pause 2000
@@ -38,7 +38,7 @@ while diffhits 'veterinary1' > 2 and diffhits 'veterinary2' > 2
     if findtype 0xe21 'any' 'backpack'
       autotargetobject 'veterinary2'
       useobject 'found'
-      pause 4750
+      pause 5250
     else
       headmsg 'Sem bandage.'
       pause 2000
