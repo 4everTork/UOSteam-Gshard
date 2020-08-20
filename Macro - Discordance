@@ -1,0 +1,234 @@
+//////
+// Macro de Discordance
+// Ter 10 animais ao seu redor.
+//////
+// Selecionar os animais
+if not @findobject 'discord1'
+  headmsg '*Selecione o primeiro animal.*'
+  promptalias 'discord1'
+endif
+if not @findobject 'discord2'
+  headmsg '*Selecione o segundo animal.*'
+  promptalias 'discord2'
+endif
+if not @findobject 'discord3'
+  headmsg '*Selecione o terceiro animal.*'
+  promptalias 'discord3'
+endif
+if not @findobject 'discord4'
+  headmsg '*Selecione o quarto animal.*'
+  promptalias 'discord4'
+endif
+if not @findobject 'discord5'
+  headmsg '*Selecione o quinto animal.*'
+  promptalias 'discord5'
+endif
+if not @findobject 'discord6'
+  headmsg '*Selecione o sexto animal.*'
+  promptalias 'discord6'
+endif
+if not @findobject 'discord7'
+  headmsg '*Selecione o setimo animal.*'
+  promptalias 'discord7'
+endif
+if not @findobject 'discord8'
+  headmsg '*Selecione o oitavo animal.*'
+  promptalias 'discord8'
+endif
+if not @findobject 'discord9'
+  headmsg '*Selecione o oitavo animal.*'
+  promptalias 'discord9'
+endif
+if not @findobject 'discord0'
+  headmsg '*Selecione o oitavo animal.*'
+  promptalias 'discord0'
+endif
+// Discordance 1
+@clearjournal
+useskill 'Discordance'
+waitfortarget 2000
+target! 'discord1'
+pause 500
+while not @injournal 'reduzindo a forca' 'system'
+  if @injournal 'ja esta em' 'system'
+    break
+  endif
+  if @injournal 'nao conseguiu' 'system'
+    pause 500
+    useskill 'Discordance'
+    waitfortarget 2000
+    target! 'discord1'
+    pause 500
+  endif
+endwhile
+// Discordance 2
+@clearjournal
+useskill 'Discordance'
+waitfortarget 2000
+target! 'discord2'
+pause 500
+while not @injournal 'reduzindo a forca' 'system'
+  if @injournal 'ja esta em' 'system'
+    break
+  endif
+  if @injournal 'nao conseguiu' 'system'
+    pause 500
+    useskill 'Discordance'
+    waitfortarget 2000
+    target! 'discord2'
+    pause 500
+  endif
+endwhile
+// Discordance 3
+@clearjournal
+useskill 'Discordance'
+waitfortarget 2000
+target! 'discord3'
+pause 500
+while not @injournal 'reduzindo a forca' 'system'
+  if @injournal 'ja esta em' 'system'
+    break
+  endif
+  if @injournal 'nao conseguiu' 'system'
+    pause 500
+    useskill 'Discordance'
+    waitfortarget 2000
+    target! 'discord3'
+    pause 500
+  endif
+endwhile
+// Discordance 4
+@clearjournal
+useskill 'Discordance'
+waitfortarget 2000
+target! 'discord4'
+pause 500
+while not @injournal 'reduzindo a forca' 'system'
+  if @injournal 'ja esta em' 'system'
+    break
+  endif
+  if @injournal 'nao conseguiu' 'system'
+    pause 500
+    useskill 'Discordance'
+    waitfortarget 2000
+    target! 'discord4'
+    pause 500
+  endif
+endwhile
+// Discordance 5
+@clearjournal
+useskill 'Discordance'
+waitfortarget 2000
+target! 'discord5'
+pause 500
+while not @injournal 'reduzindo a forca' 'system'
+  if @injournal 'ja esta em' 'system'
+    break
+  endif
+  if @injournal 'nao conseguiu' 'system'
+    pause 500
+    useskill 'Discordance'
+    waitfortarget 2000
+    target! 'discord5'
+    pause 500
+  endif
+endwhile
+// Discordance 6
+@clearjournal
+useskill 'Discordance'
+waitfortarget 2000
+target! 'discord6'
+pause 500
+while not @injournal 'reduzindo a forca' 'system'
+  if @injournal 'ja esta em' 'system'
+    break
+  endif
+  if @injournal 'nao conseguiu' 'system'
+    pause 500
+    useskill 'Discordance'
+    waitfortarget 2000
+    target! 'discord6'
+    pause 500
+  endif
+endwhile
+// Discordance 7
+@clearjournal
+useskill 'Discordance'
+waitfortarget 2000
+target! 'discord7'
+pause 500
+while not @injournal 'reduzindo a forca' 'system'
+  if @injournal 'ja esta em' 'system'
+    break
+  endif
+  if @injournal 'nao conseguiu' 'system'
+    pause 500
+    useskill 'Discordance'
+    waitfortarget 2000
+    target! 'discord7'
+    pause 500
+  endif
+endwhile
+// Discordance 8
+@clearjournal
+useskill 'Discordance'
+waitfortarget 2000
+target! 'discord8'
+pause 500
+while not @injournal 'reduzindo a forca' 'system'
+  if @injournal 'ja esta em' 'system'
+    break
+  endif
+  if @injournal 'nao conseguiu' 'system'
+    pause 500
+    useskill 'Discordance'
+    waitfortarget 2000
+    target! 'discord8'
+    pause 500
+  endif
+endwhile
+// Discordance 9
+@clearjournal
+useskill 'Discordance'
+waitfortarget 2000
+target! 'discord9'
+pause 500
+while not @injournal 'reduzindo a forca' 'system'
+  if @injournal 'ja esta em' 'system'
+    break
+  endif
+  if @injournal 'nao conseguiu' 'system'
+    pause 500
+    useskill 'Discordance'
+    waitfortarget 2000
+    target! 'discord9'
+    pause 500
+  endif
+endwhile
+// Discordance 0
+@clearjournal
+useskill 'Discordance'
+waitfortarget 2000
+target! 'discord0'
+pause 500
+while not @injournal 'reduzindo a forca' 'system'
+  if @injournal 'ja esta em' 'system'
+    break
+  endif
+  if @injournal 'nao conseguiu' 'system'
+    pause 500
+    useskill 'Discordance'
+    waitfortarget 2000
+    target! 'discord0'
+    pause 500
+  endif
+endwhile
+clearjournal
+useskill 'Hiding'
+while not @injournal 'voce ficou invisivel'
+  if @injournal 'nao conseguiu'
+    useskill 'Hiding'
+    pause 500
+  endif
+endwhile
+pause 20000
