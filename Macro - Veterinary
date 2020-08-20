@@ -1,6 +1,6 @@
 //////
 // Macro de Veterinary
-// Ter dois horses seus a pelo menos 1 passo de distancia de voce
+// Ter dois animais seus (pelo menos dog) a pelo menos 1 passo de distancia de voce
 // Ter bastante bandage na backpack
 //////
 // Selecionar os animais
@@ -17,7 +17,7 @@ autotargetobject 'veterinary1'
 msg 'all kill'
 pause 250
 // Mandar parar quando descer o life
-while diffhits 'veterinary1' <= 10 or diffhits 'veterinary2' <= 10
+while diffhits 'veterinary1' <= 5 or diffhits 'veterinary2' <= 5
   pause 250
 endwhile
 msg 'All stop'
@@ -30,7 +30,11 @@ while diffhits 'veterinary1' > 2 and diffhits 'veterinary2' > 2
       useobject 'found'
       pause 4750
     else
-      headmsg 'Sem bandage.'
+      headmsg 'Limpando bandage.'
+      findtype 0xe20 'any' 'backpack'
+      autotargetobject 0x40355084
+      useobject 'found'
+      pause 250
     endif
   endif
   if hits 'veterinary2' < maxhits
@@ -39,7 +43,11 @@ while diffhits 'veterinary1' > 2 and diffhits 'veterinary2' > 2
       useobject 'found'
       pause 4750
     else
-      headmsg 'Sem bandage.'
+      headmsg 'Limpando bandage.'
+      findtype 0xe20 'any' 'backpack'
+      autotargetobject 0x40355084
+      useobject 'found'
+      pause 250
     endif
   endif
 endwhile
