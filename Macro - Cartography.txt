@@ -2,6 +2,9 @@
 // Na aba Agents > Buy crie e ative uma aba para vender 20+ maps
 ////
 // Macro de Cartography
+// * Estar ao lado de um NPC Cartography (padrão é da ponte de Britain)
+// e alterar o nome dele no macro.
+// * Alterar as abas Agents conforme indicado.
 ////
 if findtype 0x14eb 'backpack'
 for 20
