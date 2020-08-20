@@ -1,0 +1,45 @@
+//////
+// Macro de Veterinary
+// Ter dois horses seus a pelo menos 1 passo de distancia de voce
+// Ter bastante bandage na backpack
+//////
+// Selecionar os animais
+if not @findobject 'veterinary1'
+  headmsg '*Selecione o primeiro animal.*'
+  promptalias 'veterinary1'
+endif
+if not @findobject 'veterinary2'
+  headmsg '*Selecione o segundo animal.*'
+  promptalias 'veterinary2'
+endif
+// Atacar
+autotargetobject 'veterinary1'
+msg 'all kill'
+pause 250
+// Mandar parar quando descer o life
+while diffhits 'veterinary1' <= 10 or diffhits 'veterinary2' <= 10
+  pause 250
+endwhile
+msg 'All stop'
+pause 250
+// Curar os animais
+while diffhits 'veterinary1' > 2 and diffhits 'veterinary2' > 2
+  if hits 'veterinary1' < maxhits
+    if findtype 0xe21 'any' 'backpack'
+      autotargetobject 'veterinary1'
+      useobject 'found'
+      pause 4750
+    else
+      headmsg 'Sem bandage.'
+    endif
+  endif
+  if hits 'veterinary2' < maxhits
+    if findtype 0xe21 'any' 'backpack'
+      autotargetobject 'veterinary2'
+      useobject 'found'
+      pause 4750
+    else
+      headmsg 'Sem bandage.'
+    endif
+  endif
+endwhile
