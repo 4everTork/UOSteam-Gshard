@@ -20,209 +20,259 @@ if not @findobject 'discord4'
   promptalias 'discord4'
 endif
 if not @findobject 'discord5'
-  headmsg '*Selecione o quinto animal.*'
+  headmsg '*Selecione o quinto animal ou aperte ESC.*'
   promptalias 'discord5'
 endif
 if not @findobject 'discord6'
-  headmsg '*Selecione o sexto animal.*'
+  headmsg '*Selecione o sexto animal ou aperte ESC.*'
   promptalias 'discord6'
 endif
 if not @findobject 'discord7'
-  headmsg '*Selecione o setimo animal.*'
+  headmsg '*Selecione o setimo animal ou aperte ESC.*'
   promptalias 'discord7'
 endif
 if not @findobject 'discord8'
-  headmsg '*Selecione o oitavo animal.*'
+  headmsg '*Selecione o oitavo animal ou aperte ESC.*'
   promptalias 'discord8'
 endif
 if not @findobject 'discord9'
-  headmsg '*Selecione o oitavo animal.*'
+  headmsg '*Selecione o oitavo animal ou aperte ESC.*'
   promptalias 'discord9'
 endif
 if not @findobject 'discord0'
-  headmsg '*Selecione o oitavo animal.*'
+  headmsg '*Selecione o oitavo animal ou aperte ESC.*'
   promptalias 'discord0'
 endif
+if not @findobject 'discord1'
+  unsetalias 'discord1'
+endif
+if not @findobject 'discord2'
+  unsetalias 'discord2'
+endif
+if not @findobject 'discord3'
+  unsetalias 'discord3'
+endif
+if not @findobject 'discord4'
+  unsetalias 'discord4'
+endif
+if not @findobject 'discord5'
+  unsetalias 'discord5'
+endif
+if not @findobject 'discord6'
+  unsetalias 'discord6'
+endif
+if not @findobject 'discord7'
+  unsetalias 'discord7'
+endif
+if not @findobject 'discord8'
+  unsetalias 'discord8'
+endif
+if not @findobject 'discord9'
+  unsetalias 'discord9'
+endif
+if not @findobject 'discord0'
+  unsetalias 'discord0'
+endif
 // Discordance 1
-@clearjournal
-useskill 'Discordance'
-waitfortarget 2000
-target! 'discord1'
-pause 500
-while not @injournal 'reduzindo a forca' 'system'
-  if @injournal 'ja esta em' 'system'
-    break
-  endif
-  if @injournal 'nao conseguiu' 'system'
-    pause 500
-    useskill 'Discordance'
-    waitfortarget 2000
-    target! 'discord1'
-    pause 500
-  endif
-endwhile
+if @findalias 'discord1'
+  @clearjournal
+  useskill 'Discordance'
+  waitfortarget 2000
+  target! 'discord1'
+  pause 500
+  while not @injournal 'reduzindo a forca' 'system'
+    if @injournal 'ja esta em' 'system'
+      break
+    endif
+    if @injournal 'nao conseguiu' 'system'
+      pause 500
+      useskill 'Discordance'
+      waitfortarget 2000
+      target! 'discord1'
+      pause 500
+    endif
+  endwhile
+endif
 // Discordance 2
-@clearjournal
-useskill 'Discordance'
-waitfortarget 2000
-target! 'discord2'
-pause 500
-while not @injournal 'reduzindo a forca' 'system'
-  if @injournal 'ja esta em' 'system'
-    break
-  endif
-  if @injournal 'nao conseguiu' 'system'
-    pause 500
-    useskill 'Discordance'
-    waitfortarget 2000
-    target! 'discord2'
-    pause 500
-  endif
-endwhile
+if @findalias 'discord2'
+  @clearjournal
+  useskill 'Discordance'
+  waitfortarget 2000
+  target! 'discord2'
+  pause 500
+  while not @injournal 'reduzindo a forca' 'system'
+    if @injournal 'ja esta em' 'system'
+      break
+    endif
+    if @injournal 'nao conseguiu' 'system'
+      pause 500
+      useskill 'Discordance'
+      waitfortarget 2000
+      target! 'discord2'
+      pause 500
+    endif
+  endwhile
+endif
 // Discordance 3
-@clearjournal
-useskill 'Discordance'
-waitfortarget 2000
-target! 'discord3'
-pause 500
-while not @injournal 'reduzindo a forca' 'system'
-  if @injournal 'ja esta em' 'system'
-    break
-  endif
-  if @injournal 'nao conseguiu' 'system'
-    pause 500
-    useskill 'Discordance'
-    waitfortarget 2000
-    target! 'discord3'
-    pause 500
-  endif
-endwhile
+if @findalias 'discord3'
+  @clearjournal
+  useskill 'Discordance'
+  waitfortarget 2000
+  target! 'discord3'
+  pause 500
+  while not @injournal 'reduzindo a forca' 'system'
+    if @injournal 'ja esta em' 'system'
+      break
+    endif
+    if @injournal 'nao conseguiu' 'system'
+      pause 500
+      useskill 'Discordance'
+      waitfortarget 2000
+      target! 'discord3'
+      pause 500
+    endif
+  endwhile
+endif
 // Discordance 4
-@clearjournal
-useskill 'Discordance'
-waitfortarget 2000
-target! 'discord4'
-pause 500
-while not @injournal 'reduzindo a forca' 'system'
-  if @injournal 'ja esta em' 'system'
-    break
-  endif
-  if @injournal 'nao conseguiu' 'system'
-    pause 500
-    useskill 'Discordance'
-    waitfortarget 2000
-    target! 'discord4'
-    pause 500
-  endif
-endwhile
+if @findalias 'discord4'
+  @clearjournal
+  useskill 'Discordance'
+  waitfortarget 2000
+  target! 'discord4'
+  pause 500
+  while not @injournal 'reduzindo a forca' 'system'
+    if @injournal 'ja esta em' 'system'
+      break
+    endif
+    if @injournal 'nao conseguiu' 'system'
+      pause 500
+      useskill 'Discordance'
+      waitfortarget 2000
+      target! 'discord4'
+      pause 500
+    endif
+  endwhile
+endif
 // Discordance 5
-@clearjournal
-useskill 'Discordance'
-waitfortarget 2000
-target! 'discord5'
-pause 500
-while not @injournal 'reduzindo a forca' 'system'
-  if @injournal 'ja esta em' 'system'
-    break
-  endif
-  if @injournal 'nao conseguiu' 'system'
-    pause 500
-    useskill 'Discordance'
-    waitfortarget 2000
-    target! 'discord5'
-    pause 500
-  endif
-endwhile
+if @findalias 'discord5'
+  @clearjournal
+  useskill 'Discordance'
+  waitfortarget 2000
+  target! 'discord5'
+  pause 500
+  while not @injournal 'reduzindo a forca' 'system'
+    if @injournal 'ja esta em' 'system'
+      break
+    endif
+    if @injournal 'nao conseguiu' 'system'
+      pause 500
+      useskill 'Discordance'
+      waitfortarget 2000
+      target! 'discord5'
+      pause 500
+    endif
+  endwhile
+endif
 // Discordance 6
-@clearjournal
-useskill 'Discordance'
-waitfortarget 2000
-target! 'discord6'
-pause 500
-while not @injournal 'reduzindo a forca' 'system'
-  if @injournal 'ja esta em' 'system'
-    break
-  endif
-  if @injournal 'nao conseguiu' 'system'
-    pause 500
-    useskill 'Discordance'
-    waitfortarget 2000
-    target! 'discord6'
-    pause 500
-  endif
-endwhile
+if @findalias 'discord6'
+  @clearjournal
+  useskill 'Discordance'
+  waitfortarget 2000
+  target! 'discord6'
+  pause 500
+  while not @injournal 'reduzindo a forca' 'system'
+    if @injournal 'ja esta em' 'system'
+      break
+    endif
+    if @injournal 'nao conseguiu' 'system'
+      pause 500
+      useskill 'Discordance'
+      waitfortarget 2000
+      target! 'discord6'
+      pause 500
+    endif
+  endwhile
+endif
 // Discordance 7
-@clearjournal
-useskill 'Discordance'
-waitfortarget 2000
-target! 'discord7'
-pause 500
-while not @injournal 'reduzindo a forca' 'system'
-  if @injournal 'ja esta em' 'system'
-    break
-  endif
-  if @injournal 'nao conseguiu' 'system'
-    pause 500
-    useskill 'Discordance'
-    waitfortarget 2000
-    target! 'discord7'
-    pause 500
-  endif
-endwhile
+if @findalias 'discord7'
+  @clearjournal
+  useskill 'Discordance'
+  waitfortarget 2000
+  target! 'discord7'
+  pause 500
+  while not @injournal 'reduzindo a forca' 'system'
+    if @injournal 'ja esta em' 'system'
+      break
+    endif
+    if @injournal 'nao conseguiu' 'system'
+      pause 500
+      useskill 'Discordance'
+      waitfortarget 2000
+      target! 'discord7'
+      pause 500
+    endif
+  endwhile
+endif
 // Discordance 8
-@clearjournal
-useskill 'Discordance'
-waitfortarget 2000
-target! 'discord8'
-pause 500
-while not @injournal 'reduzindo a forca' 'system'
-  if @injournal 'ja esta em' 'system'
-    break
-  endif
-  if @injournal 'nao conseguiu' 'system'
-    pause 500
-    useskill 'Discordance'
-    waitfortarget 2000
-    target! 'discord8'
-    pause 500
-  endif
-endwhile
+if @findalias 'discord8'
+  @clearjournal
+  useskill 'Discordance'
+  waitfortarget 2000
+  target! 'discord8'
+  pause 500
+  while not @injournal 'reduzindo a forca' 'system'
+    if @injournal 'ja esta em' 'system'
+      break
+    endif
+    if @injournal 'nao conseguiu' 'system'
+      pause 500
+      useskill 'Discordance'
+      waitfortarget 2000
+      target! 'discord8'
+      pause 500
+    endif
+  endwhile
+endif
 // Discordance 9
-@clearjournal
-useskill 'Discordance'
-waitfortarget 2000
-target! 'discord9'
-pause 500
-while not @injournal 'reduzindo a forca' 'system'
-  if @injournal 'ja esta em' 'system'
-    break
-  endif
-  if @injournal 'nao conseguiu' 'system'
-    pause 500
-    useskill 'Discordance'
-    waitfortarget 2000
-    target! 'discord9'
-    pause 500
-  endif
-endwhile
+if @findalias 'discord9'
+  @clearjournal
+  useskill 'Discordance'
+  waitfortarget 2000
+  target! 'discord9'
+  pause 500
+  while not @injournal 'reduzindo a forca' 'system'
+    if @injournal 'ja esta em' 'system'
+      break
+    endif
+    if @injournal 'nao conseguiu' 'system'
+      pause 500
+      useskill 'Discordance'
+      waitfortarget 2000
+      target! 'discord9'
+      pause 500
+    endif
+  endwhile
+endif
 // Discordance 0
-@clearjournal
-useskill 'Discordance'
-waitfortarget 2000
-target! 'discord0'
-pause 500
-while not @injournal 'reduzindo a forca' 'system'
-  if @injournal 'ja esta em' 'system'
-    break
-  endif
-  if @injournal 'nao conseguiu' 'system'
-    pause 500
-    useskill 'Discordance'
-    waitfortarget 2000
-    target! 'discord0'
-    pause 500
-  endif
-endwhile
+if @findalias 'discord0'
+  @clearjournal
+  useskill 'Discordance'
+  waitfortarget 2000
+  target! 'discord0'
+  pause 500
+  while not @injournal 'reduzindo a forca' 'system'
+    if @injournal 'ja esta em' 'system'
+      break
+    endif
+    if @injournal 'nao conseguiu' 'system'
+      pause 500
+      useskill 'Discordance'
+      waitfortarget 2000
+      target! 'discord0'
+      pause 500
+    endif
+  endwhile
+endif
 clearjournal
 useskill 'Hiding'
 while not @injournal 'voce ficou invisivel'
