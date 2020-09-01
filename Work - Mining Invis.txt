@@ -285,7 +285,6 @@ for 0 to 2
                 stop
               endif
             endwhile
-            @clearjournal
             if diffweight < 100
               replay
             endif
@@ -300,4 +299,5 @@ for 0 to 2
       walk 'RunXY[]'
     endfor
   endfor
-  // by tork
+endfor
+// by tork
