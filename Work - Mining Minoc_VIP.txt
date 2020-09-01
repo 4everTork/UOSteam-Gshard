@@ -40,7 +40,6 @@ pushlist 'Ores' 0x19b7 // Um ore
 pushlist 'Ores' 0x19ba // Dois ores
 pushlist 'Ores' 0x19b8 // Tres ores
 pushlist 'Ores' 0x19b9 // Quatro ores
-pushlist 'Ores' 0x1bf2 // Ingots
 // Raros
 @clearlist 'Raros'
 pushlist 'Raros' 2490 // Chaos
