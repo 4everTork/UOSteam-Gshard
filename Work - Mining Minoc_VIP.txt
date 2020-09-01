@@ -194,5 +194,4 @@ for 0 to 2
       walk 'RunXY[]'
     endfor
   endfor
-  removelist '
   // by tork
