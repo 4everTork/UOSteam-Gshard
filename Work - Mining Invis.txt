@@ -49,6 +49,44 @@ pushlist! 'RunXY' 'Northwest'
 pushlist! 'RunXY' 'Southwest'
 pushlist! 'RunXY' 'West'
 pushlist! 'RunXY' 'Northeast'
+//
+//
+///////////////////////////////////////
+///////// Lista de Minérios ///////////
+//////////////////////////////////////
+if not listexists 'Pedras'
+  createlist 'Pedras'
+endif
+if not listexists 'Ores'
+  createlist 'Ores'
+endif
+if not listexists 'Raros'
+  createlist 'Raros'
+endif
+@clearlist 'Pedras'
+// Pedras
+pushlist 'Pedras' 0xf10 // Emerald
+pushlist 'Pedras' 0xf11 // Sapphire
+pushlist 'Pedras' 0xf0f // Star Sapphire
+pushlist 'Pedras' 0xf18 // Tourmaline
+pushlist 'Pedras' 0xf13 // Ruby
+pushlist 'Pedras' 0xf15 // Citrine
+pushlist 'Pedras' 0xf16 // Amethyst
+pushlist 'Pedras' 0xf25 // Amber
+pushlist 'Pedras' 0xf26 // Diamond
+// Ores
+@clearlist 'Ores'
+pushlist 'Ores' 0x19b7 // Um ore
+pushlist 'Ores' 0x19ba // Dois ores
+pushlist 'Ores' 0x19b8 // Tres ores
+pushlist 'Ores' 0x19b9 // Quatro ores
+// Raros
+@clearlist 'Raros'
+pushlist 'Raros' 2490 // Chaos
+pushlist 'Raros' 2489 // Order
+pushlist 'Raros' 2492 // Infernal
+pushlist 'Raros' 2493 // Celestial
+//
 if not @findobject 'runebookmining'
   headmsg 'Selecione o seu runebook. PRIMEIRA runa BANCO com guardas e forge ao lado e SEGUNDA runa MINA .'
   promptalias 'runebookmining'
@@ -59,13 +97,13 @@ if not @findalias 'bankminerios'
   promptalias 'bankminerios'
 endif
 //
-// Peso limite
+// Peso limite + Recall para Forge safe
 //
 if diffweight < 100
   while not inregion 'town' 'self'
     useobject 'runebookmining'
     waitforgump 'any' 10000
-   //Gump Runebook 1
+    //Gump Runebook 1
     if @gumpexists 0x472
       replygump 0x472 1
       waitforgump 0x472 15000
@@ -82,195 +120,83 @@ if diffweight < 100
     endif
     pause 11500
   endwhile
+endif
+//
+// Recall para forge safe
+//
+if inregion 'town' 'self'
+  togglehands 'right'
+  pause 500
+  //Gump 1
+  if @gumpexists 0x483
+    replygump 0x483 0
+    //Gump 2
+  elseif @gumpexists 0x484
+    replygump 0x484 0
+    //Gump 3
+  elseif @gumpexists 0x485
+    replygump 0x485 0
   endif
-  //
-  // Restock
-  //
-  if inregion 'town' 'self'
-    msg 'banker bank'
-    pause 500
-    useobject 'bankminerios'
-    pause 250
-    @togglehands 'right'
-    pause 500
-    if @findtype 0x97b 'any' 'bankminerios'
-      useobject 'found'
-    else
-      headmsg '*Sem fish steak*
-    endif
-  endif
+  @usetype 0x13e3 'any' 'self' 1
+  waitforgump 'any' 10000
+  replygump 'any' 0
   //
   // Smeltar
   //
-  if inregion 'town' 'self'
-    togglehands 'right'
+  for 0 to 'Ores'
+    for 0 to 'Raros'
+      while @findtype 'Ores[]' 'Raros[]' 'backpack'
+        @moveitem 'found' 'bankminerios'
+        pause 1000
+      endwhile
+    endfor
+    while @findtype 'Ores[]' 'any' 'backpack'
+      @useobject 'found'
+      pause 1000
+    endwhile
+  endfor
+endif
+//
+// Guardar
+//
+if inregion 'town' 'self'
+  Resync
+  pause 1000
+  headmsg 'Guardando minerios'
+  msg 'banker bank'
+  pause 1000
+  @clearjournal
+  for 0 to 'Pedras'
+    if @findtype 'Pedras[]' 'backpack'
+      @moveitem 'found' 'bankminerios'
+      pause 1000
+    endif
+  endfor
+  for 0 to 'Ores'
+    if @findtype 'Ores[]' 'backpack'
+      @moveitem 'found' 'bankminerios'
+      pause 1000
+    endif
+  endfor
+  while @movetype 0x1bf2 'backpack' 'bankminerios'
+    pause 1000
+  endwhile
+  //
+  // Restock
+  //
+  if not @findtype 0x13e3 'any' 'backpack' 'any' 0
+    useobject 'bankminerios'
     pause 500
-    if not @findtype 0x13e3 'any' 'backpack' 'any' 0
-      useobject 'bankminerios'
-      pause 500
-      @movetype 0x13e3 'bankminerios' 'backpack' 0 0 0 'any'
-      pause 1000
-    endif
-    msg 'banker bank'
+    @movetype 0x13e3 'bankminerios' 'backpack' 0 0 0 'any'
     pause 1000
-    //Gump 1
-    if @gumpexists 0x483
-      replygump 0x483 0
-      //Gump 2
-    elseif @gumpexists 0x484
-      replygump 0x484 0
-      //Gump 3
-    elseif @gumpexists 0x485
-      replygump 0x485 0
-    endif
-    @usetype 0x13e3 'any' 'self' 1
-    waitforgump 'any' 10000
-    replygump 'any' 0
-    if @findtype 0x19ba '2492' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    if @findtype 0x19ba '2493' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    if @findtype 0x19ba '2489' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    if @findtype 0x19ba '2490' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    while @findtype 0x19ba 'any' 'backpack'
-      @useobject 'found'
-      pause 1000
-    endwhile
-    if @findtype 0x19b7 '2492' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    if @findtype 0x19b7 'any' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    if  @findtype 0x19b7 'any' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    if @findtype 0x19b7 'any' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    while @findtype 0x19b7 'any' 'backpack'
-      @useobject 'found'
-      pause 1000
-    endwhile
-    if @findtype 0x19b8 '2492' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    if @findtype 0x19b8 '2493' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    if @findtype 0x19b8 '2489' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    if @findtype 0x19b8 '2490' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    while @findtype 0x19b8 'any' 'backpack'
-      @useobject 'found'
-      pause 1000
-    endwhile
-    if @findtype 0x19b9 '2492' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    if @findtype 0x19b9 '2493' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    if @findtype 0x19b9 '2489' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    if @findtype 0x19b9 '2490' 'backpack'
-      @moveitem 'found' 'bankminerios'
-      pause 1000
-    endif
-    while @findtype 0x19b9 'any' 'backpack'
-      @useobject 'found'
-      pause 1000
-    endwhile
-    togglehands 'right'
-    pause 1000
-    if @injournal 'You can not pick that up' 'system'
-      Sysmsg 'Recalculando'
-      break
-    endif
+  endif
+  if @findtype 0x97b 'any' 'bankminerios'
+    useobject 'found'
+  else
+    headmsg '*Sem fish steak*
   endif
   //
-  // Guardar
-  //
-  if inregion 'town' 'self'
-    Resync
-    pause 1000
-    headmsg 'Guardando minerios'
-    msg 'banker bank'
-    pause 1000
-    @clearjournal
-    while @movetype 0x1bf2 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0x19b9 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0xf13 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0xf16 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0xf11 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0xf26 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0xf18 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0xf0f 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0xf10 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0xf15 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0x19b7 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0x19b8 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0x19ba 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0x19b7 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-    while @movetype 0x19bef 'backpack' 'bankminerios' 0 0 0 'any'
-      pause 1000
-    endwhile
-  endif
-  //
-  // Minerar
+  // Recall para a Mina
   //
   while mana < 40
     useskill 'meditation'
@@ -281,21 +207,21 @@ if diffweight < 100
     pause 500
     useobject 'runebookmining'
     waitforgump 'any' 15000
- //Gump Runebook 1
-  if @gumpexists 0x472
-    replygump 0x472 2
-    waitforgump 0x472 15000
-    replygump 0x472 102
-    //Gump Runebook 2
-  elseif @gumpexists 0x473
-    replygump 0x473 2
-    waitforgump 0x473 15000
-    replygump 0x473 102
-  elseif @gumpexists 0x474
-    replygump 0x474 2
-    waitforgump 0x474 15000
-    replygump 0x474 102
-  endif
+    //Gump Runebook 1
+    if @gumpexists 0x472
+      replygump 0x472 2
+      waitforgump 0x472 15000
+      replygump 0x472 102
+      //Gump Runebook 2
+    elseif @gumpexists 0x473
+      replygump 0x473 2
+      waitforgump 0x473 15000
+      replygump 0x473 102
+    elseif @gumpexists 0x474
+      replygump 0x474 2
+      waitforgump 0x474 15000
+      replygump 0x474 102
+    endif
     pause 11500
     if @findtype '0xe85' 'any' or @findtype '0xe86' 'any'
       @useobject 'found'
@@ -307,7 +233,7 @@ if diffweight < 100
     for 0 to 'RunXY'
       for 0 to 'Directions'
         for 0 to 'Pos_X'
-          for 0 to 'Pos_Y'           
+          for 0 to 'Pos_Y'
             if not hidden 'self'
               while not hidden 'self'
                 useskill 'Hiding'
@@ -342,7 +268,7 @@ if diffweight < 100
               endif
               clearjournal
               @settimer 't_timeout' 0
-              while @timer 't_timeout' < 15000              
+              while @timer 't_timeout' < 15000
                 //
                 //  Jornal
                 //
