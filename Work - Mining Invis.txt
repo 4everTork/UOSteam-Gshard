@@ -143,6 +143,7 @@ if inregion 'town' 'self'
   //
   // Smeltar
   //
+  msg 'Banker Bank'
   for 0 to 'Ores'
     for 0 to 'Raros'
       while @findtype 'Ores[]' 'Raros[]' 'backpack'
