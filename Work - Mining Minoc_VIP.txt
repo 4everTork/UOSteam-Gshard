@@ -1,11 +1,64 @@
-//Macro de Mining para UOSteam
+// Macro de Mining para UOSteam
+// Mina de Minoc/VIP, com descarte de ores comuns
+//
 //Servidor: Gshard Free Shard
-//Data: 15/06/2020
+//Data: 01/09/2020
+// ** Esse macro vai DESCARTAR ores comuns.
 // ** Ter um container (baú em seu banco) **
 // ** A mina que você estiver DEVERÁ ter acesso ao banco de qualquer lugar **
+///////////////////////////////////////////////////////
 //
+//
+///////////////////////////////////////
+///////// Lista de Minérios ///////////
+//////////////////////////////////////
+if not listexists 'Pedras'
+  createlist 'Pedras'
+endif
+if not listexists 'Ores'
+  createlist 'Ores'
+endif
+if not listexists 'Raros'
+  createlist 'Raros'
+endif
+if not listexists 'Comuns'
+  createlist 'Comuns'
+endif
+@clearlist 'Pedras'
+// Pedras
+pushlist 'Pedras' 0xf10 // Emerald
+pushlist 'Pedras' 0xf11 // Sapphire
+pushlist 'Pedras' 0xf0f // Star Sapphire
+pushlist 'Pedras' 0xf18 // Tourmaline
+pushlist 'Pedras' 0xf13 // Ruby
+pushlist 'Pedras' 0xf15 // Citrine
+pushlist 'Pedras' 0xf16 // Amethyst
+pushlist 'Pedras' 0xf25 // Amber
+pushlist 'Pedras' 0xf26 // Diamond
+// Ores
+@clearlist 'Ores'
+pushlist 'Ores' 0x19b7 // Um ore
+pushlist 'Ores' 0x19ba // Dois ores
+pushlist 'Ores' 0x19b8 // Tres ores
+pushlist 'Ores' 0x19b9 // Quatro ores
+pushlist 'Ores' 0x1bf2 // Ingots
+// Raros
+@clearlist 'Raros'
+pushlist 'Raros' 2490 // Chaos
+pushlist 'Raros' 2489 // Order
+pushlist 'Raros' 2492 // Infernal
+pushlist 'Raros' 2493 // Celestial
+// Comuns
+@clearlist 'Comuns'
+pushlist 'Comuns' 2480 // Ceramic
+pushlist 'Comuns' 2483 // Bronze
+pushlist 'Comuns' 2484 // Silver
+pushlist 'Comuns' 2485 // Gold
+pushlist 'Comuns' 2487 // Radioative
+pushlist 'Comuns' 0 // Iron
+////////////////////////////////////////
 // CONFIGURACOES
-//
+//////////////////////////////////////
 if not listexists 'Pos_X'
   createlist 'Pos_X'
 endif
@@ -61,49 +114,28 @@ if diffweight < 100
   msg 'banker bank'
   pause 1000
   @clearjournal
-  while @movetype 0x1bf2 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0x19b9 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0xf13 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0xf16 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0xf11 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0xf26 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0xf18 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0xf0f 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0xf10 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0xf15 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0x19b7 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0x19b8 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0x19ba 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0x19b7 'backpack' 'bagmining' 0 0 0 'any'
-    pause 1000
-  endwhile
-  while @movetype 0x19bef 'backpack' 'bagmining' 0 0 0 'any'
+  for 0 to 'Ores'
+    for 0 to 'Raros'
+      while @findtype 'Ores[]' 'Raros[]' 'backpack'
+        @moveitem! 'found' 'bagmining'
+        pause 1000
+      endwhile
+    endfor
+  endfor
+  for 0 to 'Ores'
+    for 0 to 'Comuns'
+      while @findtype 'Ores[]' 'Comuns[]' 'backpack'
+        @moveitem! 'found' 'bagmining'
+        pause 1000
+      endwhile
+    endfor
+  endfor
+  for 0 to 'Pedras'
+    if @findtype 'Pedras[]' 'backpack'
+      @moveitem! 'found' 'bagmining'
+    endif
+  endfor
+  while @movetype 0x1bf2 'backpack' 'bagmining'
     pause 1000
   endwhile
 endif
@@ -125,11 +157,11 @@ for 0 to 2
             if dead 'self'
               stop
             endif
-            autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
+            @autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
             if not @useobject! 'righthand'
               usetype! 0xe85 'any' 'self' 1
             endif
-            clearjournal
+            @clearjournal
             @settimer 't_timeout' 0
             while @timer 't_timeout' < 15000
               if dead 'self'
@@ -139,6 +171,7 @@ for 0 to 2
               //  Jornal
               //
               if @injournal 'Voce pos' 'system' or @injournal 'Voce nao encontrou' 'system'
+                @setalias 'quit' 'self'
                 break
               elseif @injournal 'Nao ha nada aqui' 'system' or @injournal 'Tente minerar em outro' 'system'
                 @setalias 'quit' 'self'
@@ -163,4 +196,5 @@ for 0 to 2
       walk 'RunXY[]'
     endfor
   endfor
+  removelist '
   // by tork
