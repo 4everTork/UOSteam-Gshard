@@ -1,10 +1,9 @@
 // Macro de Mining para UOSteam
-// Mina de Minoc/VIP, com descarte de ores comuns
+// Mina de Minoc/VIP.
 //
 //Servidor: Gshard Free Shard
 //Data: 01/09/2020
-// ** Esse macro vai DESCARTAR ores comuns.
-// ** Ter um container (baú em seu banco) **
+// ** Ter um container (baú em seu banco). Ter Fish Steak nele é opcional.**
 // ** A mina que você estiver DEVERÁ ter acesso ao banco de qualquer lugar **
 ///////////////////////////////////////////////////////
 //
