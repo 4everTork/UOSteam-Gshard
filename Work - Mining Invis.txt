@@ -228,75 +228,76 @@ if inregion 'town' 'self'
     endif
     pause 750
   endif
-  @cancelautotarget
-  for 0 to 2
-    for 0 to 'RunXY'
-      for 0 to 'Directions'
-        for 0 to 'Pos_X'
-          for 0 to 'Pos_Y'
-            if not hidden 'self'
+endif
+@cancelautotarget
+for 0 to 2
+  for 0 to 'RunXY'
+    for 0 to 'Directions'
+      for 0 to 'Pos_X'
+        for 0 to 'Pos_Y'
+          if not hidden 'self'
+            while not hidden 'self'
+              useskill 'Hiding'
+              pause 3500
+            endwhile
+            pause 750
+            if hidden 'self'
+              useskill 'Stealth'
+              while not @injournal 'mover em silencio' 'system'
+              endwhile
+            else
               while not hidden 'self'
                 useskill 'Hiding'
                 pause 3500
               endwhile
-              pause 750
-              if hidden 'self'
-                useskill 'Stealth'
-                while not @injournal 'mover em silencio' 'system'
-                endwhile
-              else
-                while not hidden 'self'
-                  useskill 'Hiding'
-                  pause 3500
-                endwhile
+            endif
+          endif
+          //
+          // Minerar em si
+          //
+          @unsetalias 'quit'
+          while not @findalias 'quit'
+            @cancelautotarget
+            if dead 'self'
+              replay
+            endif
+            autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
+            if not @useobject! 'righthand'
+              if @findtype '0xe85' 'any' or @findtype '0xe86' 'any'
+                @useobject 'found'
               endif
             endif
-            //
-            // Minerar em si
-            //
-            @unsetalias 'quit'
-            while not @findalias 'quit'
-              @cancelautotarget
-              if dead 'self'
-                replay
-              endif
-              autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
-              if not @useobject! 'righthand'
-                if @findtype '0xe85' 'any' or @findtype '0xe86' 'any'
-                  @useobject 'found'
-                endif
-              endif
-              clearjournal
-              @settimer 't_timeout' 0
-              while @timer 't_timeout' < 15000
-                //
-                //  Jornal
-                //
-                if @injournal 'Voce pos' 'system' or @injournal 'Voce nao encontrou' 'system'
-                  break
-                elseif @injournal 'Nao ha nada aqui' 'system'
-                  @setalias 'quit' 'self'
-                  break
-                elseif @injournal 'Voce nao tem uma' 'system' or @injournal 'You cannot mine' 'system'
-                  @setalias 'quit' 'self'
-                  break
-                elseif @injournal 'sorte' 'system'
-                  stop
-                endif
-              endwhile
-              @clearjournal
-              if diffweight < 100
-                replay
+            clearjournal
+            @settimer 't_timeout' 0
+            while @timer 't_timeout' < 15000
+              //
+              //  Jornal
+              //
+              if @injournal 'Voce pos' 'system' or @injournal 'Voce nao encontrou' 'system'
+                break
+              elseif @injournal 'Nao ha nada aqui' 'system'
+                @setalias 'quit' 'self'
+                break
+              elseif @injournal 'Voce nao tem uma' 'system' or @injournal 'You cannot mine' 'system'
+                @setalias 'quit' 'self'
+                break
+              elseif @injournal 'sorte' 'system'
+                stop
               endif
             endwhile
-          endfor
-        endfor
-        for 4
-          walk 'Directions[]'
+            @clearjournal
+            if diffweight < 100
+              replay
+            endif
+          endwhile
         endfor
       endfor
-      for 8
-        walk 'RunXY[]'
+      for 4
+        walk 'Directions[]'
       endfor
     endfor
-    // by tork
+    for 8
+      walk 'RunXY[]'
+    endfor
+  endfor
+  // by tork
