@@ -169,7 +169,6 @@ for 0 to 2
               //  Jornal
               //
               if @injournal 'Voce pos' 'system' or @injournal 'Voce nao encontrou' 'system'
-                @setalias 'quit' 'self'
                 break
               elseif @injournal 'Nao ha nada aqui' 'system' or @injournal 'Tente minerar em outro' 'system'
                 @setalias 'quit' 'self'
