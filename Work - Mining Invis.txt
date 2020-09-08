@@ -137,9 +137,17 @@ if inregion 'town' 'self'
   elseif @gumpexists 0x485
     replygump 0x485 0
   endif
-  @usetype 0x13e3 'any' 'self' 1
-  waitforgump 'any' 10000
-  replygump 'any' 0
+  if not @findtype 0x13e3 'any' 'self' 'any' 1
+    msg 'Banker Bank'
+    useobject 'bankminerios'
+    pause 500
+    @movetype 0x13e3 'bankminerios' 'backpack' 0 0 0 'any'
+    pause 1000
+  else
+    @usetype 0x13e3 'any' 'self' 2
+    waitforgump 'any' 10000
+    replygump 'any' 0
+  endif
   //
   // Smeltar
   //
@@ -182,15 +190,7 @@ if inregion 'town' 'self'
   while @movetype 0x1bf2 'backpack' 'bankminerios'
     pause 1000
   endwhile
-  //
-  // Restock
-  //
-  if not @findtype 0x13e3 'any' 'backpack' 'any' 0
-    useobject 'bankminerios'
-    pause 500
-    @movetype 0x13e3 'bankminerios' 'backpack' 0 0 0 'any'
-    pause 1000
-  endif
+  // Comer peixe
   if @findtype 0x97b 'any' 'bankminerios'
     useobject 'found'
   else
