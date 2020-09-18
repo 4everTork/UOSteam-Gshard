@@ -239,13 +239,14 @@ for 0 to 2
           if not hidden 'self'
             while not hidden 'self'
               useskill 'Hiding'
-              pause 3500
+              pause 3750
             endwhile
             pause 750
             if hidden 'self'
               useskill 'Stealth'
               while not @injournal 'mover em silencio' 'system'
               endwhile
+              pause 250
             else
               while not hidden 'self'
                 useskill 'Hiding'
