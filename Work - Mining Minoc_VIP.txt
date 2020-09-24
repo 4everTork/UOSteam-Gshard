@@ -1,5 +1,6 @@
 //////////////////////////////////
 // Macro de Mining para UOSteam
+// Link: https://github.com/4everTork/UOSteam-Gshard/blob/master/Work%20-%20Mining%20Minoc_VIP.txt
 // Servidor: AnCorp Free Shard
 // Data: 18/09/2020
 ////// Funções ////////////////////////
