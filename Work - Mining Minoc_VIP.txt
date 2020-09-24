@@ -34,11 +34,11 @@ endif
 ////
 // Comuns
 ////
-pushlist 'Comuns' 0 // Iron
-pushlist 'Comuns' 2480 // Ceramic
-pushlist 'Comuns' 2483 // Bronze
-pushlist 'Comuns' 2484 // Silver
-pushlist 'Comuns' 2485 // Gold
+//pushlist 'Comuns' 0 // Iron
+//pushlist 'Comuns' 2480 // Ceramic
+//pushlist 'Comuns' 2483 // Bronze
+//pushlist 'Comuns' 2484 // Silver
+//pushlist 'Comuns' 2485 // Gold
 //pushlist 'Comuns' 2487 // Radioative
 //
 // Raros (nao mexer)
