@@ -310,9 +310,7 @@ for 0 to 2
                 if @injournal 'order' 'system' or @injournal 'chaos' 'system
                   break
                 elseif @injournal 'celestial' 'system' or @injournal 'infernal' 'system'
-                  break
-                elseif @injournal 'radioactive' 'system'
-                  break
+                  break   
                 else
                   for 0 to 'Ores'
                     for 0 to 'Comuns'
