@@ -1,7 +1,7 @@
 //////////////////////////////////
 // Macro de Mining para UOSteam
 // Servidor: AnCorp Free Shard
-// Data: 23/09/2020
+// Data: 18/09/2020
 ////// Funções ////////////////////////
 // * Proteção contra PK em Minoc
 // * Mining seletivo
@@ -34,7 +34,6 @@ endif
 ////
 // Comuns
 ////
-@clearlist 'Comuns'
 //pushlist 'Comuns' 0 // Iron
 //pushlist 'Comuns' 2480 // Ceramic
 //pushlist 'Comuns' 2483 // Bronze
@@ -107,6 +106,7 @@ pushlist! 'RunXY' 'Southwest'
 pushlist! 'RunXY' 'West'
 pushlist! 'RunXY' 'Northeast'
 @createtimer 'Guards'
+pushlist 'Comuns' 1 // debug (nao mexer)
 if not @findobject 'ForgeMinoc'
   headmsg '*Selecione um forge na mina.*'
   promptalias 'ForgeMinoc'
