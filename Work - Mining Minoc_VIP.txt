@@ -1,6 +1,5 @@
 //////////////////////////////////
 // Macro de Mining para UOSteam
-// Link: https://github.com/4everTork/UOSteam-Gshard/blob/master/Work%20-%20Mining%20Minoc_VIP.txt
 // Servidor: AnCorp Free Shard
 // Data: 18/09/2020
 ////// Funções ////////////////////////
@@ -35,6 +34,7 @@ endif
 ////
 // Comuns
 ////
+@clearlist 'Comuns' 
 //pushlist 'Comuns' 0 // Iron
 //pushlist 'Comuns' 2480 // Ceramic
 //pushlist 'Comuns' 2483 // Bronze
@@ -121,7 +121,7 @@ if not @findobject 'bagmining'
 endif
 //
 // Ir até o forge
-// Em Minoc: com +10 raros ou -150 do maximo
+// No safe: com +10 raros ou -150 do maximo
 // Na VIP: com -5 do maximo
 //
 if @findobject 0x400cbec5
