@@ -34,7 +34,7 @@ endif
 ////
 // Comuns
 ////
-@clearlist 'Comuns' 
+@clearlist 'Comuns'
 //pushlist 'Comuns' 0 // Iron
 //pushlist 'Comuns' 2480 // Ceramic
 //pushlist 'Comuns' 2483 // Bronze
@@ -334,8 +334,18 @@ for 0 to 2
               endif
             endwhile
             @clearjournal
-            if diffweight < 100
-              replay
+            if @findobject 0x400cbec5
+              if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
+                replay
+              elseif @counttype '0x19b9' '2489' 'backpack' > 10  or @counttype '0x19b9' '2492' 'backpack' > 10
+                replay
+              elseif @counttype '0x19b9' '2493' 'backpack' > 10
+                replay
+              endif
+            else
+              if diffweight < 5
+                replay
+              endif
             endif
           endwhile
         endfor
