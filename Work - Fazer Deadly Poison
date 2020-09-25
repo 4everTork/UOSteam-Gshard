@@ -23,7 +23,7 @@ if @counttype 0xf0e 0 'backpack' == 0
   movetype 0xf0e  'BauDPoison' 'Backpack' (0 0 0) 0 15 4
   pause 1000
 endif
-// Se tiver mais que 50 Deadly Poison Potion
+// Se tiver mais que 10 Deadly Poison Potion
 if @counttype 0xf0e 68 'backpack' >= 10
   useobject 'BauDPoison'
   headmsg 'Guardando Deadly Poison Potion'
