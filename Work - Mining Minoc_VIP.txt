@@ -121,16 +121,18 @@ if not @findobject 'bagmining'
 endif
 //
 // Ir até o forge
-// No safe: com +10 raros ou -150 do maximo de peso
+// No safe: com +10 raros ou -150 do maximo
 // Na VIP: com -5 do maximo
 //
-if @findobject 0x400cbec5
-  if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
-    setalias 'Guardar' 'self'
-  elseif @counttype '0x19b9' '2489' 'backpack' > 10  or @counttype '0x19b9' '2492' 'backpack' > 10
-    setalias 'Guardar' 'self'
-  elseif @counttype '0x19b9' '2493' 'backpack' > 10
-    setalias 'Guardar' 'self'
+if x >= 2557 and x <= 2581
+  if y >= 474 and y <= 486
+    if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
+      setalias 'Guardar' 'self'
+    elseif @counttype '0x19b9' '2489' 'backpack' > 10  or @counttype '0x19b9' '2492' 'backpack' > 10
+      setalias 'Guardar' 'self'
+    elseif @counttype '0x19b9' '2493' 'backpack' > 10
+      setalias 'Guardar' 'self'
+    endif
   endif
 endif
 if @findalias 'Guardar' or diffweight < 5
@@ -206,11 +208,13 @@ for 0 to 2
       for 0 to 'Pos_X'
         for 0 to 'Pos_Y'
           // Chamar guardas
-          if @findobject 0x400cbec5
-            getenemy 'murderer' 'criminal' 'enemy' 'gray' 'humanoid' 'transformation' 'closest'
-            if @inrange 'Enemy' '20' and @timer 'Guards' >= 3000
-              msg 'Guards'
-              @settimer 'Guards' 0
+          if x >= 2557 and x <= 2581
+            if y >= 474 and y <= 486
+              getenemy 'murderer' 'criminal' 'enemy' 'gray' 'humanoid' 'transformation' 'closest'
+              if @inrange 'Enemy' '20' and @timer 'Guards' >= 3000
+                msg 'Guards'
+                @settimer 'Guards' 0
+              endif
             endif
           endif
           @unsetalias 'quit'
@@ -233,69 +237,69 @@ for 0 to 2
               ///
               // Chamar guardas
               //
-              if @findobject 0x400cbec5
-                getenemy 'murderer' 'criminal' 'enemy' 'gray' 'humanoid' 'transformation' 'closest'
-                if @inrange 'Enemy' '20' and @timer 'Guards' >= 3000
-                  msg 'Guards'
-                  settimer 'Guards'  0
-                endif
-                // Ficar sem mana
-                while mana < 46
-                  useskill 'Meditation'
-                  pause 3500
-                endwhile
-                // Usar bandage
-                if hits < 90
-                  if @findtype 0xe21 'any' 'backpack' 0
-                    while hits < maxhits
-                      turn "Northeast"
-                      pause 100
-                      walk "Northeast"
-                      pause 100
-                      for 2
-                        autotargetself!
-                        useobject! 'found'
-                        pause 4000
-                      endfor
-                    endwhile
-                  else
-                    if @timer 'Bandage' >= 10000
-                      @settimer 'Bandage' 0
-                      headmsg 'Sem Bandage na Backpack' 50 'self'
-                      break
-                    endif
+              if x >= 2557 and x <= 2581
+                if y >= 474 and y <= 486
+                  getenemy 'murderer' 'criminal' 'enemy' 'gray' 'humanoid' 'transformation' 'closest'
+                  if @inrange 'Enemy' '20' and @timer 'Guards' >= 3000
+                    msg 'Guards'
+                    settimer 'Guards'  0
                   endif
-                endif
-                // Se ficar Poisonado
-                while poisoned 'self'
-                  cast 'cure' self
-                  if @findtype 0xe85 'any' 'self' 1
-                    @useobject 'found'
-                  elseif @findtype 0xe86 'any' 'self' 1
-                    @useobject 'found'
-                  endif
-                  pause 2250
-                  turn "Northeast"
-                  pause 100
-                  walk "Northeast"
-                  pause 100
-                endwhile
-                // Se encontrar Fire Field perto
-                if @findtype 0x398c 'any' 'ground' 'any' 3
-                  turn "Northeast"
-                  pause 100
-                  walk "Northeast"
-                  pause 100
-                  if skill 'Magery' >= 75
-                    cast "Mass Dispel"
+                  // Ficar sem mana
+                  while mana < 46
+                    useskill 'Meditation'
+                    pause 3500
+                  endwhile
+                  // Se ficar Poisonado
+                  while poisoned 'self'
+                    cast 'cure' self
                     if @findtype 0xe85 'any' 'self' 1
                       @useobject 'found'
                     elseif @findtype 0xe86 'any' 'self' 1
                       @useobject 'found'
                     endif
-                    pause 4750
-                  else
-                    pause 1000
+                    pause 2250
+                    turn "Northeast"
+                    pause 100
+                    walk "Northeast"
+                    pause 100
+                  endwhile
+                  // Se encontrar Fire Field perto
+                  if @findtype 0x398c 'any' 'ground' 'any' 3
+                    turn "Northeast"
+                    pause 100
+                    walk "Northeast"
+                    pause 100
+                    if skill 'Magery' >= 75
+                      cast "Mass Dispel"
+                      if @findtype 0xe85 'any' 'self' 1
+                        @useobject 'found'
+                      elseif @findtype 0xe86 'any' 'self' 1
+                        @useobject 'found'
+                      endif
+                      pause 4750
+                    else
+                      pause 1000
+                    endif
+                  endif
+                  // Usar bandage
+                  if hits < 90
+                    if @findtype 0xe21 'any' 'backpack' 0
+                      while hits < maxhits
+                        turn "Northeast"
+                        pause 100
+                        walk "Northeast"
+                        pause 100
+                        autotargetself!
+                        useobject! 'found'
+                        pause 4000
+                      endwhile
+                    else
+                      if @timer 'Bandage' >= 10000
+                        @settimer 'Bandage' 0
+                        headmsg 'Sem Bandage na Backpack' 50 'self'
+                        break
+                      endif
+                    endif
                   endif
                 endif
                 // Se morrer :(
@@ -334,16 +338,12 @@ for 0 to 2
               endif
             endwhile
             @clearjournal
-            if @findobject 0x400cbec5
-              if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
-                replay
-              elseif @counttype '0x19b9' '2489' 'backpack' > 10  or @counttype '0x19b9' '2492' 'backpack' > 10
-                replay
-              elseif @counttype '0x19b9' '2493' 'backpack' > 10
-                replay
-              endif
-            else
-              if diffweight < 5
+            if x >= 2557 and x <= 2581
+              if y >= 474 and y <= 486
+                if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
+                  replay
+                endif
+              elseif diffweight < 5
                 replay
               endif
             endif
