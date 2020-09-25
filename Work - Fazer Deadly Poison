@@ -12,7 +12,7 @@ else
   useobject 'BauDPoison'
 endif
 // Se acabar Nightshade
-if @counttype 0xf88 0 'backpack' < 3
+if @counttype 0xf88 0 'backpack' < 8
   headmsg 'Restockando Nightshade'
   movetype 0xf88 'BauDPoison' 'Backpack' (0 0 0) 0 400 4
   pause 1000
