@@ -112,7 +112,7 @@ if not @findobject 'ForgeMinoc'
   headmsg '*Selecione um forge na mina.*'
   promptalias 'ForgeMinoc'
 endif
-if not @findobject 'bagmining'
+if not @findalias 'bagmining'
   headmsg 'Selecione o bau em seu banco para guardar os minerios.'
   msg 'Banker Bank'
   pause 300
