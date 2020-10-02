@@ -31,8 +31,11 @@ elseif @gumpexists 0x485
   @replygump 0x485 0
 endif
 while not @injournal 'voce esmeltou o ore' 'system'
-  usetype 0x19ba 'any' 'backpack'
-  pause 750
+  if @usetype 0x19ba 'any' 'backpack'
+    pause 750
+  else
+    break
+  endif
   if @injournal 'nao conseguiu' 'system'
     @movetype 0x19b7 'backpack' 'baumineriosmelt' 0 0 0 'any'
     pause 750
