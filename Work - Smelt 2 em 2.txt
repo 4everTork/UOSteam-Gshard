@@ -14,9 +14,11 @@ endif
 //
 // Pegar minerios
 //
-if @findtype '0x19b9' 'any' 'baumineriosmelt'
-  @moveitem 'found' 'backpack' (0 0 0) 2
-  pause 750
+if not @findtype 0x19ba 'any' 'backpack'
+  if @findtype '0x19b9' 'any' 'baumineriosmelt'
+    @moveitem 'found' 'backpack' (0 0 0) 2
+    pause 750
+  endif
 endif
 //
 // Smeltar
