@@ -16,7 +16,7 @@ endif
 //
 if @findtype '0x19b9' 'any' 'baumineriosmelt'
   @moveitem 'found' 'backpack' (0 0 0) 2
-  pause 1000
+  pause 750
 endif
 //
 // Smeltar
@@ -32,10 +32,10 @@ elseif @gumpexists 0x485
 endif
 while not @injournal 'voce esmeltou o ore' 'system'
   usetype 0x19ba 'any' 'backpack'
-  pause 1000
+  pause 750
   if @injournal 'nao conseguiu' 'system'
     @movetype 0x19b7 'backpack' 'baumineriosmelt' 0 0 0 'any'
-    pause 1000
+    pause 750
     break
   endif
 endwhile
