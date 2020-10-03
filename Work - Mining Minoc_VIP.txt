@@ -125,7 +125,7 @@ endif
 // Na VIP: com -5 do maximo
 //
 if x >= 2557 and x <= 2581
-  if y >= 474 and y <= 486
+  if y >= 474 and y <= 495
     if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
       setalias 'Guardar' 'self'
     elseif @counttype '0x19b9' '2489' 'backpack' > 10  or @counttype '0x19b9' '2492' 'backpack' > 10
@@ -208,163 +208,148 @@ for 0 to 2
     for 0 to 'Directions'
       for 0 to 'Pos_X'
         for 0 to 'Pos_Y'
-          ///
-          // Chamar guardas
-          //
-          if x >= 2557 and x <= 2581
-            if y >= 474 and y <= 486
-              getenemy 'murderer' 'criminal' 'enemy' 'gray' 'humanoid' 'transformation' 'closest'
-              if @inrange 'Enemy' '20' and @timer 'Guards' >= 3000
-                msg 'Guards'
-                settimer 'Guards'  0
-              endif
+          @unsetalias 'quit'
+          while not @findalias 'quit'
+            @cancelautotarget
+            if dead 'self'
+              stop
             endif
-            @unsetalias 'quit'
-            while not @findalias 'quit'
-              @cancelautotarget
+            @autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
+            if @findtype 0xe85 'any' 'self' 1
+              @useobject 'found'
+            elseif @findtype 0xe86 'any' 'self' 1
+              @useobject 'found'
+            endif
+            @clearjournal
+            @settimer 't_timeout' 0
+            while @timer 't_timeout' < 15000
+              ///
+              // Segurança
+              ///
+              // Chamar guardas
+              //
+              if @findobject 'ForgeMinoc'
+                getenemy 'murderer' 'criminal' 'enemy' 'gray' 'humanoid' 'transformation' 'closest'
+                if @inrange 'Enemy' '20' and @timer 'Guards' >= 3000
+                  msg 'Guards'
+                  settimer 'Guards'  0
+                endif
+                // Ficar sem mana
+                while mana < 60
+                  if mana < 21
+                    msg '.drinkmana'
+                  endif
+                  useskill 'Meditation'
+                  pause 3500
+                endwhile
+                // Se ficar Paralizado
+                while paralyzed 'self'
+                  autotargetself!
+                  cast "Magic Arrow"
+                  pause 2000
+                endwhile
+                // Se ficar Poisonado
+                while poisoned 'self'
+                  cast 'cure' self
+                  if @findtype 0xe85 'any' 'self' 1
+                    @useobject 'found'
+                  elseif @findtype 0xe86 'any' 'self' 1
+                    @useobject 'found'
+                  endif
+                  pause 2250
+                  turn "Northeast"
+                  pause 100
+                  walk "Northeast"
+                  pause 100
+                endwhile
+                // Se encontrar Fire Field perto
+                if @findtype 0x398c 'any' 'ground' 'any' 3
+                  turn "Northeast"
+                  pause 100
+                  walk "Northeast"
+                  pause 100
+                  if skill 'Magery' >= 75
+                    cast "Mass Dispel"
+                    if @findtype 0xe85 'any' 'self' 1
+                      @useobject 'found'
+                    elseif @findtype 0xe86 'any' 'self' 1
+                      @useobject 'found'
+                    endif
+                    pause 4750
+                  else
+                    pause 1000
+                  endif
+                endif
+                // Usar bandage
+                if hits < 90
+                  if @findtype 0xe21 'any' 'backpack' 0
+                    turn "Northeast"
+                    pause 100
+                    walk "Northeast"
+                    pause 100
+                    autotargetself!
+                    useobject! 'found'
+                    pause 4500
+                  else
+                    if @timer 'Bandage' >= 7000
+                      @settimer 'Bandage' 0
+                      headmsg 'Sem Bandage na Backpack' 50 'self'
+                      break
+                    endif
+                  endif
+                endif
+              endif
+              // Se morrer :(
               if dead 'self'
                 stop
               endif
-              @autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
-              if @findtype 0xe85 'any' 'self' 1
-                @useobject 'found'
-              elseif @findtype 0xe86 'any' 'self' 1
-                @useobject 'found'
+              //
+              //  Jornal
+              //
+              if  @injournal 'Voce nao encontrou' 'system'
+                break
               endif
-              @clearjournal
-              @settimer 't_timeout' 0
-              while @timer 't_timeout' < 15000
-                ///
-                // Segurança
-                ///
-                // Chamar guardas
-                //
-                if x >= 2557 and x <= 2581
-                  if y >= 474 and y <= 486
-                    getenemy 'murderer' 'criminal' 'enemy' 'gray' 'humanoid' 'transformation' 'closest'
-                    if @inrange 'Enemy' '20' and @timer 'Guards' >= 3000
-                      msg 'Guards'
-                      settimer 'Guards'  0
-                    endif
-                    // Ficar sem mana
-                    while mana < 60
-                      if mana < 21
-                        msg '.drinkmana'
-                      endif
-                      useskill 'Meditation'
-                      pause 3500
-                    endwhile
-                    // Se ficar Paralizado
-                    while paralyzed 'self'
-                      autotargetself!
-                      cast "Magic Arrow"
-                      pause 2000
-                    endwhile
-                    // Se ficar Poisonado
-                    while poisoned 'self'
-                      cast 'cure' self
-                      if @findtype 0xe85 'any' 'self' 1
-                        @useobject 'found'
-                      elseif @findtype 0xe86 'any' 'self' 1
-                        @useobject 'found'
-                      endif
-                      pause 2250
-                      turn "Northeast"
-                      pause 100
-                      walk "Northeast"
-                      pause 100
-                    endwhile
-                    // Se encontrar Fire Field perto
-                    if @findtype 0x398c 'any' 'ground' 'any' 3
-                      turn "Northeast"
-                      pause 100
-                      walk "Northeast"
-                      pause 100
-                      if skill 'Magery' >= 75
-                        cast "Mass Dispel"
-                        if @findtype 0xe85 'any' 'self' 1
-                          @useobject 'found'
-                        elseif @findtype 0xe86 'any' 'self' 1
-                          @useobject 'found'
-                        endif
-                        pause 4750
-                      else
-                        pause 1000
-                      endif
-                    endif
-                    // Usar bandage
-                    if hits < 90
-                      if @findtype 0xe21 'any' 'backpack' 0
-                        turn "Northeast"
-                        pause 100
-                        walk "Northeast"
-                        pause 100
-                        autotargetself!
-                        useobject! 'found'
-                        pause 4500
-                      else
-                        if @timer 'Bandage' >= 7000
-                          @settimer 'Bandage' 0
-                          headmsg 'Sem Bandage na Backpack' 50 'self'
-                          break
-                        endif
-                      endif
-                    endif
-                  endif
-                  // Se morrer :(
-                  if dead 'self'
-                    stop
-                  endif
-                endif
-                //
-                //  Jornal
-                //
-                if  @injournal 'Voce nao encontrou' 'system'
+              if @injournal 'Voce pos' 'system'
+                if @injournal 'order' 'system' or @injournal 'chaos' 'system
                   break
-                endif
-                if @injournal 'Voce pos' 'system'
-                  if @injournal 'order' 'system' or @injournal 'chaos' 'system
-                    break
-                  elseif @injournal 'celestial' 'system' or @injournal 'infernal' 'system'
-                    break
-                  else
-                    for 0 to 'Ores'
-                      for 0 to 'Comuns'
-                        if @findtype 'Ores[]' 'Comuns[]' 'backpack'
-                          moveitemoffset 'found' 'ground'
-                        endif
-                      endfor
+                elseif @injournal 'celestial' 'system' or @injournal 'infernal' 'system'
+                  break
+                else
+                  for 0 to 'Ores'
+                    for 0 to 'Comuns'
+                      if @findtype 'Ores[]' 'Comuns[]' 'backpack'
+                        moveitemoffset 'found' 'ground'
+                      endif
                     endfor
-                  endif
-                  @setalias 'quit' 'self'
-                  break
-                elseif @injournal 'Nao ha nada aqui' 'system' or @injournal 'Tente minerar em outro' 'system'
-                  @setalias 'quit' 'self'
-                  break
-                elseif @injournal 'Voce nao tem uma' 'system' or @injournal 'You cannot mine' 'system'
-                  @setalias 'quit' 'self'
-                  break
+                  endfor
                 endif
-              endwhile
-              @clearjournal
-              if x >= 2557 and x <= 2581
-                if y >= 474 and y <= 486
-                  if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
-                    replay
-                  endif
-                elseif diffweight < 5
-                  replay
-                endif
+                @setalias 'quit' 'self'
+                break
+              elseif @injournal 'Nao ha nada aqui' 'system' or @injournal 'Tente minerar em outro' 'system'
+                @setalias 'quit' 'self'
+                break
+              elseif @injournal 'Voce nao tem uma' 'system' or @injournal 'You cannot mine' 'system'
+                @setalias 'quit' 'self'
+                break
               endif
             endwhile
-          endfor
-        endfor
-        for 4
-          walk 'Directions[]'
+            @clearjournal
+            if @findobject 'ForgeMinoc'
+              if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
+                replay
+              endif
+            elseif diffweight < 5
+              replay
+            endif
+          endwhile
         endfor
       endfor
-      for 8
-        walk 'RunXY[]'
+      for 4
+        walk 'Directions[]'
       endfor
     endfor
-    // by tork
+    for 8
+      walk 'RunXY[]'
+    endfor
+  endfor
+  // by tork
