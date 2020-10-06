@@ -164,7 +164,8 @@ if @findalias 'Guardar' or diffweight < 5
     @useobject 'found'
   elseif @findtype 0x13e4 'any' 'backpack'
     @useobject 'found'
-  else headmsg 'Nao achou o Martelo'
+  else
+  headmsg 'Nao achou o Martelo'
   endif
   waitforgump 'any' 10000
   replygump 'any' 0
