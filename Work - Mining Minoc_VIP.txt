@@ -1,7 +1,7 @@
 //////////////////////////////////
 // Macro de Mining para UOSteam
 // Servidor: AnCorp Free Shard
-// Data: 18/09/2020
+// Data: 06/10/2020
 ////// Funções ////////////////////////
 // * Proteção contra PK em Minoc
 // * Mining seletivo
@@ -164,8 +164,7 @@ if @findalias 'Guardar' or diffweight < 5
     @useobject 'found'
   elseif @findtype 0x13e4 'any' 'backpack'
     @useobject 'found'
-  else
-  headmsg 'Nao achou o Martelo'
+  else headmsg 'Nao achou o Martelo'
   endif
   waitforgump 'any' 10000
   replygump 'any' 0
@@ -216,14 +215,12 @@ for 0 to 2
               stop
             endif
             @autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
-            if @findtype 0xe85 'any' 'backpack'
-              @useobject 'found'
+            if @findobject 'righthand'
+              useobject! 'found'
+            elseif @findtype 0xe85 'any' 'backpack'
+              @useobject! 'found'
             elseif @findtype 0xe86 'any' 'backpack'
-              @useobject 'found'
-            elseif @findtype 0xe85 'any' 'self' 1
-              @useobject 'found'
-            elseif @findtype 0xe86 'any' 'self' 1
-              @useobject 'found'
+              @useobject! 'found'
             endif
             @clearjournal
             @settimer 't_timeout' 0
