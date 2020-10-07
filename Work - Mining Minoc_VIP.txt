@@ -227,24 +227,13 @@ for 0 to 2
               stop
             endif
             @autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
+            pause 50
             if @findobject 'righthand'
               useobject! 'found'
-              waitfortarget 500
-              if not targetexists
-                useobject! 'found'
-              endif
             elseif @findtype 0xe85 'any' 'backpack'
               @useobject! 'found'
-               waitfortarget 500
-              if not targetexists
-                useobject! 'found'
-              endif
             elseif @findtype 0xe86 'any' 'backpack'
               @useobject! 'found'
-               waitfortarget 500
-              if not targetexists
-                useobject! 'found'
-              endif
             endif
             @clearjournal
             @settimer 't_timeout' 0
