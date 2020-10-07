@@ -209,8 +209,8 @@ if @findalias 'Guardar' or diffweight < 5
     pause 1000
   endwhile
   unsetalias 'Guardar'
-  msg ".disarm"
 endif
+msg ".disarm"
 //
 // Minerar
 //
