@@ -1,1 +1,381 @@
--manutencao-
+//////////////////////////////////
+// Macro de Mining para UOSteam
+// Servidor: AnCorp Free Shard
+// Data: 07/10/2020
+////// Funções ////////////////////////
+// * Proteção contra PK em Minoc
+// * Mining seletivo
+// * Guardar ores raros e smeltar comuns
+////// NECESSIDADES ////////////////////////
+//
+// ** Mina de Minoc ou Mina VIP
+// ** Ter um container (baú) em seu banco.
+// ** Ter uma Pickaxe e um Smith Hammer consigo.
+//
+/////// DESCARTAR //////////////////////////////////
+// * Por padrão ele vai minerar todos normalmente.
+// ** REMOVA as "//" antes de "pushlist" nas linhas do ore comum
+// que deseja DESCARTAR na seguinte Lista de Minérios:
+///////////////////////////////////////
+///////// Lista de Minérios ///////////
+//////////////////////////////////////
+if not listexists 'Pedras'
+  createlist 'Pedras'
+endif
+if not listexists 'Ores'
+  createlist 'Ores'
+endif
+if not listexists 'Raros'
+  createlist 'Raros'
+endif
+if not listexists 'Comuns'
+  createlist 'Comuns'
+endif
+////
+// Comuns
+////
+@clearlist 'Comuns'
+//pushlist 'Comuns' 0 // Iron
+//pushlist 'Comuns' 2480 // Ceramic
+//pushlist 'Comuns' 2483 // Bronze
+//pushlist 'Comuns' 2484 // Silver
+//pushlist 'Comuns' 2485 // Gold
+//pushlist 'Comuns' 2487 // Radioative
+//
+// Raros (nao mexer)
+@clearlist 'Raros'
+pushlist 'Raros' 2490 // Chaos
+pushlist 'Raros' 2489 // Order
+pushlist 'Raros' 2492 // Infernal
+pushlist 'Raros' 2493 // Celestial
+@clearlist 'Pedras'
+// Pedras
+pushlist 'Pedras' 0xf10 // Emerald
+pushlist 'Pedras' 0xf11 // Sapphire
+pushlist 'Pedras' 0xf0f // Star Sapphire
+pushlist 'Pedras' 0xf18 // Tourmaline
+pushlist 'Pedras' 0xf13 // Ruby
+pushlist 'Pedras' 0xf15 // Citrine
+pushlist 'Pedras' 0xf16 // Amethyst
+pushlist 'Pedras' 0xf25 // Amber
+pushlist 'Pedras' 0xf26 // Diamond
+// Ores
+@clearlist 'Ores'
+pushlist 'Ores' 0x19b7 // Um ore
+pushlist 'Ores' 0x19ba // Dois ores
+pushlist 'Ores' 0x19b8 // Tres ores
+pushlist 'Ores' 0x19b9 // Quatro ores
+////////////////////////////////////////
+// CONFIGURACOES
+//////////////////////////////////////
+if not listexists 'Pos_X'
+  createlist 'Pos_X'
+endif
+@clearlist 'Pos_X'
+pushlist! 'Pos_X' -1
+pushlist! 'Pos_X' 0
+pushlist! 'Pos_X' 1
+if not listexists 'Pos_Y'
+  createlist 'Pos_Y'
+endif
+@clearlist 'Pos_Y'
+pushlist! 'Pos_Y' -1
+pushlist! 'Pos_Y' 0
+pushlist! 'Pos_Y' 1
+if not listexists 'Directions'
+  createlist 'Directions'
+endif
+@clearlist 'Directions'
+pushlist! 'Directions' 'Southeast'
+pushlist! 'Directions' 'North'
+pushlist! 'Directions' 'Northwest'
+pushlist! 'Directions' 'East'
+pushlist! 'Directions' 'South'
+pushlist! 'Directions' 'Southwest'
+pushlist! 'Directions' 'West'
+pushlist! 'Directions' 'Northeast'
+if not listexists 'RunXY'
+  createlist 'RunXY'
+endif
+@clearlist 'RunXY'
+pushlist! 'RunXY' 'East'
+pushlist! 'RunXY' 'South'
+pushlist! 'RunXY' 'Southeast'
+pushlist! 'RunXY' 'North'
+pushlist! 'RunXY' 'Northwest'
+pushlist! 'RunXY' 'Southwest'
+pushlist! 'RunXY' 'West'
+pushlist! 'RunXY' 'Northeast'
+if @findtype 0xe85 'any' 'backpack'
+  @useobject! 'found'
+  if not targetexists
+    useobject! 'found'
+  endif
+elseif @findtype 0xe86 'any' 'backpack'
+  @useobject! 'found'
+  if not targetexists
+    useobject! 'found'
+  endif
+endif
+@createtimer 'Guards'
+pushlist 'Comuns' 1 // debug (nao mexer)
+if not @findobject 'ForgeMinoc'
+  headmsg '*Selecione um forge na mina.*'
+  promptalias 'ForgeMinoc'
+endif
+if not @findobject 'bagmining'
+  headmsg 'Selecione o bau em seu banco para guardar os minerios.'
+  msg 'Banker Bank'
+  pause 300
+  promptalias 'bagmining'
+  useobject 'bagmining'
+endif
+//
+// Ir até o forge
+// No safe: com +10 raros ou -150 do maximo
+// Na VIP: com -5 do maximo
+//
+if x >= 2557 and x <= 2581
+  if y >= 474 and y <= 495
+    if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
+      setalias 'Guardar' 'self'
+    elseif @counttype '0x19b9' '2489' 'backpack' > 10  or @counttype '0x19b9' '2492' 'backpack' > 10
+      setalias 'Guardar' 'self'
+    elseif @counttype '0x19b9' '2493' 'backpack' > 10
+      setalias 'Guardar' 'self'
+    endif
+  endif
+endif
+if @findalias 'Guardar' or diffweight < 5
+  headmsg 'Guardando minerios'
+  pause 500
+  while not @inrange 'ForgeMinoc' 1
+    if @x 'ForgeMinoc'> x 'self' and @y 'ForgeMinoc'> y 'self'
+      walk 'Southeast'
+    elseif @x 'ForgeMinoc'< x 'self' and @y 'ForgeMinoc'> y 'self'
+      walk 'Southwest'
+    elseif @x 'ForgeMinoc'> x 'self' and @y 'ForgeMinoc'< y 'self'
+      walk 'Northeast'
+    elseif @x 'ForgeMinoc'< x 'self' and @y 'ForgeMinoc'< y 'self'
+      walk 'Northwest'
+    elseif @x 'ForgeMinoc'> x 'self' and @y 'ForgeMinoc'== y 'self'
+      walk 'East'
+    elseif @x 'ForgeMinoc'< x 'self' and @y 'ForgeMinoc'== y 'self'
+      walk 'West'
+    elseif @x 'ForgeMinoc'== x 'self' and @y 'ForgeMinoc'> y 'self'
+      walk 'South'
+    elseif @x 'ForgeMinoc'== x 'self' and @y 'ForgeMinoc'< y 'self'
+      walk 'North'
+    endif
+  endwhile
+  //
+  // Guardar raros e smeltar outros
+  //
+  if @findtype 0x13e3 'any' 'backpack'
+    @equipitem 'found' 1
+  elseif @findtype 0x13e4 'any' 'backpack'
+    @equipitem 'found' 1
+  else
+    headmsg 'Nao achou o Martelo'
+  endif
+  msg 'Banker Bank'
+  pause 500
+  for 0 to 'Ores'
+    for 0 to 'Raros'
+      while @findtype 'Ores[]' 'Raros[]' 'backpack'
+        @moveitem 'found' 'bagmining'
+        pause 1000
+      endwhile
+    endfor
+    while @findtype 'Ores[]' 'any' 'backpack'
+      @useobject 'found'
+      pause 1000
+    endwhile
+    msg ".disarm"
+  endfor
+  //
+  // Guardar
+  //
+  msg 'banker bank'
+  pause 1000
+  @clearjournal
+  for 0 to 'Pedras'
+    if @findtype 'Pedras[]' 'backpack'
+      @moveitem! 'found' 'bagmining'
+      pause 1000
+    endif
+  endfor
+  while @movetype 0x1bf2 'backpack' 'bagmining'
+    pause 1000
+  endwhile
+  unsetalias 'Guardar'
+endif
+//
+// Minerar
+//
+@cancelautotarget
+for 0 to 2
+  for 0 to 'RunXY'
+    for 0 to 'Directions'
+      for 0 to 'Pos_X'
+        for 0 to 'Pos_Y'
+          @unsetalias 'quit'
+          while not @findalias 'quit'
+            @cancelautotarget
+            if dead 'self'
+              stop
+            endif
+            @autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
+            if @findobject 'righthand'
+              @useobject! 'found'
+              waitingfortarget 3000
+              if not @targetexists
+                useobject! 'found'
+              endif
+            elseif @findtype 0xe85 'any' 'backpack'
+              @useobject! 'found'
+              waitingfortarget 3000
+              if not @targetexists
+                @useobject! 'found'
+                waitingfortarget 3000
+              endif
+            elseif @findtype 0xe86 'any' 'backpack'
+              @useobject! 'found'
+              waitingfortarget 3000
+              if not @targetexists
+                useobject! 'found'
+              endif
+            endif
+            @clearjournal
+            @settimer 't_timeout' 0
+            while @timer 't_timeout' < 15000
+              ///
+              // Segurança
+              ///
+              // Chamar guardas
+              //
+              if @findobject 'ForgeMinoc'
+                getenemy 'murderer' 'criminal' 'enemy' 'gray' 'humanoid' 'transformation' 'closest'
+                if @inrange 'Enemy' '20' and @timer 'Guards' >= 3000
+                  msg 'Guards'
+                  settimer 'Guards'  0
+                endif
+                // Ficar sem mana
+                while mana < 60
+                  if mana < 21
+                    msg '.drinkmana'
+                  endif
+                  useskill 'Meditation'
+                  pause 3500
+                endwhile
+                // Se ficar Paralizado
+                while paralyzed 'self'
+                  autotargetself!
+                  cast "Magic Arrow"
+                  pause 2000
+                endwhile
+                // Se ficar Poisonado
+                while poisoned 'self'
+                  cast 'cure' self
+                  if @findtype 0xe85 'any' 'backpack'
+                    @useobject 'found'
+                  elseif @findtype 0xe86 'any' 'backpack'
+                    @useobject 'found'
+                  endif
+                  pause 2250
+                  turn "Northeast"
+                  pause 100
+                  walk "Northeast"
+                  pause 100
+                endwhile
+                // Se encontrar Fire Field perto
+                if @findtype 0x398c 'any' 'ground' 'any' 3
+                  turn "Northeast"
+                  pause 100
+                  walk "Northeast"
+                  pause 100
+                  if skill 'Magery' >= 75
+                    cast "Mass Dispel"
+                    if @findtype 0xe85 'any' 'backpack'
+                      @useobject 'found'
+                    elseif @findtype 0xe86 'any' 'backpack'
+                      @useobject 'found'
+                    endif
+                    pause 4750
+                  else
+                    pause 1000
+                  endif
+                endif
+                // Usar bandage
+                if hits < 90
+                  if @findtype 0xe21 'any' 'backpack'
+                    turn "Northeast"
+                    pause 100
+                    walk "Northeast"
+                    pause 100
+                    autotargetself!
+                    useobject! 'found'
+                    pause 4500
+                  else
+                    if @timer 'Bandage' >= 7000
+                      @settimer 'Bandage' 0
+                      headmsg 'Sem Bandage na Backpack' 50 'self'
+                      break
+                    endif
+                  endif
+                endif
+              endif
+              // Se morrer :(
+              if dead 'self'
+                stop
+              endif
+              //
+              //  Jornal
+              //
+              if  @injournal 'Voce nao encontrou' 'system'
+                break
+              endif
+              if @injournal 'Voce pos' 'system'
+                if @injournal 'order' 'system' or @injournal 'chaos' 'system
+                  break
+                elseif @injournal 'celestial' 'system' or @injournal 'infernal' 'system'
+                  break
+                else
+                  for 0 to 'Ores'
+                    for 0 to 'Comuns'
+                      if @findtype 'Ores[]' 'Comuns[]' 'backpack'
+                        moveitemoffset 'found' 'ground'
+                      endif
+                    endfor
+                  endfor
+                endif
+                @setalias 'quit' 'self'
+                break
+              elseif @injournal 'Nao ha nada aqui' 'system' or @injournal 'Tente minerar em outro' 'system'
+                @setalias 'quit' 'self'
+                break
+              elseif @injournal 'Voce nao tem uma' 'system' or @injournal 'You cannot mine' 'system'
+                @setalias 'quit' 'self'
+                break
+              endif
+            endwhile
+            @clearjournal
+            if @findobject 'ForgeMinoc'
+              if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
+                replay
+              endif
+            elseif diffweight < 5
+              replay
+            endif
+          endwhile
+        endfor
+      endfor
+      for 4
+        walk 'Directions[]'
+      endfor
+    endfor
+    for 8
+      walk 'RunXY[]'
+    endfor
+  endfor
+  // by tork
