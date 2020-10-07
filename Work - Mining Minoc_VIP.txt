@@ -106,6 +106,9 @@ pushlist! 'RunXY' 'Northwest'
 pushlist! 'RunXY' 'Southwest'
 pushlist! 'RunXY' 'West'
 pushlist! 'RunXY' 'Northeast'
+///
+//Debug (nao mexer)
+///
 if @findtype 0xe85 'any' 'backpack'
   @useobject! 'found'
   if not targetexists
@@ -118,7 +121,8 @@ elseif @findtype 0xe86 'any' 'backpack'
   endif
 endif
 @createtimer 'Guards'
-pushlist 'Comuns' 1 // debug (nao mexer)
+pushlist 'Comuns' 1
+////
 if not @findobject 'ForgeMinoc'
   headmsg '*Selecione um forge na mina.*'
   promptalias 'ForgeMinoc'
