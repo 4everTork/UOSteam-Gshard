@@ -1,7 +1,7 @@
 //////////////////////////////////
 // Macro de Mining para UOSteam
 // Servidor: AnCorp Free Shard
-// Data: 07/10/2020
+// Data: 06/10/2020
 ////// Funções ////////////////////////
 // * Proteção contra PK em Minoc
 // * Mining seletivo
@@ -171,6 +171,7 @@ if @findalias 'Guardar' or diffweight < 5
   //
   // Guardar raros e smeltar outros
   //
+  msg '.disarm'
   if @findtype 0x13e3 'any' 'backpack'
     @equipitem 'found' 1
   elseif @findtype 0x13e4 'any' 'backpack'
@@ -191,14 +192,12 @@ if @findalias 'Guardar' or diffweight < 5
       @useobject 'found'
       pause 1000
     endwhile
-    msg ".disarm"
   endfor
   //
   // Guardar
   //
   msg 'banker bank'
   pause 1000
-  @clearjournal
   for 0 to 'Pedras'
     if @findtype 'Pedras[]' 'backpack'
       @moveitem! 'found' 'bagmining'
@@ -209,10 +208,12 @@ if @findalias 'Guardar' or diffweight < 5
     pause 1000
   endwhile
   unsetalias 'Guardar'
+  msg ".disarm"
 endif
 //
 // Minerar
 //
+@clearjournal
 @cancelautotarget
 for 0 to 2
   for 0 to 'RunXY'
