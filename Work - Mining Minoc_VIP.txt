@@ -167,7 +167,6 @@ if @findalias 'Guardar' or diffweight < 5
   else
     headmsg 'Nao achou o Martelo'
   endif
-  waitforgump 'any' 10000
   replygump 'any' 0
   msg 'Banker Bank'
   pause 500
