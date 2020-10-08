@@ -1,7 +1,7 @@
 //////////////////////////////////
 // Macro de Mining para UOSteam
 // Servidor: AnCorp Free Shard
-// Data: 06/10/2020
+// Data: 08/10/2020
 ////// Funções ////////////////////////
 // * Proteção contra PK em Minoc
 // * Mining seletivo
