@@ -171,8 +171,6 @@ if @findalias 'Guardar' or diffweight < 5
   //
   // Guardar raros e smeltar outros
   //
-  msg '.disarm'
-  pause 500
   if @findtype 0x13e3 'any' 'backpack'
     @equipitem 'found' 1
   elseif @findtype 0x13e4 'any' 'backpack'
@@ -209,13 +207,13 @@ if @findalias 'Guardar' or diffweight < 5
     pause 1000
   endwhile
   unsetalias 'Guardar'
+  pause 1000
   if @findtype 0xe85 'any' 'backpack'
-    @useobject! 'found'
+    @equipitem 'found' 1
   elseif @findtype 0xe86 'any' 'backpack'
-    @useobject! 'found'
+    @equipitem 'found' 1
   endif
 endif
-msg '.disarm'
 //
 // Minerar
 //
@@ -232,26 +230,17 @@ for 0 to 2
             if dead 'self'
               stop
             endif
+            if @gumpexists 'any'
+              @replygump 'any' 0
+            endif
             @autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
+            if @findtype 0xe85 'any' 'backpack'
+              @equipitem 'found' 1
+            elseif @findtype 0xe86 'any' 'backpack'
+              @equipitem 'found' 1
+            endif
             if @findobject 'righthand'
               @useobject! 'found'
-              waitingfortarget 3000
-              if not @targetexists
-                useobject! 'found'
-              endif
-            elseif @findtype 0xe85 'any' 'backpack'
-              @useobject! 'found'
-              waitingfortarget 3000
-              if not @targetexists
-                @useobject! 'found'
-                waitingfortarget 3000
-              endif
-            elseif @findtype 0xe86 'any' 'backpack'
-              @useobject! 'found'
-              waitingfortarget 3000
-              if not @targetexists
-                useobject! 'found'
-              endif
             endif
             @clearjournal
             @settimer 't_timeout' 0
