@@ -209,8 +209,13 @@ if @findalias 'Guardar' or diffweight < 5
     pause 1000
   endwhile
   unsetalias 'Guardar'
+  if @findtype 0xe85 'any' 'backpack'
+    @useobject! 'found'
+  elseif @findtype 0xe86 'any' 'backpack'
+    @useobject! 'found'
+  endif
 endif
-msg ".disarm"
+msg '.disarm'
 //
 // Minerar
 //
