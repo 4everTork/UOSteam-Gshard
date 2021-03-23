@@ -187,4 +187,6 @@ elseif @findtype 0x873 'any' 'ground' 'any' 2 or @findtype 0x874 'any' 'ground' 
   @useobject! 'found'
 elseif @findtype 0x875 'any' 'ground' 'any' 2
   @useobject! 'found'
+elseif @findtype 0x1fef 'any' 'ground' 'any' 2 or @findtype 0x1ff0 'any' 'ground' 'any' 2
+  @useobject! 'found'
 endif
