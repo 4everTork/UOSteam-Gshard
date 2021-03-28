@@ -31,6 +31,8 @@ while @counttype 0x1bf2 2480 'backpack' >= 2
     @replygump 0x484 0
   elseif @gumpexists 0x485
     @replygump 0x485 0
+  elseif @gumpexists 0x486
+    @replygump 0x486 0  
   endif
   usetype 0x1eb8 'any' 'backpack'
   waitforgump 'any' 15000
@@ -52,5 +54,11 @@ while @counttype 0x1bf2 2480 'backpack' >= 2
     waitforgump 0x485 15000
     @replygump 0x485 10107
     waitforgump 0x485 15000
+      //Gump 4
+  elseif @gumpexists 0x486
+    @replygump 0x486 7
+    waitforgump 0x486 15000
+    @replygump 0x486 10107
+    waitforgump 0x486 15000  
   endif
 endwhile
