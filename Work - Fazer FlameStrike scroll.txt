@@ -69,4 +69,9 @@ elseif @gumpexists 0x485
   waitforgump 0x485 15000
   replygump 0x485 10103
   waitforgump 0x485 15000
+elseif @gumpexists 0x486
+  replygump 0x486 7
+  waitforgump 0x486 15000
+  replygump 0x486 10103
+  waitforgump 0x486 15000  
 endif
