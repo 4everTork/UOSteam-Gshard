@@ -48,6 +48,8 @@ elseif @gumpexists 0x484
   @replygump 0x484 0
 elseif @gumpexists 0x485
   @replygump 0x485 0
+elseif @gumpexists 0x486
+  @replygump 0x486 0  
 endif
 usetype 0xfbf 'backpack'
 waitforgump 'any' 15000
