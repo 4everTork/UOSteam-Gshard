@@ -53,6 +53,7 @@ elseif @gumpexists 0x485
   waitforgump 0x485 15000
   @replygump 0x485 10102
   waitforgump 0x485 15000
+  //Gump 3  
 elseif @gumpexists 0x486
   @replygump 0x486 3
   waitforgump 0x486 15000
