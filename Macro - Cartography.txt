@@ -14,6 +14,8 @@ elseif @gumpexists 0x484
 @replygump 0x484 0
 elseif @gumpexists 0x485
 @replygump 0x485 0
+elseif @gumpexists 0x486
+@replygump 0x486 0
 endif
   usetype 0xfbf 'backpack'
   waitforgump 'any' 15000
@@ -35,6 +37,12 @@ elseif @gumpexists 0x485
   waitforgump 0x485 15000
   @replygump 0x485 10101
   waitforgump 0x485 15000
+  //Gump 4
+elseif @gumpexists 0x486
+  @replygump 0x486 1
+  waitforgump 0x486 15000
+  @replygump 0x486 10101
+  waitforgump 0x486 15000
 endif
 endfor
 pause 1000
