@@ -88,6 +88,10 @@ if @gumpexists 'any'
   elseif @gumpexists 0x485
     @replygump 0x485 5008
     waitforgump 0x485 15000
+    //Gump 4
+  elseif @gumpexists 0x486
+    @replygump 0x486 5008
+    waitforgump 0x486 15000   
   endif
 else
   headmsg 'Fabrique a arma desejada' 4000
