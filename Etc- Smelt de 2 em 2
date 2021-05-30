@@ -29,8 +29,6 @@ elseif @gumpexists 0x484
   @replygump 0x484 0
 elseif @gumpexists 0x485
   @replygump 0x485 0
-elseif @gumpexists 0x486
-  @replygump 0x486 0
 endif
 while not @injournal 'voce esmeltou o ore' 'system'
   while @findtype 0x19ba 'any' 'backpack'
@@ -39,22 +37,23 @@ while not @injournal 'voce esmeltou o ore' 'system'
   endwhile
   if @injournal 'nao conseguiu' 'system'
     if @findtype 0x19b7 2492 'backpack'
-      @findtype '0x19b9' 2492 'baumineriosmelt'
+      if @findtype '0x19b9' 2492 'baumineriosmelt' or @findtype '0x19ba' 2492 'baumineriosmelt'
       @moveitem 'found' 'backpack' (0 0 0) 1
       pause 1000
     endif
     if @findtype '0x19b7' 2493 'backpack'
-      @findtype '0x19b9' 2493 'baumineriosmelt'
-      @moveitem 'found' 'backpack' (0 0 0) 1
-      pause 1000
+      if @findtype '0x19b9' 2493 'baumineriosmelt' or @findtype '0x19ba' 2493 'baumineriosmelt'
+        @moveitem 'found' 'backpack' (0 0 0) 1
+        pause 1000
+      endif
     endif
     if @findtype '0x19b7' 2489 'backpack'
-      @findtype '0x19b9' 2489 'baumineriosmelt'
+      if @findtype '0x19b9' 2489 'baumineriosmelt' or @findtype '0x19ba' 2489 'baumineriosmelt'
       @moveitem 'found' 'backpack' (0 0 0) 1
       pause 1000
     endif
     if @findtype '0x19b7' 2490 'backpack'
-      @findtype '0x19b9' 2490 'baumineriosmelt'
+      if @findtype '0x19b9' 2490 'baumineriosmelt' or @findtype '0x19ba' 2490 'baumineriosmelt'
       @moveitem 'found' 'backpack' (0 0 0) 1
       pause 1000
     endif
