@@ -14,7 +14,7 @@ endif
 //
 // Pegar minerios
 //
-if @findtype '0x19b9' 'any' 'baumineriosmelt'
+if @findtype '0x19b9' 'any' 'baumineriosmelt' or @findtype '0x19b8' 'any' 'baumineriosmelt'
   @moveitem 'found' 'backpack' (0 0 0) 2
   pause 1000
 endif
@@ -67,3 +67,4 @@ endwhile
 //
 @movetype 0x1bf2 'backpack' 'baumineriosmelt' 0 0 0 'any'
 pause 1000
+clearjournal
