@@ -38,8 +38,9 @@ while not @injournal 'voce esmeltou o ore' 'system'
   if @injournal 'nao conseguiu' 'system'
     if @findtype 0x19b7 2492 'backpack'
       if @findtype '0x19b9' 2492 'baumineriosmelt' or @findtype '0x19ba' 2492 'baumineriosmelt'
-      @moveitem 'found' 'backpack' (0 0 0) 1
-      pause 1000
+        @moveitem 'found' 'backpack' (0 0 0) 1
+        pause 1000
+      endif
     endif
     if @findtype '0x19b7' 2493 'backpack'
       if @findtype '0x19b9' 2493 'baumineriosmelt' or @findtype '0x19ba' 2493 'baumineriosmelt'
@@ -49,13 +50,15 @@ while not @injournal 'voce esmeltou o ore' 'system'
     endif
     if @findtype '0x19b7' 2489 'backpack'
       if @findtype '0x19b9' 2489 'baumineriosmelt' or @findtype '0x19ba' 2489 'baumineriosmelt'
-      @moveitem 'found' 'backpack' (0 0 0) 1
-      pause 1000
+        @moveitem 'found' 'backpack' (0 0 0) 1
+        pause 1000
+      endif
     endif
     if @findtype '0x19b7' 2490 'backpack'
       if @findtype '0x19b9' 2490 'baumineriosmelt' or @findtype '0x19ba' 2490 'baumineriosmelt'
-      @moveitem 'found' 'backpack' (0 0 0) 1
-      pause 1000
+        @moveitem 'found' 'backpack' (0 0 0) 1
+        pause 1000
+      endif
     endif
   endif
 endwhile
