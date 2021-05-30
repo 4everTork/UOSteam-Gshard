@@ -29,6 +29,8 @@ elseif @gumpexists 0x484
   @replygump 0x484 0
 elseif @gumpexists 0x485
   @replygump 0x485 0
+  elseif @gumpexists 0x486
+  @replygump 0x486 0
 endif
 while not @injournal 'voce esmeltou o ore' 'system'
   while @findtype 0x19ba 'any' 'backpack'
