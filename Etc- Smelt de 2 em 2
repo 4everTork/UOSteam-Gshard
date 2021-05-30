@@ -62,7 +62,6 @@ while not @injournal 'voce esmeltou o ore' 'system'
     endif
   endif
 endwhile
-@clearjournal
 //
 // Guardar
 //
