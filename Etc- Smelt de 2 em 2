@@ -14,9 +14,15 @@ endif
 //
 // Pegar minerios
 //
-if @findtype '0x19b9' 'any' 'baumineriosmelt' or @findtype '0x19b8' 'any' 'baumineriosmelt'
+if @findtype '0x19b9' 'any' 'baumineriosmelt' or @findtype '0x19b8' 'any' 'baumineriosmelt' // 4 ou 3 minerios
   @moveitem 'found' 'backpack' (0 0 0) 2
   pause 1000
+else @findtype '0x19ba' 'any' 'baumineriosmelt' // 2 minerios
+  @moveitem 'found' 'backpack' (0 0 0) 2
+else @findtype '0x19b7' 'any' 'baumineriosmelt' // 1 minerio
+  @moveitem 'found' 'backpack' (0 0 0)
+  pause 1000
+  useobject 'found'
 endif
 //
 // Smeltar
@@ -62,9 +68,10 @@ while not @injournal 'voce esmeltou o ore' 'system'
     endif
   endif
 endwhile
+@clearjournal
 //
 // Guardar
 //
+@clearjournal
 @movetype 0x1bf2 'backpack' 'baumineriosmelt' 0 0 0 'any'
 pause 1000
-clearjournal
