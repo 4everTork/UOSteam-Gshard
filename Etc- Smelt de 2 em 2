@@ -65,6 +65,5 @@ endwhile
 //
 // Guardar
 //
-@clearjournal
 @movetype 0x1bf2 'backpack' 'baumineriosmelt' 0 0 0 'any'
 pause 1000
