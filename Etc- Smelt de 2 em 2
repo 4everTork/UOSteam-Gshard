@@ -31,12 +31,31 @@ elseif @gumpexists 0x485
   @replygump 0x485 0
 endif
 while not @injournal 'voce esmeltou o ore' 'system'
-  usetype 0x19ba 'any' 'backpack'
-  pause 1000
-  if @injournal 'nao conseguiu' 'system'
-    @movetype 0x19b7 'backpack' 'baumineriosmelt' 0 0 0 'any'
+  while @findtype 0x19ba 'any' 'backpack'
+    useobject 'found'
     pause 1000
-    break
+  endwhile
+  if @injournal 'nao conseguiu' 'system'
+    if @findtype 0x19b7 2492 'backpack'
+      @findtype '0x19b9' 2492 'baumineriosmelt'
+      @moveitem 'found' 'backpack' (0 0 0) 1
+      pause 1000
+    endif
+    if @findtype '0x19b7' 2493 'backpack'
+      @findtype '0x19b9' 2493 'baumineriosmelt'
+      @moveitem 'found' 'backpack' (0 0 0) 1
+      pause 1000
+    endif
+    if @findtype '0x19b7' 2489 'backpack'
+      @findtype '0x19b9' 2489 'baumineriosmelt'
+      @moveitem 'found' 'backpack' (0 0 0) 1
+      pause 1000
+    endif
+    if @findtype '0x19b7' 2490 'backpack'
+      @findtype '0x19b9' 2490 'baumineriosmelt'
+      @moveitem 'found' 'backpack' (0 0 0) 1
+      pause 1000
+    endif
   endif
 endwhile
 @clearjournal
