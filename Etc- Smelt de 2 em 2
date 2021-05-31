@@ -20,7 +20,7 @@ if @findtype '0x19b9' 'any' 'baumineriosmelt' or @findtype '0x19b8' 'any' 'baumi
 else @findtype '0x19ba' 'any' 'baumineriosmelt' // 2 minerios
   @moveitem 'found' 'backpack' (0 0 0) 2
 else @findtype '0x19b7' 'any' 'baumineriosmelt' // 1 minerio
-  @moveitem 'found' 'backpack' (0 0 0)
+  @moveitem 'found' 'backpack' (0 0 0) 1
   pause 1000
   useobject 'found'
 endif
