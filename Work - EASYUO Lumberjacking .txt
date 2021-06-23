@@ -1,27 +1,21 @@
-                                 // Macro Lumberjacking de EASYUO Configuravel by iGGy
+                                                        // Macro Lumberjacking Configuravel by iGGya / adaptado por Alien
 // Criado: 21/02/03
-// TFG shard: 21/11/18
-// AnCorp shard: 01/07/20
+// Revisao: 05/11/20
 // Habilite o ALLOW EXECUTE em Options no EUO, se disponivel.
-//////
-// Caminha, Hiding, Stealth, Guarda Bau/Bank
-//////
-//////**<<
-// Shift + F1 para marcar as árvores. Vai aparecer um target, clique na árvore.
-// Pode cancelar a ação e partir para a próxima.
-// Shift + F4 para finalizar a marcação.
-//////**>>
-//////
 // Leva 9 segundos por arvore marcada para criar o arquivo. AGUARDE
-
 
 set %filename N/A
 set %machado N/A
+set %comida YSD_WLI_FUD_HND_RUD_CNL_YLI_AQD_HQD_WMD_NRD_RGG_ZPE_QRD
 set %r N/A
 set %pausescan 10
-set %peso #maxweight - 250
+set %peso #maxweight - 200
 set %parado 0
 set %guardar 0
+set %normal_logs 0
+set %oak_logs 0
+set %blood_logs 0
+set %frost_logs 0
 set %fail 0
 set %reconect novoreconect.txt
 Set #SysMsgCol 1965
@@ -31,7 +25,7 @@ wait 3
 set %real #skill - 10
 set %oldskill %real
 set %change %real - %oldskill
-SETUOTITLE  Macro: Mining  Valor atual: %real Valor Inicial: %oldskill Delta: %change
+SETUOTITLE  Macro: Lumber  Valor atual: %real Valor Inicial: %oldskill Delta: %change
 
 initevents
 ;--------------------------- Inicio ---------------------------
@@ -46,7 +40,7 @@ menu font bgcolor black
 menu font color white
 menu font size 10
 menu button 1 10 18 150 25 &Onde Guardar
-menu button 2 10 43 150 25 &Reconect
+menu button 2 10 43 150 25 &Reconect (Desativado)
 menu button 4 10 68 150 25 Definir &Machado
 menu button 3 10 93 150 25 Definir &Posicoes/Arvores
 menu button 5 10 118 150 25 &Iniciar Macro
@@ -198,7 +192,7 @@ goto configurar
 botao2:
 menu clear
 menu window size 134 75
-menu window title Reconect
+menu window title Reconect (Desativado)
 menu window color black
 menu hideeuo
 menu show 0 26
@@ -460,11 +454,6 @@ if %machado = N/A
 event sysmessage Machado nao Definido!
 goto botao4
 }
-if %senha = N/A
-{
-event sysmessage Senha nao Definida!
-goto botao2
-}
 if  %guardarx = N/A
 {
 event sysmessage Onde Guardar nao Definido!
@@ -479,8 +468,54 @@ entrada:
 set %target 0
 call %filename , .txt
 event sysmessage Comecando o macro de Lumberjacking!
+set %target 0
+str ins #time : 3
+str ins #strres : 6
+set %time #strres
+menu clear
+menu window size 400 160
+menu window title Lumber Monitor
+menu window color black
+menu hideeuo
+menu font bgcolor black
+menu font color white
+menu show 0 26
+menu shape main 5 5 390 140 4 7 2 $0000FF 7 $000000
+menu shape title 15 15 170 65 4 3 1 $0000FF 7 $000000
+menu font transparent #true
+menu font color white
+menu font style B
+menu font size 11
+menu text maintext1 20 100 Comida:
+menu font size 8
+menu text maintext2 2 145 Shard: An Corp
+finditem %comida
+if #findid = X
+{
+menu font color $0000FF
+menu font size 11
+menu text food 80 100 Não encontrada
+}
+else
+{
+menu font color $FF0000
+menu font size 11
+menu text food 80 100 Encontrada
+}
+menu font size 14
+menu font color white
+menu text time 25 20 Hora de início:
+menu text time2 50 50 %time
+menu font size 12
+menu font color white
+menu font style BU
+menu text logtext1 250 20 Normal:
+menu text logtext2 250 50 Oak Log:
+menu text logtext3 250 80 Bloodwood:
+menu text logtext4 250 110 Frostwood:
 wait 1s
 goto contas
+
 ;------------------------------ LUMBER ------------------------------
 lumber:
 set %real #skill - 9
@@ -493,7 +528,6 @@ goto guardar
 event sysmessage Lumberjacking Lugar %target de %MAXWPTS
 set #lobjectid %machado
 event macro 17 0
-event macro 17 0
 target
 click %TREEX . %target %TREEY . %target
 goto jornal
@@ -502,6 +536,10 @@ jornal:
 wait %pausescan
 scanjournal 1
 if nao_ha_madeiras in #journal
+goto contas
+if see_the_target in #journal
+goto contas
+if nao_encontrou_uma_maneira in #journal
 goto contas
 if immune in #journal
 goto contas
@@ -527,41 +565,33 @@ goto contas
 }
 event macro 22 0  ;Last Target
 set %repetir %repetir + 1
-if %repetir > 60
+if %repetir > 50
 {
 set %repetir 0
-goto lumber
+goto contas
 }
 goto jornal
-;------------------------------ Stealth + Hiding-----------------------
-sub stealth
-hiding:
-if #charstatus = G
-key tab
-if #charstatus <> H
-{
- event macro 13 21
- wait 80
- event macro 13 47
- wait 80
- goto hiding
-}
-}
-return
+
 ;--------------------------------- Guardar ----------------------------
 guardar:
+set %normal %normal_logs
+set %oak %oak_logs
+set %blood %blood_logs
+set %frost %frost_logs
 call %reconect
 set %guardar %guardar + 1
 if %guardar = 1
 {
 set %target2 %target
 set %target 0
+wait 1s
 goto onde_cortar
-}
+}     %guardar
 if %guardar > 2
 {
 set %guardar 0
-set %target %target2
+set %target 1
+wait 1s
 goto onde_cortar
 }
 acharlog:
@@ -804,15 +834,39 @@ goto desviar
 goto desviar
 ;------------------------------ CONTAS ------------------------------
 contas:
-Finditem HND_YSD_WLI_AQD
-Set #LObjectId #FindID
-Event Macro 17
+
+set #lobjectid %comida
+event macro 17
 set %target %target + 1
 if %target > %MAXWPTS
 set %target 1
 set %fail 0
-goto onde_cortar
+goto check_update
 
+;--check update--
+check_update:
+ignoreitem #findid
+finditem ZLK C_ . #backpackid
+if ( #findcol = 0 ) && ( #findid <> X )
+set %normal_logs #findstack + %normal
+if #findcol = 2010
+set %oak_logs #findstack + %oak
+if #findcol = 1218
+set %blood_logs #findstack + %blood
+if #findcol = 91
+set %frost_logs #findstack + %frost
+}
+until #findid = X
+ignoreitem reset
+menu delete nlogs
+menu delete ologs
+menu delete blogs
+menu delete flogs
+menu text nlogs 320 20 %normal_logs
+menu text ologs 325 50 %oak_logs
+menu text blogs 350 80 %blood_logs
+menu text flogs 345 110 %frost_logs
+goto onde_cortar
 
 terminar:
 Event Sysmessage Macro Finalizada!
@@ -825,4 +879,6 @@ wait 10
 Return
 // by iGGy
 // revisao by tork
+
+
 
