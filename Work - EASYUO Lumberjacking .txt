@@ -1,4 +1,4 @@
-                                                        // Macro Lumberjacking Configuravel by iGGya / adaptado por Alien
+                                                        // Macro Lumberjacking Configuravel by iGGya / adaptado por Alien e Tork
 // Criado: 21/02/03
 // Revisao: 05/11/20
 // Habilite o ALLOW EXECUTE em Options no EUO, se disponivel.
