@@ -10,7 +10,7 @@ endif
 @clearjournal
 useskill 'Poisoning'
 waitfortarget 15000
-targettype! 0xf0e 68
+targettype! 0xf0e '68'
 waitfortarget 15000
 target! 'daggerpoison'
 // Jornal
@@ -33,4 +33,4 @@ endwhile
 usetype 0x175d 2001
 waitfortarget 15000
 target! 'daggerpoison'
-pause 9000
+pause 10000
