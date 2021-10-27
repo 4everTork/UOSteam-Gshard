@@ -5,6 +5,6 @@ endif
 if @findlayer 'self' 1 or @findlayer 'self' 2
   stop
 endif
-if not @findobject 'Bow' 'any' 'backpack'
+if not @findobject 'Bow' 'any' 'self'
   promptalias 'Bow'
 endif
