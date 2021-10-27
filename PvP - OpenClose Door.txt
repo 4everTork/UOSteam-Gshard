@@ -1,192 +1,208 @@
 ////
 // Abrir e fechar portas
 ////
-if @findtype 0x675 'any' 'ground' 'any' 2 or @findtype 0x676 'any' 'ground' 'any' 2
+if @findtype 0x675 'any' 'ground' 'any' 3 or @findtype 0x676 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x679 'any' 'ground' 'any' 2 or @findtype 0x68a 'any' 'ground' 'any' 2
+elseif @findtype 0x679 'any' 'ground' 'any' 3 or @findtype 0x68a 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x67d 'any' 'ground' 'any' 2 or @findtype 0x67f 'any' 'ground' 'any' 2
+elseif @findtype 0x67d 'any' 'ground' 'any' 3 or @findtype 0x67f 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x67e 'any' 'ground' 'any' 2 or @findtype 0x680 'any' 'ground' 'any' 2
+elseif @findtype 0x67e 'any' 'ground' 'any' 3 or @findtype 0x680 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x677 'any' 'ground' 'any' 2 or @findtype 0x678 'any' 'ground' 'any' 2
+elseif @findtype 0x677 'any' 'ground' 'any' 3 or @findtype 0x678 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x681 'any' 'ground' 'any' 2 or @findtype 0x682 'any' 'ground' 'any' 2
+elseif @findtype 0x681 'any' 'ground' 'any' 3 or @findtype 0x682 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x683 'any' 'ground' 'any' 2 or @findtype 0x684 'any' 'ground' 'any' 2
+elseif @findtype 0x683 'any' 'ground' 'any' 3 or @findtype 0x684 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x68b 'any' 'ground' 'any' 2 or @findtype 0x68c 'any' 'ground' 'any' 2
+elseif @findtype 0x68b 'any' 'ground' 'any' 3 or @findtype 0x68c 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x68d 'any' 'ground' 'any' 2 or @findtype 0x68e 'any' 'ground' 'any' 2
+elseif @findtype 0x68d 'any' 'ground' 'any' 3 or @findtype 0x68e 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x68f 'any' 'ground' 'any' 2 or @findtype 0x690 'any' 'ground' 'any' 2
+elseif @findtype 0x68f 'any' 'ground' 'any' 3 or @findtype 0x690 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x691 'any' 'ground' 'any' 2 or @findtype 0x692 'any' 'ground' 'any' 2
+elseif @findtype 0x691 'any' 'ground' 'any' 3 or @findtype 0x692 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x693 'any' 'ground' 'any' 2 or @findtype 0x694 'any' 'ground' 'any' 2
+elseif @findtype 0x693 'any' 'ground' 'any' 3 or @findtype 0x694 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x695 'any' 'ground' 'any' 2 or @findtype 0x696 'any' 'ground' 'any' 2
+elseif @findtype 0x695 'any' 'ground' 'any' 3 or @findtype 0x696 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x697 'any' 'ground' 'any' 2 or @findtype 0x698 'any' 'ground' 'any' 2
+elseif @findtype 0x697 'any' 'ground' 'any' 3 or @findtype 0x698 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x699 'any' 'ground' 'any' 2 or @findtype 0x69a 'any' 'ground' 'any' 2
+elseif @findtype 0x699 'any' 'ground' 'any' 3 or @findtype 0x69a 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x69b 'any' 'ground' 'any' 2 or @findtype 0x69c 'any' 'ground' 'any' 2
+elseif @findtype 0x69b 'any' 'ground' 'any' 3 or @findtype 0x69c 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x69d 'any' 'ground' 'any' 2 or @findtype 0x69f 'any' 'ground' 'any' 2
+elseif @findtype 0x69d 'any' 'ground' 'any' 3 or @findtype 0x69f 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6a0 'any' 'ground' 'any' 2 or @findtype 0x6a1 'any' 'ground' 'any' 2
+elseif @findtype 0x6a0 'any' 'ground' 'any' 3 or @findtype 0x6a1 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6a2 'any' 'ground' 'any' 2 or @findtype 0x6a3 'any' 'ground' 'any' 2
+elseif @findtype 0x6a2 'any' 'ground' 'any' 3 or @findtype 0x6a3 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6a4 'any' 'ground' 'any' 2 or @findtype 0x6a5 'any' 'ground' 'any' 2
+elseif @findtype 0x6a4 'any' 'ground' 'any' 3 or @findtype 0x6a5 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6a6  'any' 'ground' 'any' 2 or @findtype 0x6a7 'any' 'ground' 'any' 2
+elseif @findtype 0x6a6  'any' 'ground' 'any' 3 or @findtype 0x6a7 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6a8 'any' 'ground' 'any' 2 or @findtype 0x6a9 'any' 'ground' 'any' 2
+elseif @findtype 0x6a8 'any' 'ground' 'any' 3 or @findtype 0x6a9 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6aa 'any' 'ground' 'any' 2 or @findtype 0x6ab 'any' 'ground' 'any' 2
+elseif @findtype 0x6aa 'any' 'ground' 'any' 3 or @findtype 0x6ab 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6ac 'any' 'ground' 'any' 2 or @findtype 0x6ad 'any' 'ground' 'any' 2
+elseif @findtype 0x6ac 'any' 'ground' 'any' 3 or @findtype 0x6ad 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6ae 'any' 'ground' 'any' 2 or @findtype 0x6af 'any' 'ground' 'any' 2
+elseif @findtype 0x6ae 'any' 'ground' 'any' 3 or @findtype 0x6af 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6b0  'any' 'ground' 'any' 2 or @findtype 0x6b1  'any' 'ground' 'any' 2
+elseif @findtype 0x6b0  'any' 'ground' 'any' 3 or @findtype 0x6b1  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6b2  'any' 'ground' 'any' 2 or @findtype 0x6b3  'any' 'ground' 'any' 2
+elseif @findtype 0x6b2  'any' 'ground' 'any' 3 or @findtype 0x6b3  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6b4  'any' 'ground' 'any' 2 or @findtype 0x6b5  'any' 'ground' 'any' 2
+elseif @findtype 0x6b4  'any' 'ground' 'any' 3 or @findtype 0x6b5  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6b6  'any' 'ground' 'any' 2 or @findtype 0x6b7  'any' 'ground' 'any' 2
+elseif @findtype 0x6b6  'any' 'ground' 'any' 3 or @findtype 0x6b7  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6b8  'any' 'ground' 'any' 2 or @findtype 0x6b9  'any' 'ground' 'any' 2
+elseif @findtype 0x6b8  'any' 'ground' 'any' 3 or @findtype 0x6b9  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6ba  'any' 'ground' 'any' 2 or @findtype 0x6bb  'any' 'ground' 'any' 2
+elseif @findtype 0x6ba  'any' 'ground' 'any' 3 or @findtype 0x6bb  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6bc  'any' 'ground' 'any' 2 or @findtype 0x6bd  'any' 'ground' 'any' 2
+elseif @findtype 0x6bc  'any' 'ground' 'any' 3 or @findtype 0x6bd  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6be  'any' 'ground' 'any' 2 or @findtype 0x6bf  'any' 'ground' 'any' 2
+elseif @findtype 0x6be  'any' 'ground' 'any' 3 or @findtype 0x6bf  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6c0  'any' 'ground' 'any' 2 or @findtype 0x6c1  'any' 'ground' 'any' 2
+elseif @findtype 0x6c0  'any' 'ground' 'any' 3 or @findtype 0x6c1  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6c2  'any' 'ground' 'any' 2 or @findtype 0x6c3  'any' 'ground' 'any' 2
+elseif @findtype 0x6c2  'any' 'ground' 'any' 3 or @findtype 0x6c3  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6c4  'any' 'ground' 'any' 2 or @findtype 0x6c5  'any' 'ground' 'any' 2
+elseif @findtype 0x6c4  'any' 'ground' 'any' 3 or @findtype 0x6c5  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6c6  'any' 'ground' 'any' 2 or @findtype 0x6c7  'any' 'ground' 'any' 2
+elseif @findtype 0x6c6  'any' 'ground' 'any' 3 or @findtype 0x6c7  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6c8  'any' 'ground' 'any' 2 or @findtype 0x6c9  'any' 'ground' 'any' 2
+elseif @findtype 0x6c8  'any' 'ground' 'any' 3 or @findtype 0x6c9  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6ca  'any' 'ground' 'any' 2 or @findtype 0x6cb  'any' 'ground' 'any' 2
+elseif @findtype 0x6ca  'any' 'ground' 'any' 3 or @findtype 0x6cb  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6cc  'any' 'ground' 'any' 2 or @findtype 0x6cd  'any' 'ground' 'any' 2
+elseif @findtype 0x6cc  'any' 'ground' 'any' 3 or @findtype 0x6cd  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6ce  'any' 'ground' 'any' 2 or @findtype 0x6cf  'any' 'ground' 'any' 2
+elseif @findtype 0x6ce  'any' 'ground' 'any' 3 or @findtype 0x6cf  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6d0  'any' 'ground' 'any' 2 or @findtype 0x6d1  'any' 'ground' 'any' 2
+elseif @findtype 0x6d0  'any' 'ground' 'any' 3 or @findtype 0x6d1  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6d2  'any' 'ground' 'any' 2 or @findtype 0x6d3  'any' 'ground' 'any' 2
+elseif @findtype 0x6d2  'any' 'ground' 'any' 3 or @findtype 0x6d3  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6d4  'any' 'ground' 'any' 2 or @findtype 0x6d5  'any' 'ground' 'any' 2
+elseif @findtype 0x6d4  'any' 'ground' 'any' 3 or @findtype 0x6d5  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6d6  'any' 'ground' 'any' 2 or @findtype 0x6d7  'any' 'ground' 'any' 2
+elseif @findtype 0x6d6  'any' 'ground' 'any' 3 or @findtype 0x6d7  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6d8  'any' 'ground' 'any' 2 or @findtype 0x6d9  'any' 'ground' 'any' 2
+elseif @findtype 0x6d8  'any' 'ground' 'any' 3 or @findtype 0x6d9  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6da  'any' 'ground' 'any' 2 or @findtype 0x6db  'any' 'ground' 'any' 2
+elseif @findtype 0x6da  'any' 'ground' 'any' 3 or @findtype 0x6db  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6dc  'any' 'ground' 'any' 2 or @findtype 0x6dd  'any' 'ground' 'any' 2
+elseif @findtype 0x6dc  'any' 'ground' 'any' 3 or @findtype 0x6dd  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6de  'any' 'ground' 'any' 2 or @findtype 0x6df  'any' 'ground' 'any' 2
+elseif @findtype 0x6de  'any' 'ground' 'any' 3 or @findtype 0x6df  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6e0 'any' 'ground' 'any' 2 or @findtype 0x6e1   'any' 'ground' 'any' 2
+elseif @findtype 0x6e0 'any' 'ground' 'any' 3 or @findtype 0x6e1   'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6e2 'any' 'ground' 'any' 2 or @findtype 0x6e3 'any' 'ground' 'any' 2
+elseif @findtype 0x6e2 'any' 'ground' 'any' 3 or @findtype 0x6e3 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6e4  'any' 'ground' 'any' 2 or @findtype 0x6e5  'any' 'ground' 'any' 2
+elseif @findtype 0x6e4  'any' 'ground' 'any' 3 or @findtype 0x6e5  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6e6  'any' 'ground' 'any' 2 or @findtype 0x6e7  'any' 'ground' 'any' 2
+elseif @findtype 0x6e6  'any' 'ground' 'any' 3 or @findtype 0x6e7  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6e8  'any' 'ground' 'any' 2 or @findtype 0x6e9  'any' 'ground' 'any' 2
+elseif @findtype 0x6e8  'any' 'ground' 'any' 3 or @findtype 0x6e9  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6ea  'any' 'ground' 'any' 2 or @findtype 0x6eb  'any' 'ground' 'any' 2
+elseif @findtype 0x6ea  'any' 'ground' 'any' 3 or @findtype 0x6eb  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6ec  'any' 'ground' 'any' 2 or @findtype 0x6ed  'any' 'ground' 'any' 2
+elseif @findtype 0x6ec  'any' 'ground' 'any' 3 or @findtype 0x6ed  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6ef  'any' 'ground' 'any' 2 or @findtype 0x6f0  'any' 'ground' 'any' 2
+elseif @findtype 0x6ef  'any' 'ground' 'any' 3 or @findtype 0x6f0  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6f1 'any' 'ground' 'any' 2 or @findtype 0x6f2  'any' 'ground' 'any' 2
+elseif @findtype 0x6f1 'any' 'ground' 'any' 3 or @findtype 0x6f2  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6f3 'any' 'ground' 'any' 2 or @findtype 0x6f4  'any' 'ground' 'any' 2
+elseif @findtype 0x6f3 'any' 'ground' 'any' 3 or @findtype 0x6f4  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x6f5 'any' 'ground' 'any' 2 or @findtype 0x6f6  'any' 'ground' 'any' 2
+elseif @findtype 0x6f5 'any' 'ground' 'any' 3 or @findtype 0x6f6  'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x824 'any' 'ground' 'any' 2
+elseif @findtype 0x824 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x825 'any' 'ground' 'any' 2 or @findtype 0x826 'any' 'ground' 'any' 2
+elseif @findtype 0x825 'any' 'ground' 'any' 3 or @findtype 0x826 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x827 'any' 'ground' 'any' 2 or @findtype 0x8288 'any' 'ground' 'any' 2
+elseif @findtype 0x827 'any' 'ground' 'any' 3 or @findtype 0x8288 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x829 'any' 'ground' 'any' 2 or @findtype 0x82a 'any' 'ground' 'any' 2
+elseif @findtype 0x829 'any' 'ground' 'any' 3 or @findtype 0x82a 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x82b 'any' 'ground' 'any' 2 or @findtype 0x82c 'any' 'ground' 'any' 2
+elseif @findtype 0x82b 'any' 'ground' 'any' 3 or @findtype 0x82c 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x82d 'any' 'ground' 'any' 2 or @findtype 0x82e 'any' 'ground' 'any' 2
+elseif @findtype 0x82d 'any' 'ground' 'any' 3 or @findtype 0x82e 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x82f 'any' 'ground' 'any' 2 or @findtype 0x830 'any' 'ground' 'any' 2
+elseif @findtype 0x82f 'any' 'ground' 'any' 3 or @findtype 0x830 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x831 'any' 'ground' 'any' 2 or @findtype 0x832 'any' 'ground' 'any' 2
+elseif @findtype 0x831 'any' 'ground' 'any' 3 or @findtype 0x832 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x833 'any' 'ground' 'any' 2 or @findtype 0x839 'any' 'ground' 'any' 2
+elseif @findtype 0x833 'any' 'ground' 'any' 3 or @findtype 0x839 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x83a 'any' 'ground' 'any' 2 or @findtype 0x83b 'any' 'ground' 'any' 2
+elseif @findtype 0x83a 'any' 'ground' 'any' 3 or @findtype 0x83b 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x83c 'any' 'ground' 'any' 2 or @findtype 0x83d 'any' 'ground' 'any' 2
+elseif @findtype 0x83c 'any' 'ground' 'any' 3 or @findtype 0x83d 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x83e 'any' 'ground' 'any' 2 or @findtype 0x83f 'any' 'ground' 'any' 2
+elseif @findtype 0x83e 'any' 'ground' 'any' 3 or @findtype 0x83f 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x840 'any' 'ground' 'any' 2 or @findtype 0x841 'any' 'ground' 'any' 2
+elseif @findtype 0x840 'any' 'ground' 'any' 3 or @findtype 0x841 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x842 'any' 'ground' 'any' 2 or @findtype 0x843 'any' 'ground' 'any' 2
+elseif @findtype 0x842 'any' 'ground' 'any' 3 or @findtype 0x843 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x844 'any' 'ground' 'any' 2 or @findtype 0x845 'any' 'ground' 'any' 2
+elseif @findtype 0x844 'any' 'ground' 'any' 3 or @findtype 0x845 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x846 'any' 'ground' 'any' 2 or @findtype 0x847 'any' 'ground' 'any' 2
+elseif @findtype 0x846 'any' 'ground' 'any' 3 or @findtype 0x847 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x848 'any' 'ground' 'any' 2 or @findtype 0x84c 'any' 'ground' 'any' 2
+elseif @findtype 0x848 'any' 'ground' 'any' 3 or @findtype 0x84c 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x84d 'any' 'ground' 'any' 2 or @findtype 0x84e 'any' 'ground' 'any' 2
+elseif @findtype 0x84d 'any' 'ground' 'any' 3 or @findtype 0x84e 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x84f 'any' 'ground' 'any' 2 or @findtype 0x850 'any' 'ground' 'any' 2
+elseif @findtype 0x84f 'any' 'ground' 'any' 3 or @findtype 0x850 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x851 'any' 'ground' 'any' 2 or @findtype 0x852 'any' 'ground' 'any' 2
+elseif @findtype 0x851 'any' 'ground' 'any' 3 or @findtype 0x852 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x853 'any' 'ground' 'any' 2 or @findtype 0x854 'any' 'ground' 'any' 2
+elseif @findtype 0x853 'any' 'ground' 'any' 3 or @findtype 0x854 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x855 'any' 'ground' 'any' 2 or @findtype 0x856 'any' 'ground' 'any' 2
+elseif @findtype 0x855 'any' 'ground' 'any' 3 or @findtype 0x856 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x857 'any' 'ground' 'any' 2 or @findtype 0x858 'any' 'ground' 'any' 2
+elseif @findtype 0x857 'any' 'ground' 'any' 3 or @findtype 0x858 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x859 'any' 'ground' 'any' 2 or @findtype 0x85a 'any' 'ground' 'any' 2
+elseif @findtype 0x859 'any' 'ground' 'any' 3 or @findtype 0x85a 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x85b 'any' 'ground' 'any' 2 or @findtype 0x866 'any' 'ground' 'any' 2
+elseif @findtype 0x85b 'any' 'ground' 'any' 3 or @findtype 0x866 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x867 'any' 'ground' 'any' 2 or @findtype 0x868 'any' 'ground' 'any' 2
+elseif @findtype 0x867 'any' 'ground' 'any' 3 or @findtype 0x868 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x869 'any' 'ground' 'any' 2 or @findtype 0x86a 'any' 'ground' 'any' 2
+elseif @findtype 0x869 'any' 'ground' 'any' 3 or @findtype 0x86a 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x86b 'any' 'ground' 'any' 2 or @findtype 0x86c 'any' 'ground' 'any' 2
+elseif @findtype 0x86b 'any' 'ground' 'any' 3 or @findtype 0x86c 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x86d 'any' 'ground' 'any' 2 or @findtype 0x86e 'any' 'ground' 'any' 2
+elseif @findtype 0x86d 'any' 'ground' 'any' 3 or @findtype 0x86e 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x86f 'any' 'ground' 'any' 2 or @findtype 0x870 'any' 'ground' 'any' 2
+elseif @findtype 0x86f 'any' 'ground' 'any' 3 or @findtype 0x870 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x871 'any' 'ground' 'any' 2 or @findtype 0x872 'any' 'ground' 'any' 2
+elseif @findtype 0x871 'any' 'ground' 'any' 3 or @findtype 0x872 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x873 'any' 'ground' 'any' 2 or @findtype 0x874 'any' 'ground' 'any' 2
+elseif @findtype 0x873 'any' 'ground' 'any' 3 or @findtype 0x874 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x875 'any' 'ground' 'any' 2
+elseif @findtype 0x875 'any' 'ground' 'any' 3
   @useobject! 'found'
-elseif @findtype 0x1fef 'any' 'ground' 'any' 2 or @findtype 0x1ff0 'any' 'ground' 'any' 2
+elseif @findtype 0x1FED 'any' 'ground' 'any' 3 or @findtype 0x1FED 'any' 'ground' 'any' 3
+  @useobject! 'found'
+elseif @findtype 0x1FEF 'any' 'ground' 'any' 3 or @findtype 0x1FF0 'any' 'ground' 'any' 3
+  @useobject! 'found'
+elseif @findtype 0x1FF1 'any' 'ground' 'any' 3 or @findtype 0x1FF2 'any' 'ground' 'any' 3
+  @useobject! 'found'
+elseif @findtype 0x1FF3 'any' 'ground' 'any' 3 or @findtype 0x1FF4 'any' 'ground' 'any' 3
+  @useobject! 'found'
+elseif @findtype 0x1FF5 'any' 'ground' 'any' 3 or @findtype 0x1FF6 'any' 'ground' 'any' 3
+  @useobject! 'found'
+elseif @findtype 0x1FF7 'any' 'ground' 'any' 3 or @findtype 0x1FF8 'any' 'ground' 'any' 3
+  @useobject! 'found'
+elseif @findtype 0x1FF9 'any' 'ground' 'any' 3 or @findtype 0x1FFA 'any' 'ground' 'any' 3
+  @useobject! 'found'
+elseif @findtype 0x1FFB 'any' 'ground' 'any' 3 or @findtype 0x1FFC 'any' 'ground' 'any' 3
+  @useobject! 'found'
+elseif @findtype 0x67b 'any' 'ground' 'any' 3 or @findtype 0x67c 'any' 'ground' 'any' 3
   @useobject! 'found'
 endif
