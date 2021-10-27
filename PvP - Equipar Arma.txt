@@ -21,6 +21,6 @@ if @findlayer 'self' 1 or @findlayer 'self' 2
   canceltarget
   stop
 endif
-if not @findobject 'Arma' 'any' 'backpack'
+if not @findobject 'Arma' 'any' 'self'
   promptalias 'Arma'
 endif
