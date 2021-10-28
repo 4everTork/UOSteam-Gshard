@@ -113,7 +113,7 @@ if diffweight < 100
       replygump 0x473 1
       waitforgump 0x473 15000
       replygump 0x473 101
-     //Gump Runebook 3
+      //Gump Runebook 3
     elseif @gumpexists 0x474
       replygump 0x474 1
       waitforgump 0x474 15000
@@ -193,7 +193,15 @@ if inregion 'town' 'self'
   endwhile
   // Comer peixe
   if @findtype 0x97b 'any' 'bankminerios'
-    useobject 'found'
+    clearjournal
+    while not @injournal 'satisfeito'
+      if @findtype 0x97b 'any' 'bankminerios'
+        useobject 'found'
+        pause 250
+      else
+        break
+      endif
+    endwhile
   else
     headmsg '*Sem fish steak*
   endif
@@ -219,7 +227,7 @@ if inregion 'town' 'self'
       replygump 0x473 2
       waitforgump 0x473 15000
       replygump 0x473 102
-           //Gump Runebook 3
+      //Gump Runebook 3
     elseif @gumpexists 0x474
       replygump 0x474 2
       waitforgump 0x474 15000
@@ -243,7 +251,7 @@ for 0 to 2
               useskill 'Hiding'
               pause 3750
             endwhile
-            pause 750
+            pause 1000
             if hidden 'self'
               useskill 'Stealth'
               while not @injournal 'mover em silencio' 'system'
