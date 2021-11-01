@@ -96,6 +96,40 @@ if not @findalias 'bankminerios'
   headmsg 'Selecione o bau onde GUARDAR minerios e COMER Fish Steak.' '33'
   promptalias 'bankminerios'
 endif
+// Sem Smith Hammer
+if not @findtype 0x13e3 'any' 'self' 'any' 1 and not @findtype 0x13e4 'any' 'self' 'any' 1
+  headmsg 'Sem Hammer, pegando...'
+  msg 'Banker Bank'
+  useobject 'bankminerios'
+  pause 500
+  @movetype 0x13e3 'bankminerios' 'backpack' 0 0 0 'any'
+  pause 1000
+  if not @findtype 0x13e3 'any' 'self' 'any' 1
+    if @findtype 0x13e4 'any' 'bankminerios'
+      @moveitem 'found' 'backpack'
+    else
+      headmsg 'Sem Smith Hammer, fim de macro!'
+      stop
+    endif
+  endif
+endif
+// Sem Pickaxe
+if not @findtype 0xe85 'any' 'self' 'any' 1 and not @findtype 0xe86 'any' 'self' 'any' 1
+  headmsg 'Sem Pickaxe, pegando...'
+  msg 'Banker Bank'
+  useobject 'bankminerios'
+  pause 500
+  @movetype 0xe85 'bankminerios' 'backpack' 0 0 0 'any'
+  pause 1000
+  if not @findtype 0xe85 'any' 'self' 'any' 1
+    if @findtype 0xe86 'any' 'bankminerios'
+      @moveitem 'found' 'backpack'
+    else
+      headmsg 'Sem Pickaxe, fim de macro!'
+      stop
+    endif
+  endif
+endif
 //
 // Peso limite + Recall para Forge safe
 //
@@ -138,16 +172,19 @@ if inregion 'town' 'self'
   elseif @gumpexists 0x485
     replygump 0x485 0
   endif
-  if not @findtype 0x13e3 'any' 'self' 'any' 1
+  if not @findtype 0x13e3 'any' 'self' 'any' 1 and not @findtype 0x13e4 'any' 'self' 'any' 1
+    headmsg 'Sem Hammer, pegando...'
     msg 'Banker Bank'
     useobject 'bankminerios'
     pause 500
     @movetype 0x13e3 'bankminerios' 'backpack' 0 0 0 'any'
     pause 1000
   else
-    @usetype 0x13e3 'any' 'self' 2
-    waitforgump 'any' 10000
-    replygump 'any' 0
+    if @findtype 0x13e3 'any' 'self' 'any' 1 or @findtype 0x13e4 'any' 'self' 'any' 1
+      @useobject 'found'
+      waitforgump 'any' 10000
+      replygump 'any' 0
+    endif
   endif
   //
   // Smeltar
@@ -194,7 +231,7 @@ if inregion 'town' 'self'
   // Comer peixe
   if @findtype 0x97b 'any' 'bankminerios'
     clearjournal
-    while not @injournal 'satisfeito'
+    while not @injournal 'ja esta satisfeito'
       if @findtype 0x97b 'any' 'bankminerios'
         useobject 'found'
         pause 250
