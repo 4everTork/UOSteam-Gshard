@@ -106,6 +106,22 @@ pushlist! 'RunXY' 'Northwest'
 pushlist! 'RunXY' 'Southwest'
 pushlist! 'RunXY' 'West'
 pushlist! 'RunXY' 'Northeast'
+@createtimer 'Guards'
+@canceltarget
+pause 500
+pushlist 'Comuns' 1 // debug (nao mexer)
+if not @findobject 'ForgeMining'
+  headmsg '*Selecione um forge na mina.*' 155
+  pause 300
+  promptalias 'ForgeMining'
+endif
+if not @findobject 'bagmining'
+  headmsg 'Selecione o bau em seu banco para guardar os minerios.' 665
+  msg 'Banker Bank'
+  pause 300
+  promptalias 'bagmining'
+  useobject 'bagmining'
+endif
 if @findtype 0xe85 'any' 'backpack'
   @useobject! 'found'
   if not targetexists
@@ -117,23 +133,10 @@ elseif @findtype 0xe86 'any' 'backpack'
     useobject! 'found'
   endif
 endif
-@createtimer 'Guards'
-pushlist 'Comuns' 1 // debug (nao mexer)
-if not @findobject 'ForgeMinoc'
-  headmsg '*Selecione um forge na mina.*'
-  promptalias 'ForgeMinoc'
-endif
-if not @findobject 'bagmining'
-  headmsg 'Selecione o bau em seu banco para guardar os minerios.'
-  msg 'Banker Bank'
-  pause 300
-  promptalias 'bagmining'
-  useobject 'bagmining'
-endif
 //
 // Ir até o forge
-// No safe: com +10 raros ou -150 do maximo
-// Na VIP: com -5 do maximo
+// Em Minoc: com +10 raros ou -150 do maximo
+// Na VIP: com -50 do maximo
 //
 if x >= 2557 and x <= 2581
   if y >= 474 and y <= 495
@@ -146,25 +149,25 @@ if x >= 2557 and x <= 2581
     endif
   endif
 endif
-if @findalias 'Guardar' or diffweight < 5
+if @findalias 'Guardar' or diffweight < 50
   headmsg 'Guardando minerios'
   pause 500
-  while not @inrange 'ForgeMinoc' 1
-    if @x 'ForgeMinoc'> x 'self' and @y 'ForgeMinoc'> y 'self'
+  while not @inrange 'ForgeMining' 1
+    if @x 'ForgeMining'> x 'self' and @y 'ForgeMining'> y 'self'
       walk 'Southeast'
-    elseif @x 'ForgeMinoc'< x 'self' and @y 'ForgeMinoc'> y 'self'
+    elseif @x 'ForgeMining'< x 'self' and @y 'ForgeMining'> y 'self'
       walk 'Southwest'
-    elseif @x 'ForgeMinoc'> x 'self' and @y 'ForgeMinoc'< y 'self'
+    elseif @x 'ForgeMining'> x 'self' and @y 'ForgeMining'< y 'self'
       walk 'Northeast'
-    elseif @x 'ForgeMinoc'< x 'self' and @y 'ForgeMinoc'< y 'self'
+    elseif @x 'ForgeMining'< x 'self' and @y 'ForgeMining'< y 'self'
       walk 'Northwest'
-    elseif @x 'ForgeMinoc'> x 'self' and @y 'ForgeMinoc'== y 'self'
+    elseif @x 'ForgeMining'> x 'self' and @y 'ForgeMining'== y 'self'
       walk 'East'
-    elseif @x 'ForgeMinoc'< x 'self' and @y 'ForgeMinoc'== y 'self'
+    elseif @x 'ForgeMining'< x 'self' and @y 'ForgeMining'== y 'self'
       walk 'West'
-    elseif @x 'ForgeMinoc'== x 'self' and @y 'ForgeMinoc'> y 'self'
+    elseif @x 'ForgeMining'== x 'self' and @y 'ForgeMining'> y 'self'
       walk 'South'
-    elseif @x 'ForgeMinoc'== x 'self' and @y 'ForgeMinoc'< y 'self'
+    elseif @x 'ForgeMining'== x 'self' and @y 'ForgeMining'< y 'self'
       walk 'North'
     endif
   endwhile
@@ -175,9 +178,9 @@ if @findalias 'Guardar' or diffweight < 5
     @equipitem 'found' 1
   elseif @findtype 0x13e4 'any' 'backpack'
     @equipitem 'found' 1
-elseif @findtype 0x13e4 'any' 'backpack'
+  elseif @findtype 0x13e4 'any' 'backpack'
     @equipitem 'found' 1
-elseif @findtype 0xfb5 'any' 'backpack'
+  elseif @findtype 0xfb5 'any' 'backpack'
     @equipitem 'found' 1
   else
     headmsg 'Nao achou o Martelo'
@@ -254,73 +257,75 @@ for 0 to 2
               ///
               // Chamar guardas
               //
-              if @findobject 'ForgeMinoc'
-                getenemy 'murderer' 'criminal' 'enemy' 'gray' 'humanoid' 'transformation' 'closest'
-                if @inrange 'Enemy' '20' and @timer 'Guards' >= 3000
-                  msg 'Guards'
-                  settimer 'Guards'  0
-                endif
-                // Ficar sem mana
-                while mana < 60
-                  if mana < 21
-                    msg '.drinkmana'
+              if x >= 2557 and x <= 2581
+                if y >= 474 and y <= 495
+                  getenemy 'murderer' 'criminal' 'enemy' 'gray' 'humanoid' 'transformation' 'closest'
+                  if @inrange 'Enemy' '20' and @timer 'Guards' >= 3000
+                    msg 'Guards'
+                    settimer 'Guards'  0
                   endif
-                  useskill 'Meditation'
-                  pause 3500
-                endwhile
-                // Se ficar Paralizado
-                while paralyzed 'self'
-                  autotargetself!
-                  cast "Magic Arrow"
-                  pause 2000
-                endwhile
-                // Se ficar Poisonado
-                while poisoned 'self'
-                  cast 'cure' self
-                  if @findtype 0xe85 'any' 'backpack'
-                    @useobject 'found'
-                  elseif @findtype 0xe86 'any' 'backpack'
-                    @useobject 'found'
-                  endif
-                  pause 2250
-                  turn "Northeast"
-                  pause 100
-                  walk "Northeast"
-                  pause 100
-                endwhile
-                // Se encontrar Fire Field perto
-                if @findtype 0x398c 'any' 'ground' 'any' 3
-                  turn "Northeast"
-                  pause 100
-                  walk "Northeast"
-                  pause 100
-                  if skill 'Magery' >= 75
-                    cast "Mass Dispel"
+                  // Ficar sem mana
+                  while mana < 60
+                    if mana < 21
+                      msg '.drinkmana'
+                    endif
+                    useskill 'Meditation'
+                    pause 3500
+                  endwhile
+                  // Se ficar Paralizado
+                  while paralyzed 'self'
+                    autotargetself!
+                    cast "Magic Arrow"
+                    pause 2000
+                  endwhile
+                  // Se ficar Poisonado
+                  while poisoned 'self'
+                    cast 'cure' self
                     if @findtype 0xe85 'any' 'backpack'
                       @useobject 'found'
                     elseif @findtype 0xe86 'any' 'backpack'
                       @useobject 'found'
                     endif
-                    pause 4750
-                  else
-                    pause 1000
-                  endif
-                endif
-                // Usar bandage
-                if hits < 90
-                  if @findtype 0xe21 'any' 'backpack'
+                    pause 2250
                     turn "Northeast"
                     pause 100
                     walk "Northeast"
                     pause 100
-                    autotargetself!
-                    useobject! 'found'
-                    pause 4500
-                  else
-                    if @timer 'Bandage' >= 7000
-                      @settimer 'Bandage' 0
-                      headmsg 'Sem Bandage na Backpack' 50 'self'
-                      break
+                  endwhile
+                  // Se encontrar Fire Field perto
+                  if @findtype 0x398c 'any' 'ground' 'any' 3
+                    turn "Northeast"
+                    pause 100
+                    walk "Northeast"
+                    pause 100
+                    if skill 'Magery' >= 75
+                      cast "Mass Dispel"
+                      if @findtype 0xe85 'any' 'backpack'
+                        @useobject 'found'
+                      elseif @findtype 0xe86 'any' 'backpack'
+                        @useobject 'found'
+                      endif
+                      pause 4750
+                    else
+                      pause 1000
+                    endif
+                  endif
+                  // Usar bandage
+                  if hits < 90
+                    if @findtype 0xe21 'any' 'backpack'
+                      turn "Northeast"
+                      pause 100
+                      walk "Northeast"
+                      pause 100
+                      autotargetself!
+                      useobject! 'found'
+                      pause 4500
+                    else
+                      if @timer 'Bandage' >= 7000
+                        @settimer 'Bandage' 0
+                        headmsg 'Sem Bandage na Backpack' 50 'self'
+                        break
+                      endif
                     endif
                   endif
                 endif
@@ -361,11 +366,11 @@ for 0 to 2
               endif
             endwhile
             @clearjournal
-            if @findobject 'ForgeMinoc'
+            if @findobject 'ForgeMining'
               if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
                 replay
               endif
-            elseif diffweight < 5
+            elseif diffweight < 50
               replay
             endif
           endwhile
