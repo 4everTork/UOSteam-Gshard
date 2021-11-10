@@ -24,39 +24,17 @@ if @counttype 0x1bd7 0 'backpack' >= 100
   pause 1000
 endif
 // Fazer 1 Board
-if @gumpexists 0x483
-  @replygump 0x483 0
-elseif @gumpexists 0x484
-  @replygump 0x484 0
-elseif @gumpexists 0x485
-  @replygump 0x485 0
-  elseif @gumpexists 0x486
-  @replygump 0x486 0
+if @gumpexists 'any'
+  @replygump 'any'  0
 endif
 usetype 0x1034 'backpack'
 waitforgump 'any' 15000
 //Gump 1
-if @gumpexists 0x483
-  @replygump 0x483 1
-  waitforgump 0x483 15000
-  @replygump 0x483 10101
-  waitforgump 0x483 15000
-  //Gump 2
-elseif @gumpexists 0x484
-  @replygump 0x484 1
-  waitforgump 0x484 15000
-  @replygump 0x484 10101
-  waitforgump 0x484 15000
-  //Gump 3
-elseif @gumpexists 0x485
-  @replygump 0x485 1
-  waitforgump 0x485 15000
-  @replygump 0x485 10101
-  waitforgump 0x485 15000
- //Gump 4
-elseif @gumpexists 0x486
-  @replygump 0x486 1
-  waitforgump 0x486 15000
-  @replygump 0x486 10101
-  waitforgump 0x486 15000
+if @gumpexists 'any'
+  @replygump 'any' 1
+  waitforgump 'any' 15000
+  @replygump 'any' 10101
+  waitforgump 'any' 15000
 endif
+//by tork
+
