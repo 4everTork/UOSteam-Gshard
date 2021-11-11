@@ -79,6 +79,7 @@ if @gumpexists 'any'
   //Gump 1
   if @gumpexists 'any'
     @replygump 'any' 5008
+waitforgump 'any' 10000
   endif
 else
   headmsg 'Fabrique a arma desejada' 4000
