@@ -77,7 +77,7 @@ endif
 clearjournal
 if @gumpexists 'any'
   //Gump 1
-  if @gumpexists 0x483
+  if @gumpexists 'any'
     @replygump 'any' 5008
   endif
 else
@@ -101,9 +101,8 @@ else
       @autotargettype! Excp[] 'backpack'
       @replygump 'any' 5004
       pause 250
-      if @usetype 0x13e3 'any' 'self' '2'
-      else
-        @usetype 0xfb4 'any' 'self' '2'
+      if @usetype 0xfb5 'any' 'self' or @usetype 0xfb4 'any' 'self
+      elseif @usetype 0x13e4 'any' 'self' or @usetype 0x13e3 'any' 'self'
       endif
     endwhile
   endfor
