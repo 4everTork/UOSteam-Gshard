@@ -1,6 +1,7 @@
-                                                        // Macro Lumberjacking Configuravel by iGGya / adaptado por Alien e Tork
+// Macro Lumberjacking Configuravel by iGGya / adaptado por Alien, Tork e Topojijo
 // Criado: 21/02/03
 // Revisao: 05/11/20
+// Revisão: 10/05/21
 // Habilite o ALLOW EXECUTE em Options no EUO, se disponivel.
 // Leva 9 segundos por arvore marcada para criar o arquivo. AGUARDE
 
@@ -108,7 +109,7 @@ menu button 1 10 7 100 25 &Banco
 menu button 2 10 69 100 25 Bau &Seguro
 menu button 3 10 94 100 25 &Voltar
 menu text TEXT1 10 34 Va ao lado do banco
-menu text TEXT2 10 50 &Marcar Posicao(M) ou Cancelar©
+menu text TEXT2 10 50 &Marcar Posicao(M) ou Cancelar:copyright:
 goto hotkey1
 B2:
 menu clear
@@ -123,7 +124,7 @@ menu button 3 10 108 100 25 &Voltar
 menu text TEXT1 10 59 Posicione o cursor do mouse no local onde vai ficar o
 BauSeguro
 menu text TEXT2 10 74 Esteja proximo ou ao lado dele.
-menu text TEXT3 10 89 &Marcar Posicao(M) ou Cancelar©
+menu text TEXT3 10 89 &Marcar Posicao(M) ou Cancelar:copyright:
 goto hotkey2
 hotkey1:
 If #MenuButton = 2
@@ -160,7 +161,7 @@ menu font bgcolor black
 menu font color white
 menu font size 10
 menu text TEXT1 10 34 Posicione o Cursor do mouse onde vai ficar as logs!
-menu text TEXT2 10 50 &Marcar Posicao(M) ou Cancelar©
+menu text TEXT2 10 50 &Marcar Posicao(M) ou Cancelar:copyright:
 banco1:
 If #MenuButton = 2
 goto B2
@@ -494,7 +495,7 @@ if #findid = X
 {
 menu font color $0000FF
 menu font size 11
-menu text food 80 100 Não encontrada
+menu text food 80 100 Nao encontrada
 }
 else
 {
@@ -502,9 +503,9 @@ menu font color $FF0000
 menu font size 11
 menu text food 80 100 Encontrada
 }
-menu font size 14
+menu font size 14         Hora de
 menu font color white
-menu text time 25 20 Hora de início:
+menu text time 25 20 Hora de inicio:
 menu text time2 50 50 %time
 menu font size 12
 menu font color white
@@ -574,6 +575,8 @@ goto jornal
 
 ;--------------------------------- Guardar ----------------------------
 guardar:
+set #sysmsgcol 1965
+event sysmessage Guardando madeiras.
 set %normal %normal_logs
 set %oak %oak_logs
 set %blood %blood_logs
@@ -878,7 +881,3 @@ msg Guards $
 wait 10
 Return
 // by iGGy
-// revisao by tork
-
-
-
