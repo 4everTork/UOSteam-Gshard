@@ -13,12 +13,6 @@ if @injournal 'nao conseguiu'
 endif
 pause 50
 //Gump 1
-if @gumpexists 0x483
-  @replygump 0x483 0
-  //Gump 2
-elseif @gumpexists 0x484
-  @replygump 0x484 0
-  //Gump 3
-elseif @gumpexists 0x485
-  @replygump 0x485 0
+if @gumpexists 'any'
+  @replygump 'any' 0
 endif
