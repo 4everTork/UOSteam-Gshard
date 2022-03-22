@@ -12,7 +12,7 @@ if @injournal 'nao conseguiu'
   replay
 endif
 pause 50
-//Gump 1
+//Gump
 if @gumpexists 'any'
   @replygump 'any' 0
 endif
