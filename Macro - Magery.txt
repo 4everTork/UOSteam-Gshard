@@ -10,3 +10,4 @@ while mana < maxmana
   useskill meditation
   pause 3500
 endwhile
+pause 1000
