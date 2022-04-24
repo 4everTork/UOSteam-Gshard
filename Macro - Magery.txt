@@ -4,7 +4,7 @@
 while mana >= 4
   @autotargetself
   cast "Night Sight"
-  pause 1750
+  pause 2000
 endwhile
 while mana < maxmana
   useskill meditation
