@@ -136,7 +136,7 @@ if not @findobject 'bagmining'
 endif
 //
 // Ir até o forge
-// No safe: com +10 raros ou -150 do maximo
+// No safe: com +10 raros ou -100 do maximo
 // Na VIP: com -5 do maximo
 //
 if x >= 2557 and x <= 2581
