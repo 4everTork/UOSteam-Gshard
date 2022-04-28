@@ -141,7 +141,7 @@ endif
 //
 if x >= 2557 and x <= 2581
   if y >= 474 and y <= 495
-    if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
+    if diffweight < 100  or @counttype '0x19b9' '2490' 'backpack' > 10
       setalias 'Guardar' 'self'
     elseif @counttype '0x19b9' '2489' 'backpack' > 10  or @counttype '0x19b9' '2492' 'backpack' > 10
       setalias 'Guardar' 'self'
@@ -354,7 +354,7 @@ for 0 to 2
             endwhile
             @clearjournal
             if @findobject 'ForgeMinoc'
-              if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
+              if diffweight < 100  or @counttype '0x19b9' '2490' 'backpack' > 10
                 replay
               endif
             elseif diffweight < 5
