@@ -25,7 +25,7 @@ if findtype 0x14eb 'backpack'
 endif
 // Altere o nome do NPC Mapmaker na proxima linha!
 msg 'John sell'
-pause 2500
+pause 3000
 if findtype 0x190 'any' 'any' 'any' 4
   useobject 'found'
 elseif findtype 0x191 'any' 'any' 'any' 4
@@ -33,7 +33,7 @@ elseif findtype 0x191 'any' 'any' 'any' 4
 else
   headmsg '*Sem NPC perto*'
 endif
-pause 2500
+pause 3000
 // Altere o nome do NPC Mapmaker na proxima linha!
 msg 'John buy'
-pause 2500
+pause 3000
