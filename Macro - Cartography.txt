@@ -10,7 +10,11 @@ if findtype 0x14eb 'backpack'
     if @gumpexists 'any'
       @replygump 'any' 0
     endif
-    usetype 0xfbf 'backpack'
+    if @findtype 0xfbf 'any' 'backpack'
+      @useobject! 'found'
+    elseif @findtype 0xfc0 'any' 'backpack'
+      @useobject! 'found'
+    endif
     waitforgump 'any' 15000
     //Gump 1
     if @gumpexists 'any'
@@ -37,3 +41,4 @@ pause 3000
 // Altere o nome do NPC Mapmaker na proxima linha!
 msg 'John buy'
 pause 3000
+0xfc0
