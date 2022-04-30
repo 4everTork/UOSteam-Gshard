@@ -1,28 +1,27 @@
-// Na aba Agents > Sell crie e ative uma aba para vender 20+ maps
-// Na aba Agents > Buy crie e ative uma aba para vender 20+ maps
+// Na aba Agents > Vendor > Sell crie e ative uma aba para vender 20+ blank maps
+// Na aba Agents > Vendor > Buy crie e ative uma aba para comprar 20+ blank maps
 ////
 // Macro de Cartography
-// * Estar ao lado de um NPC Cartography (padrão é da ponte de Britain)
-// e alterar o nome dele no macro.
+// * Estar ao lado de um NPC Cartography (padrão é da ponte de Britain: JOHN)
 // * Alterar as abas Agents conforme indicado.
 ////
 if findtype 0x14eb 'backpack'
-for 20
-if @gumpexists 'any'
-  @replygump 'any' 0
-endif
-  usetype 0xfbf 'backpack'
-  waitforgump 'any' 15000
-//Gump 1
-if @gumpexists 'any'
-  @replygump 'any' 1
-  waitforgump 'any' 15000
-  @replygump 'any' 10101
-  waitforgump 'any' 15000
-endif
-//by tork
-endfor
-pause 1000
+  for 20
+    if @gumpexists 'any'
+      @replygump 'any' 0
+    endif
+    usetype 0xfbf 'backpack'
+    waitforgump 'any' 15000
+    //Gump 1
+    if @gumpexists 'any'
+      @replygump 'any' 1
+      waitforgump 'any' 15000
+      @replygump 'any' 10101
+      waitforgump 'any' 15000
+    endif
+    //by tork
+  endfor
+  pause 1000
 endif
 // Altere o nome do NPC Mapmaker na proxima linha!
 msg 'John sell'
@@ -38,4 +37,3 @@ pause 2500
 // Altere o nome do NPC Mapmaker na proxima linha!
 msg 'John buy'
 pause 2500
-
