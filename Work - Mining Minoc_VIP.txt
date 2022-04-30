@@ -124,6 +124,8 @@ endif
 pushlist 'Comuns' 1
 ////
 if not @findobject 'ForgeMinoc'
+  cancelautotarget
+  pause 250
   headmsg '*Selecione um forge na mina.*'
   promptalias 'ForgeMinoc'
 endif
@@ -213,7 +215,12 @@ if @findalias 'Guardar' or diffweight < 5
     pause 1000
   endwhile
   unsetalias 'Guardar'
-  msg ".disarm"
+  pause 500
+  if @findtype 0xe85 'any' 'backpack'
+    @useobject! 'found'
+  elseif @findtype 0xe86 'any' 'backpack'
+    @useobject! 'found'
+  endif
 endif
 //
 // Minerar
@@ -353,10 +360,8 @@ for 0 to 2
               endif
             endwhile
             @clearjournal
-            if @findobject 'ForgeMinoc'
-              if diffweight < 100  or @counttype '0x19b9' '2490' 'backpack' > 10
-                replay
-              endif
+            if diffweight < 100  or @counttype '0x19b9' '2490' 'backpack' > 10
+              replay
             elseif diffweight < 5
               replay
             endif
