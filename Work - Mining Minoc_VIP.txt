@@ -126,6 +126,8 @@ pushlist 'Comuns' 1
 if not @findobject 'ForgeMinoc'
   cancelautotarget
   pause 250
+  canceltarget
+  pause 250
   headmsg '*Selecione um forge na mina.*'
   promptalias 'ForgeMinoc'
 endif
@@ -143,7 +145,7 @@ endif
 //
 if x >= 2557 and x <= 2581
   if y >= 474 and y <= 495
-    if diffweight < 100  or @counttype '0x19b9' '2490' 'backpack' > 10
+    if diffweight < 195  or @counttype '0x19b9' '2490' 'backpack' > 10
       setalias 'Guardar' 'self'
     elseif @counttype '0x19b9' '2489' 'backpack' > 10  or @counttype '0x19b9' '2492' 'backpack' > 10
       setalias 'Guardar' 'self'
@@ -152,7 +154,7 @@ if x >= 2557 and x <= 2581
     endif
   endif
 endif
-if @findalias 'Guardar' or diffweight < 5
+if @findalias 'Guardar' or diffweight < 195
   headmsg 'Guardando minerios'
   pause 500
   while not @inrange 'ForgeMinoc' 1
@@ -360,9 +362,22 @@ for 0 to 2
               endif
             endwhile
             @clearjournal
-            if diffweight < 100  or @counttype '0x19b9' '2490' 'backpack' > 10
-              replay
-            elseif diffweight < 5
+            if x >= 2557 and x <= 2581
+              if y >= 474 and y <= 495
+                if diffweight < 195  or @counttype '0x19b9' '2490' 'backpack' > 10
+                  setalias 'Guardar' 'self'
+                  replay
+                elseif @counttype '0x19b9' '2489' 'backpack' > 10  or @counttype '0x19b9' '2492' 'backpack' > 10
+                  setalias 'Guardar' 'self'
+                  replay
+                elseif @counttype '0x19b9' '2493' 'backpack' > 10
+                  setalias 'Guardar' 'self'
+                  replay
+                endif
+              endif
+            endif
+            if diffweight < 195
+              setalias 'Guardar' 'self'
               replay
             endif
           endwhile
