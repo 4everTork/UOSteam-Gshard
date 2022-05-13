@@ -524,7 +524,7 @@ set %change %real - %oldskill
 for %cnt 1 15
 {
 call %reconect
-if #weight > %peso
+if #weight > %peso || %target = %MAXWPTS
 goto guardar
 event sysmessage Lumberjacking Lugar %target de %MAXWPTS
 set #lobjectid %machado
