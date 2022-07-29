@@ -136,8 +136,35 @@ while @findtype '0x9cc' '51' 'backpack' // Prized Fish
   moveitem! 'found' 'containerdobarco'
   pause 1000
 endwhile
-while @findtype '0x9cc' '86' 'backpack' /// Wondrous Fish
+while @findtype '0x9cc' '86' 'backpack' // Wondrous Fish
   moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0xde1' '0' 'backpack' // Kindling
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x1bd7' '0' 'backpack' // Board
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x1059' '0' 'backpack' // Sextant Parts
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x10e1' '0' 'backpack' // Barrel Hoops (chao)
+  movetypeoffset 0x10e1 'backpack' 'ground'
+  pause 1000
+endwhile
+while @findtype '0x14f3' '0' 'backpack' // Ship Model (chao)
+  movetypeoffset 0x14f3 'backpack' 'ground'
+  pause 1000
+endwhile
+useobject 'vara'
+waitfortarget 5000
+canceltarget
+while @findtype '0xdbf' '0' 'backpack' // Fishing Road (chao)
+  movetypeoffset 0xdbf 'backpack' 'ground'
   pause 1000
 endwhile
 msg 'Right'
@@ -231,12 +258,35 @@ while @findtype '0x9cc' '51' 'backpack' // Prized Fish
   moveitem! 'found' 'containerdobarco'
   pause 1000
 endwhile
-while @findtype '0x9cc' '86' 'backpack' /// Wondrous Fish
+while @findtype '0x9cc' '86' 'backpack' // Wondrous Fish
   moveitem! 'found' 'containerdobarco'
   pause 1000
 endwhile
-while @findtype '0x9cc' '66' 'backpack' /// High Peculiar Fish
+while @findtype '0xde1' '0' 'backpack' // Kindling
   moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x1bd7' '0' 'backpack' // Board
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x1059' '0' 'backpack' // Sextant Parts
+  moveitem! 'found' 'containerdobarco'
+  pause 1000
+endwhile
+while @findtype '0x10e1' '0' 'backpack' // Barrel Hoops (chao)
+  movetypeoffset 0x10e1 'backpack' 'ground'
+  pause 1000
+endwhile
+while @findtype '0x14f3' '0' 'backpack' // Ship Model (chao)
+  movetypeoffset 0x14f3 'backpack' 'ground'
+  pause 1000
+endwhile
+useobject 'vara'
+waitfortarget 5000
+canceltarget
+while @findtype '0xdbf' '0' 'backpack' // Fishing Road (chao)
+  movetypeoffset 0xdbf 'backpack' 'ground'
   pause 1000
 endwhile
 msg 'Left'
@@ -247,4 +297,4 @@ pause 1000
 // FIM //
 /////////
 // by Tork
-// 16.08.2020
+// 28.07.2022
