@@ -112,10 +112,6 @@ endwhile
 //
 // GUARDAR
 //
-while @findtype '0x14eb' '0' 'backpack' // Tattered Treasure Map
-  moveitem! 'found' 'containerdobarco'
-  pause 1000
-endwhile
 while @findtype '0x99f' '0' 'backpack' // SoS in Bottle
   moveitem! 'found' 'containerdobarco'
   pause 1000
@@ -234,10 +230,6 @@ endwhile
 //
 // GUARDAR
 //
-while @findtype '0x14eb' '0' 'backpack' // Tattered Treasure Map
-  moveitem! 'found' 'containerdobarco'
-  pause 1000
-endwhile
 while @findtype '0x99f' '0' 'backpack' // SoS in Bottle
   moveitem! 'found' 'containerdobarco'
   pause 1000
