@@ -56,10 +56,10 @@ for 0 to 12
   for 0 to 'axisx'
     for 0 to 'axisy'
       @clearjournal
-      useobject 'vara'
-      waitfortarget 5000
+      useobject! 'vara'
+      waitfortarget 4000
       targettileoffset  'axisx[]' 'axisy[]' -3
-      pause 250
+      pause 350
       if not @injournal 'Nao ha peixe' and not @injournal 'Tente pescar'
         if diffweight < 100
           break
@@ -67,10 +67,10 @@ for 0 to 12
         waitforjournal 'pescou' 15000 'system'
         @clearjournal
         while not @injournal 'Voce pescou' 'system'
-          useobject 'vara'
+          useobject! 'vara'
           waitfortarget 5000
           targettileoffset  'axisx[]' 'axisy[]' -3
-          pause 250
+          pause 350
           if not @injournal 'Nao ha peixe' and not @injournal 'Tente pescar'
             @clearjournal
             waitforjournal 'pescou' 15000
@@ -91,22 +91,22 @@ endfor
 //
 while @findtype '0x9cd' '0' 'backpack'
   autotargettype '0x9cd' // peixe marrom
-  useobject 'faca'
+  useobject! 'faca'
   pause 1000
 endwhile
 while @findtype '0x9cf' '0' 'backpack'
   autotargettype '0x9cf' // peixe amarelo
-  useobject 'faca'
+  useobject! 'faca'
   pause 1000
 endwhile
 while @findtype '0x9cc' '0' 'backpack'
   autotargettype '0x9cc' // peixe verde
-  useobject 'faca'
+  useobject! 'faca'
   pause 1000
 endwhile
 while @findtype '0x9ce' '0' 'backpack'
   autotargettype '0x9ce' // peixe roxo
-  useobject 'faca'
+  useobject! 'faca'
   pause 1000
 endwhile
 //
@@ -160,7 +160,7 @@ while @findtype '0x15f8' '0' 'backpack' // Wooden Bowl (chao)
   movetypeoffset 0x15f8 'backpack' 'ground'
   pause 1000
 endwhile
-useobject 'vara'
+useobject! 'vara'
 waitfortarget 5000
 canceltarget
 while @findtype '0xdbf' '0' 'backpack' // Fishing Road (chao)
@@ -178,7 +178,7 @@ for 0 to 12
   for 0 to 'axisx'
     for 0 to 'axisy'
       @clearjournal
-      useobject 'vara'
+      useobject! 'vara'
       waitfortarget 5000
       targettileoffset  'axisx[]' 'axisy[]' -3
       pause 250
@@ -189,7 +189,7 @@ for 0 to 12
         waitforjournal 'pescou' 15000 'system'
         @clearjournal
         while not @injournal 'Voce pescou' 'system'
-          useobject 'vara'
+          useobject! 'vara'
           waitfortarget 5000
           targettileoffset  'axisx[]' 'axisy[]' -3
           pause 250
@@ -213,22 +213,22 @@ endfor
 //
 while @findtype '0x9cd' '0' 'backpack'
   autotargettype '0x9cd' // peixe marrom
-  useobject 'faca'
+  useobject! 'faca'
   pause 1000
 endwhile
 while @findtype '0x9cf' '0' 'backpack'
   autotargettype '0x9cf' // peixe amarelo
-  useobject 'faca'
+  useobject! 'faca'
   pause 1000
 endwhile
 while @findtype '0x9cc' '0' 'backpack'
   autotargettype '0x9cc' // peixe verde
-  useobject 'faca'
+  useobject! 'faca'
   pause 1000
 endwhile
 while @findtype '0x9ce' '0' 'backpack'
   autotargettype '0x9ce' // peixe roxo
-  useobject 'faca'
+  useobject! 'faca'
   pause 1000
 endwhile
 //
@@ -282,7 +282,7 @@ while @findtype '0x15f8' '0' 'backpack' // Wooden Bowl (chao)
   movetypeoffset 0x15f8 'backpack' 'ground'
   pause 1000
 endwhile
-useobject 'vara'
+useobject! 'vara'
 waitfortarget 5000
 canceltarget
 while @findtype '0xdbf' '0' 'backpack' // Fishing Road (chao)
