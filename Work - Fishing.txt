@@ -156,6 +156,10 @@ while @findtype '0x14f3' '0' 'backpack' // Ship Model (chao)
   movetypeoffset 0x14f3 'backpack' 'ground'
   pause 1000
 endwhile
+while @findtype '0x15f8' '0' 'backpack' // Wooden Bowl (chao)
+  movetypeoffset 0x15f8 'backpack' 'ground'
+  pause 1000
+endwhile
 useobject 'vara'
 waitfortarget 5000
 canceltarget
@@ -272,6 +276,10 @@ while @findtype '0x10e1' '0' 'backpack' // Barrel Hoops (chao)
 endwhile
 while @findtype '0x14f3' '0' 'backpack' // Ship Model (chao)
   movetypeoffset 0x14f3 'backpack' 'ground'
+  pause 1000
+endwhile
+while @findtype '0x15f8' '0' 'backpack' // Wooden Bowl (chao)
+  movetypeoffset 0x15f8 'backpack' 'ground'
   pause 1000
 endwhile
 useobject 'vara'
