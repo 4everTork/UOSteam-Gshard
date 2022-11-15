@@ -241,11 +241,9 @@ for 0 to 2
             endif
             @autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
             pause 50
-            if @findobject 'righthand'
-              useobject! 'found'
-            elseif @findtype 0xe85 'any' 'backpack'
+            if @findtype 0xe85 'any' 'self'
               @useobject! 'found'
-            elseif @findtype 0xe86 'any' 'backpack'
+            elseif @findtype 0xe86 'any' 'self'
               @useobject! 'found'
             endif
             @clearjournal
