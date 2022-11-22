@@ -176,6 +176,7 @@ if @findalias 'Guardar' or diffweight < 195
       walk 'North'
     endif
   endwhile
+  pause 1000
   //
   // Guardar raros e smeltar outros
   //
@@ -189,7 +190,7 @@ if @findalias 'Guardar' or diffweight < 195
     @equipitem 'found' 1
   else
     headmsg 'Nao achou o Martelo'
-    replay
+    stop
   endif
   replygump 'any' 0
   msg 'Banker Bank'
