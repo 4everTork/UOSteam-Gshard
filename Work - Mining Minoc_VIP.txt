@@ -180,6 +180,7 @@ if @findalias 'Guardar' or diffweight < 195
   //
   // Guardar raros e smeltar outros
   //
+  msg ".disarm"
   if @findtype 0x13e3 'any' 'backpack'
     @equipitem 'found' 1
   elseif @findtype 0x13e4 'any' 'backpack'
