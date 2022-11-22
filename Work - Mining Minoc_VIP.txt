@@ -183,12 +183,17 @@ if @findalias 'Guardar' or diffweight < 195
     @equipitem 'found' 1
   elseif @findtype 0x13e4 'any' 'backpack'
     @equipitem 'found' 1
+  elseif @findtype 0xfb4 '2485' 'backpack'
+    @equipitem 'found' 1
+  elseif @findtype 0xfb5 '2485' 'backpack'
+    @equipitem 'found' 1
   else
     headmsg 'Nao achou o Martelo'
+    replay
   endif
   replygump 'any' 0
   msg 'Banker Bank'
-  pause 500
+  pause 1000
   for 0 to 'Ores'
     for 0 to 'Raros'
       while @findtype 'Ores[]' 'Raros[]' 'backpack'
