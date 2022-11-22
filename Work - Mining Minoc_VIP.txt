@@ -176,11 +176,11 @@ if @findalias 'Guardar' or diffweight < 195
       walk 'North'
     endif
   endwhile
-  pause 1000
   //
   // Guardar raros e smeltar outros
   //
   msg ".disarm"
+  pause 1250
   if @findtype 0x13e3 'any' 'backpack'
     @equipitem 'found' 1
   elseif @findtype 0x13e4 'any' 'backpack'
