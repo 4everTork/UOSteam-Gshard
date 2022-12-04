@@ -143,6 +143,7 @@ endif
 // No safe: com +10 raros ou -100 do maximo
 // Na VIP: com -5 do maximo
 //
+// Mina Minoc
 if x >= 2557 and x <= 2581
   if y >= 474 and y <= 495
     if diffweight < 195  or @counttype '0x19b9' '2490' 'backpack' > 10
@@ -154,7 +155,8 @@ if x >= 2557 and x <= 2581
     endif
   endif
 endif
-if @findalias 'Guardar' or diffweight < 195
+// Mina VIP (resto)
+if @findalias 'Guardar' or diffweight < 5
   headmsg 'Guardando minerios'
   pause 500
   while not @inrange 'ForgeMinoc' 1
@@ -367,6 +369,7 @@ for 0 to 2
               endif
             endwhile
             @clearjournal
+            // Mina Minoc
             if x >= 2557 and x <= 2581
               if y >= 474 and y <= 495
                 if diffweight < 195  or @counttype '0x19b9' '2490' 'backpack' > 10
@@ -381,7 +384,8 @@ for 0 to 2
                 endif
               endif
             endif
-            if diffweight < 195
+            // Mina VIP (resto)
+            if diffweight < 5
               setalias 'Guardar' 'self'
               replay
             endif
