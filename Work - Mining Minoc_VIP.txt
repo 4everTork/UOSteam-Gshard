@@ -184,13 +184,13 @@ if @findalias 'Guardar' or diffweight < 5
   msg ".disarm"
   pause 1250
   if @findtype 0x13e3 'any' 'backpack'
-    @equipitem 'found' 1
+    @useobject 'found' 
   elseif @findtype 0x13e4 'any' 'backpack'
-    @equipitem 'found' 1
+    @useobject 'found' 
   elseif @findtype 0xfb4 '2485' 'backpack'
-    @equipitem 'found' 1
+    @useobject 'found' 
   elseif @findtype 0xfb5 '2485' 'backpack'
-    @equipitem 'found' 1
+    @useobject 'found' 
   else
     headmsg 'Nao achou o Martelo'
     stop
