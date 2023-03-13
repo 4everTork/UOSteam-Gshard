@@ -7,10 +7,12 @@
 //////
 //Setar bau com belts vazias e o ingot que será usado
 if not @findobject 'baumateriais'
+headmsg 'Selecione o container com o ingot e as bags vazias.' 070 'self'
   promptalias 'baumateriais'
 endif
 //Setar bau das belts de plate
 if not @findobject 'bau2'
+headmsg 'Selecione o container onde guardar as plates prontas.' 070 'self'
   promptalias 'bau2'
 endif
 //Contar ingots
