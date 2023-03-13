@@ -184,13 +184,13 @@ if @findalias 'Guardar' or diffweight < 5
   msg ".disarm"
   pause 1250
   if @findtype 0x13e3 'any' 'backpack'
-    @useobject 'found' 
+    @useobject 'found'
   elseif @findtype 0x13e4 'any' 'backpack'
-    @useobject 'found' 
+    @useobject 'found'
   elseif @findtype 0xfb4 '2485' 'backpack'
-    @useobject 'found' 
+    @useobject 'found'
   elseif @findtype 0xfb5 '2485' 'backpack'
-    @useobject 'found' 
+    @useobject 'found'
   else
     headmsg 'Nao achou o Martelo'
     stop
@@ -245,6 +245,12 @@ for 0 to 2
           @unsetalias 'quit'
           while not @findalias 'quit'
             @cancelautotarget
+            // Fechar porta VIP e Minoc
+            if @findtype 0x839 'any' 'ground' 'any' 2 or @findtype 0x83B 'any' 'ground' 'any' 2
+              @useobject! 'found'
+            elseif @findtype 0x866 'any' 'ground' 'any' 2
+              @useobject! 'found'
+            endif
             if dead 'self'
               stop
             endif
