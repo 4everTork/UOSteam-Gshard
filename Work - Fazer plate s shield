@@ -1,0 +1,299 @@
+//Macro de fazer platemail sem shield
+//An Corp Shard 2023
+//by: General / Tork
+//////
+//Ter um container com bags vazias e (apenas) o ingot que será usado
+//E outro container para guardar as plates.
+//////
+//Setar bau com belts vazias e o ingot que será usado
+if not @findobject 'baumateriais'
+  promptalias 'baumateriais'
+endif
+//Setar bau das belts de plate
+if not @findobject 'bau2'
+  promptalias 'bau2'
+endif
+//Contar ingots
+if @findtype '0x1bf2' 'any' 'baumateriais'
+  if amount 'found' < 236
+    headmsg 'Não há minérios suficiente para 1 plate full' '38'
+    stop
+  endif
+endif
+//Abrir menu BS
+while not @gumpexists 'any'
+  headmsg 'Abra o menu de BS' 050 'self'
+  pause 1500
+endwhile
+//Pegar Belt Pouch
+useobject 'baumateriais'
+pause 1000
+if not @findobject 'belt' '0' 'backpack'
+  @movetype '0x9b0' 'baumateriais' 'backpack' (0 0 0) 'any' '1' 4
+  pause 1000
+  clearlist 'found'
+endif
+//Setar nome da belt
+if @findtype '0x9b0' '0' 'backpack' '1' 4
+  setalias 'belt' 'found'
+  pause 1000
+  useobject 'belt'
+  pause 1000
+endif
+//Coloque apenas um tipo de ingot no bau de materiais
+if @findtype '0x1bf2' 'any' 'baumateriais'
+  if amount 'found' >= 236
+    //Selecionar ingot
+    //Gump 1
+    if @gumpexists 'any'
+      replygump 'any' 5005
+      waitforgump 'any' 15000
+    endif
+    //Bronze ingot
+    if color 'found' == 2483
+      headmsg 'Bronze Platemail sem shield' 050 'self'
+      //Gump 1
+      if @gumpexists 'any'
+        replygump 'any' 5021
+        waitforgump 'any' 15000
+        replygump 'any' 1
+        waitforgump 'any' 15000
+      endif
+    endif
+    //Silver ingot
+    if color 'found' == 2484
+      headmsg 'Silver Platemail sem shield' 050 'self'
+      //Gump 1
+      if @gumpexists 'any'
+        replygump 'any' 5022
+        waitforgump 'any' 15000
+        replygump 'any' 1
+        waitforgump 'any' 15000
+      endif
+    endif
+    //Gold ingot
+    if color 'found' == 2485
+      headmsg 'Gold Platemail sem shield' 050 'self'
+      //Gump 1
+      if @gumpexists 'any'
+        replygump 'any' 5023
+        waitforgump 'any' 15000
+        replygump 'any' 1
+        waitforgump 'any' 15000
+      endif
+    endif
+    //Radioactive ingot
+    if color 'found' == 2487
+      headmsg 'Radioactive Platemail sem shield' 050 'self'
+      //Gump 1
+      if @gumpexists 'any'
+        replygump 'any' 5024
+        waitforgump 'any' 15000
+        replygump 'any' 1
+        waitforgump 'any' 15000
+      endif
+    endif
+    //Order ingot
+    if color 'found' == 2489
+      headmsg 'Order Platemail sem shield' 050 'self'
+      //Gump 1
+      if @gumpexists 'any'
+        replygump 'any' 5025
+        waitforgump 'any' 15000
+        replygump 'any' 1
+        waitforgump 'any' 15000
+        //Gump 2
+      endif
+    endif
+    //Chaos ingot
+    if color 'found' == 2490
+      headmsg 'Chaos Platemail sem shield' 050 'self'
+      //Gump 1
+      if @gumpexists 'any'
+        replygump 'any' 5026
+        waitforgump 'any' 15000
+        replygump 'any' 1
+        waitforgump 'any' 15000
+      endif
+    endif
+  endif
+endif
+@clearjournal
+//Chest
+headmsg 'Fazendo peito . . .' 050 'self'
+while not @injournal 'Voce pos' 'system'
+  @clearjournal
+  //Gump 1
+  if @gumpexists 'any'
+    replygump 'any' 10101
+    waitforgump 'any' 15000
+  endif
+  //Mover peito para belt
+  if @findtype '0x1415' 'any' 'backpack' '1'
+    @moveitem 'found' 'belt'
+    pause 1000
+  endif
+  if @ingump 0X000 'voce nao possui os materiais necessarios para fazer isto.'
+    @findtype '0x1bf2' 'any' 'backpack'
+    @moveitem 'found' 'baumateriais'
+    pause 1000
+    @findtype '0x1bf2' 'any' 'baumateriais'
+    if amount 'found' >= 50
+      @moveitem 'found' 'backpack' (0 0 0) '50'
+      pause 1000
+    else
+      sysmsg 'Não há mineral suficiente para continuar.'
+      stop
+    endif
+  endif
+endwhile
+@clearjournal
+//Legs
+headmsg 'Fazendo pernas . . .' 050 'self'
+while not @injournal 'Voce pos' 'system'
+  @clearjournal
+  //Gump 1
+  if @gumpexists 'any'
+    replygump 'any' 10102
+    waitforgump 'any' 15000
+  endif
+  //Mover legs para belt
+  if @findtype '0x1411' 'any' 'backpack' '1'
+    @moveitem 'found' 'belt'
+    pause 1000
+  endif
+  if @ingump 0X000 'voce nao possui os materiais necessarios para fazer isto.'
+    @findtype '0x1bf2' 'any' 'backpack'
+    @moveitem 'found' 'baumateriais'
+    pause 1000
+    @findtype '0x1bf2' 'any' 'baumateriais'
+    if amount 'found' >= 40
+      @moveitem 'found' 'backpack' (0 0 0) '40'
+      pause 1000
+    else
+      sysmsg 'Não há mineral suficiente para continuar.'
+      stop
+    endif
+  endif
+endwhile
+@clearjournal
+//Gloves
+headmsg 'Fazendo luvas . . .' 050 'self'
+while not @injournal 'Voce pos' 'system'
+  clearjournal
+  if @gumpexists 'any'
+    replygump 'any' 10103
+    waitforgump 'any' 15000
+  endif
+  //Mover gloves para belt
+  if @findtype '0x1414' 'any' 'backpack' '1'
+    @moveitem 'found' 'belt'
+    pause 1000
+  endif
+  if @ingump 0X000 'voce nao possui os materiais necessarios para fazer isto.'
+    @findtype '0x1bf2' 'any' 'backpack'
+    @moveitem 'found' 'baumateriais'
+    pause 1000
+    @findtype '0x1bf2' 'any' 'baumateriais'
+    if amount 'found' >= 24
+      @moveitem 'found' 'backpack' (0 0 0) '24'
+      pause 1000
+    else
+      sysmsg 'Não há mineral suficiente para continuar.'
+      stop
+    endif
+  endif
+endwhile
+@clearjournal
+//Gorget
+headmsg 'Fazendo pescoço . . .' 050 'self'
+while not @injournal 'Voce pos' 'system'
+  @clearjournal
+  if @gumpexists 'any'
+    replygump 'any' 10104
+    waitforgump 'any' 15000
+  endif
+  //Mover gorget para belt
+  if @findtype '0x1413' 'any' 'backpack' '1'
+    @moveitem 'found' 'belt'
+    pause 1000
+  endif
+  if @ingump 0X000 'voce nao possui os materiais necessarios para fazer isto.'
+    @findtype '0x1bf2' 'any' 'backpack'
+    @moveitem 'found' 'baumateriais'
+    pause 1000
+    @findtype '0x1bf2' 'any' 'baumateriais'
+    if amount 'found' >= 20
+      @moveitem 'found' 'backpack' (0 0 0) '20'
+      pause 1000
+    else
+      sysmsg 'Não há mineral suficiente para continuar.'
+      stop
+    endif
+  endif
+endwhile
+@clearjournal
+//Arms
+headmsg 'Fazendo braços . . .' 050 'self'
+while not @injournal 'Voce pos' 'system'
+  @clearjournal
+  if @gumpexists 'any'
+    replygump 'any' 10105
+    waitforgump 'any' 15000
+  endif
+  //Mover arms para belt
+  if @findtype '0x1410' 'any' 'backpack' '1'
+    @moveitem 'found' 'belt'
+    pause 1000
+  endif
+  if @ingump 0X000 'voce nao possui os materiais necessarios para fazer isto.'
+    @findtype '0x1bf2' 'any' 'backpack'
+    @moveitem 'found' 'baumateriais'
+    pause 1000
+    @findtype '0x1bf2' 'any' 'baumateriais'
+    if amount 'found' >= 36
+      @moveitem 'found' 'backpack' (0 0 0) '36'
+      pause 1000
+    else
+      sysmsg 'Não há mineral suficiente para continuar.'
+      stop
+    endif
+  endif
+endwhile
+@clearjournal
+//Helmet
+headmsg 'Fazendo capacete . . .' 050 'self'
+while not @injournal 'Voce pos' 'system'
+  @clearjournal
+  if @gumpexists 'any'
+    replygump 'any' 10106
+    waitforgump 'any' 15000
+  endif
+  //Mover helmet para belt
+  if @findtype '0x1412' 'any' 'backpack' '1'
+    @moveitem 'found' 'belt'
+    pause 1000
+  endif
+  if @ingump 0X000 'voce nao possui os materiais necessarios para fazer isto.'
+    @findtype '0x1bf2' 'any' 'backpack'
+    @moveitem 'found' 'baumateriais'
+    pause 1000
+    @findtype 0x1bf2 'any' 'baumateriais'
+    if amount 'found' >= 30
+      @moveitem 'found' 'backpack' (0 0 0) '30'
+      pause 1000
+    else
+      sysmsg 'Não há mineral suficiente para continuar.'
+      stop
+    endif
+  endif
+endwhile
+@clearjournal
+@clearjournal
+//Mover belt para o bau
+if @findobject 'belt' '0' 'backpack'
+  headmsg 'Plate completa! Guardando . . .' 050 'self'
+  @moveitem 'found' 'bau2'
+  pause 1000
+endif
+//Fim
