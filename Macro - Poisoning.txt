@@ -2,12 +2,31 @@
 // Ter bastante Lesser Poison, Oil Cloth e uma lâmmina na backpack.
 // Cuidado porque diminui karma a ponto de ficar PK
 /////
+if not @findobject 'BaumacroPoison'
+  headmsg 'Selecione o bau com os Iron Ingots.'
+  promptalias 'BaumacroPoison'
+  useobject 'BaumacroPoison'
+else
+  useobject 'BaumacroPoison'
+endif
 if not @findobject 'daggerpoison'
   headmsg 'Selecione a lamina para envenenar.'
   promptalias 'daggerpoison'
 endif
+// Se não tiver Lesser Poison, restock 100
+if @counttype 0xf0e 68 'backpack' == 0
+  headmsg 'Restockando Lesser Poison'
+  movetype 0xf0e 'BaumacroPoison' 'Backpack' (0 0 0) 68 100 4
+  pause 1000
+endif
+// Se não tiver Oil Cloth, restock 100
+if @counttype 0x175d 07d1 'backpack' == 0
+  headmsg 'Restockando Oil Cloth'
+  movetype 0x175d 'BaumacroPoison' 'Backpack' (0 0 0) 07d1 100 4
+  pause 1000
+endif
 // Usar Poisoning
-@clearjournal
+clearjournal
 useskill 'Poisoning'
 waitfortarget 15000
 targettype! 0xf0e '68'
@@ -24,9 +43,11 @@ while not @injournal 'aplicou o veneno' 'system'
     replay
   endif
   if @injournal 'Voce cometeu um grande engano' 'system'
-    cast 'cure' 'self'
-    pause 2250
-    break
+    while poisoned 'self'
+      cast 'cure' 'self'
+      pause 2750
+      break
+    endwhile
   endif
 endwhile
 // Limpar com Oil Cloth
